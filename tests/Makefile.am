@@ -7,7 +7,8 @@ TESTS = \
 	test_gzip_deflate \
 	test_gzip_inflate
 
-check_PROGRAMS = $(TESTS)
+check_PROGRAMS = $(TESTS) \
+	test_send_encrypted_text
 
 AM_CFLAGS = -g -O2
 
@@ -24,7 +25,16 @@ CLEANFILES = *~ test_pkcs7_encrypt.result \
 
 test_base64_LDADD = ../src/base64.o ../src/bsd-base64.o
 
-test_encrypt_LDADD = -lwwwutils -lxml2 -lssl -lxml \
+test_send_encrypted_text_LDADD = \
+	-lxml2 \
+	-lwwwinit -lwwwutils -lwwwcore -lwwwapp \
+	../src/globals.o \
+	../src/context.o \
+	../src/init.o \
+	../src/exit.o \
+	../src/send_encrypted_text.o
+
+test_encrypt_LDADD = -lwwwutils -lxml2 -lssl \
 	../src/globals.o \
 	../src/context.o \
 	../src/init.o \

@@ -56,6 +56,7 @@ int geier_send_encrypted_text(geier_context *context,
 	HTRequest *request = NULL;
 	HTParentAnchor *src = NULL;
 	HTChunk *chunk = NULL;
+	HTStream *target = NULL;
 
 	/* FIXME: balance load between URIs */
 	dest_uri = context->clearing_uri_list[1];
@@ -67,25 +68,26 @@ int geier_send_encrypted_text(geier_context *context,
 	HTTrace_setCallback(tracer);
 	HTNet_addAfter(terminate_handler, NULL, NULL, HT_ALL, HT_FILTER_LAST);
 
-	/* request setup */
+	/* setup source anchor */
 	src = HTTmpAnchor(NULL);
 	HTAnchor_setDocument(src, (unsigned char *)input);
-	HTAnchor_setFormat(src, WWW_PLAINTEXT);
+	HTAnchor_setFormat(src, HTAtom_for("application/xml"));
 	/* Length is only needed for HTTP version < 1.1 */
 	HTAnchor_setLength(src, strlen(input));
 	
+	/* setup request */
 	request = HTRequest_new();
-	HTRequest_addGnHd(request, HT_G_DATE);
-	HTRequest_setEntityAnchor(request, src);
-	HTRequest_setMethod(request, METHOD_POST);
-	/* FIXME: for testing raw output including headers */
+	/* send output to chunk (allocated here) */
+        target = HTStreamToChunk(request, &chunk, 0);
+        HTRequest_setOutputStream(request, target);
+	/* FIXME: raw output including headers only for testing */
 	HTRequest_setOutputFormat(request, WWW_RAW);
+
 	/* close connection immediately */
 	HTRequest_addConnection(request, "close", "");
 	
 	/* send it off and get the result as a chunk */
-	chunk = HTLoadToChunk(dest_uri, request);
-	if (!chunk) {
+	if (!HTPostAbsolute(src, dest_uri, request)) {
 		HTPrint("Post failed\n");
 		retval = -1;
 		goto exit0;

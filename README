@@ -40,9 +40,21 @@ $ make check
 Benutzte Software-Versionen
 (andere können funktionieren oder auch nicht, bei Problemen bitte melden):
 
+$ autoconf --version
 autoconf (GNU Autoconf) 2.59
+[...]
+$ automake --version
 automake (GNU automake) 1.7.9
+[...]
+$ libtoolize --version
 libtoolize (GNU libtool) 1.5.6
+[...]
+$ libtool --version
 ltmain.sh (GNU libtool) 1.5.6
+[...]
+$ make --version
 GNU Make 3.80
-gcc (GCC) 3.3.5
+[...]
+$ gcc --version
+gcc (GCC) 3.3.5 (Debian 1:3.3.5-5)
+[...]

@@ -21,15 +21,19 @@
 
 # FIXME: we need a proper project bugreport email address
 AC_INIT([libgeier],[0.1],[juergen@jstuber.net])
+AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_HEADERS([src/config.h])
 AM_INIT_AUTOMAKE
 
 AC_PREREQ(2.59)
 # we need the extra parentheses in order to cope with the comma
 AC_COPYRIGHT([configure.ac Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany])
-AC_REVISION($Revision: 1.7 $)
+AC_REVISION($Revision: 1.8 $)
 
 AC_CONFIG_SRCDIR(src/srcdir_marker)
+
+# add options for configure
+# FIXME: add options --with-libxxx=dir for locations of libraries
 
 # checks for programs
 AC_PROG_CC

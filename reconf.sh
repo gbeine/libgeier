@@ -1,5 +1,5 @@
 libtoolize --force --automake
 aclocal
-automake -a -Wall
+automake -a
 autoconf
-autoheader -Wall
+autoheader

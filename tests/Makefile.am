@@ -11,7 +11,7 @@ AM_CPPFLAGS = \
 	-I../include \
 	-DHAVE_CONFIG_H
 
-CLEANFILES = *~
+CLEANFILES = *~ test_pkcs7_encrypt.result
 
 test_base64_LDADD = ../src/base64.o ../src/bsd-base64.o
 

@@ -117,12 +117,12 @@ static int decrypt_content(geier_context *context,
 	int retval = 0;
 	unsigned char *content = NULL;
 	size_t content_len = 0;
-	unsigned char *gzipped = NULL;
-	size_t gzipped_len = 0;
 	unsigned char *encrypted = NULL;
 	size_t encrypted_len = 0;
 	unsigned char *decrypted = NULL;
 	size_t decrypted_len = 0;
+	unsigned char *inflated = NULL;
+	size_t inflated_len = 0;
 	xmlNode *text_node = NULL;
 
 	/* convert contents of selected node to text */
@@ -132,31 +132,31 @@ static int decrypt_content(geier_context *context,
 
 	/* convert base64 to gzip */
 	retval = geier_base64_decode(content, content_len,
-				     &gzipped, &gzipped_len);
+				     &encrypted, &encrypted_len);
 	if (retval) { goto exit1; }
 
-	/* ungzip it */
-	retval = geier_gzip_inflate(gzipped, gzipped_len,
-				    &encrypted, &encrypted_len);
-	if (retval) { goto exit2; }
-	
 	/* decrypt it */
 	retval = geier_pkcs7_decrypt(context,
 				     encrypted, encrypted_len,
 				     &decrypted, &decrypted_len);
+	if (retval) { goto exit2; }
+	
+	/* ungzip it */
+	retval = geier_gzip_inflate(decrypted, decrypted_len,
+				    &inflated, &inflated_len);
 	if (retval) { goto exit3; }
 
 	/* build new node */
 	/* FIXME: we need to parse it! */
 	*new_node = xmlNewNode(node->ns, node->name);
-	text_node = xmlNewTextLen(decrypted, decrypted_len);
+	text_node = xmlNewTextLen(inflated, inflated_len);
 	xmlAddChild(*new_node, text_node);
 
-	free(decrypted);
+	free(inflated);
  exit3:
-	free(encrypted);
+	free(decrypted);
  exit2:
-	free(gzipped);
+	free(encrypted);
  exit1:
 	free(content);
  exit0:

@@ -22,3 +22,8 @@ openssl enc -d -des-ede3-cbc -in encrypted_content.bin -K `cat session_key.hex` 
 
 # compare
 diff -uw datenteil.decrypted datenteil.orig
+
+
+
+# Preparing session_key for test_decrypt
+xxd -r -p < session_key.hex > session_key

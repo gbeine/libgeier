@@ -46,7 +46,7 @@ static unsigned char *elster_datenlieferant_xpathexpr =
 static unsigned char *elster_datenteil_xpathexpr =
 "/*[local-name()='Elster']/*[local-name()='DatenTeil']";
 static unsigned char *elster_transportschluessel_xpathexpr =
-"/*[local-name()='Elster']/*[local-name()='TransferHeader']/*[local-name()='Datei/*[local-name()='TransportSchluessel']";
+"/*[local-name()='Elster']/*[local-name()='TransferHeader']/*[local-name()='Datei']/*[local-name()='TransportSchluessel']";
 
 /* XPath expression for length of encrypted data part */
 static unsigned char *elster_datengroesse_xpathexpr =

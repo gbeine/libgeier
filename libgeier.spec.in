@@ -1,5 +1,5 @@
 # libgeier spec file, used to drive rpmbuild.
-# Spec File Version 0.1.2 - 28.02.2005
+# Spec File Version 0.1.3 - 28.02.2005
 
 #
 # Define vendor and version
@@ -33,7 +33,6 @@ Release:	1.%{VENDOR}%{VENDOR_VERS}
 Distribution:	%{VENDOR} %{VENDOR_VERS}
 URL:		http://www.taxbird.de/
 Source0:	%{name}-%{version}.tar.gz
-Patch0:		%{name}-configure.ac.patch
 License:	GPL
 Group:		Applications/Finance
 Vendor:		G-N-U GmbH
@@ -63,8 +62,6 @@ Diese Software ist zur Zeit im ALPHA Stadium!
 #
 %prep
 %setup -q
-# configure.ac libary location fix
-%patch0
 
 #
 # configure & build section
@@ -75,7 +72,6 @@ sh -x autogen.sh
 # configure libgeier
 %configure \
 	--with-mozilla-libs=%{mozilla_libs}
-
 
 # compile libgeier
 %__make

@@ -8,3 +8,4 @@ configure
 libtool
 autoscan.log
 configure.scan
+libgeier.spec

@@ -1,7 +1,7 @@
 libgeier - C-Bibliothek zur Kommunikation mit Elster 
 
-(c) 2005 Jürgen Stuber <juergen@jstuber.net>
-
+Copyright (C) 2005  Jürgen Stuber <juergen@jstuber.net>, Germany
+                    and others, see AUTHORS for a complete list of authors
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -24,3 +24,25 @@ von Steuererklärungen, siehe <http://www.elster.de>.
 
 libgeier ist Teil des Taxbird-Projekts.
 Geier = Gnu Elster ImplementiERung
+
+
+Installation der CVS-Version:
+-----------------------------
+
+$ sh reconf.sh
+$ ./configure [...Optionen...]
+$ make
+$ make install
+
+Um die Tests in tests/ auszuführen
+$ make check
+
+Benutzte Software-Versionen
+(andere können funktionieren oder auch nicht, bei Problemen bitte melden):
+
+autoconf (GNU Autoconf) 2.59
+automake (GNU automake) 1.7.9
+libtoolize (GNU libtool) 1.5.6
+ltmain.sh (GNU libtool) 1.5.6
+GNU Make 3.80
+gcc (GCC) 3.3.5

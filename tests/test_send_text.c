@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "\n");
 
 		if (!result) {			
-			FILE *f = fopen("test_send.result","w");
+			FILE *f = fopen("test_send_text.result","w");
 			fwrite(output, 1, outlen, f);
 			fclose(f);
 

@@ -1,0 +1,3 @@
+- Check whether all config files are distributed correctly
+  (see 12.1 Using Libtool Libraries).
+- Introduce libreplace?

@@ -26,6 +26,10 @@ libgeier_la_SOURCES = \
 #	send_text.c \
 #	decrypt.c
 
+# force relink on version change
+# For legal reasons all versions in production use must be tested and archived.
+libgeier_la_LDFLAGS = -release $(PACKAGE_VERSION)
+
 # FIXME: configure include directories
 AM_CPPFLAGS = -Wall \
 	-I/usr/include/libxml2 \
@@ -33,9 +37,9 @@ AM_CPPFLAGS = -Wall \
 	-I/usr/include/mozilla/nspr \
 	-I/usr/include/mozilla/nss \
 	-I$(top_srcdir)/include \
-	-DDEFAULT_CERT_FILE=\"$(datadir)/Elster2Cry.b64.cer\" \
+	-DDEFAULT_CERT_FILE=\"$(pkgdatadir)/Elster2Cry.b64.cer\" \
 	-DDEFAULT_CLEARING_TIMEOUT=30000 \
-	-DDEFAULT_SCHEMA_DIR_URL=\"file://$(datadir)/schemas\" \
+	-DDEFAULT_SCHEMA_DIR_URL=\"file://$(pkgdatadir)/schemas\" \
 	-DDEFAULT_HTCHUNK_GROWBY=1024
 
 CLEANFILES = *~

@@ -1,5 +1,3 @@
-AUTOMAKE_OPTIONS = foreign
-
 # tests run for make check
 TESTS = \
 	test_base64 \
@@ -30,13 +28,6 @@ AM_CPPFLAGS = -Wall \
 	-DTESTDATADIR=\"$(top_srcdir)/tests/data\" \
 	-DDEFAULT_HTCHUNK_GROWBY=1024
 
-LDADD = -L../src -lgeier
+LDADD = $(top_builddir)/src/libgeier.la
 
-CLEANFILES = *~ \
-	test_send_encrypted_text.result \
-	test_encrypt.result \
-	test_decrypt.result \
-	test_pkcs7_encrypt.result \
-	test_pkcs7_decrypt.result \
-	test_gzip_inflate.result \
-	test_gzip_deflate.result
+CLEANFILES = *~ *.result

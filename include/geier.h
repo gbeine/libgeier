@@ -57,6 +57,8 @@ int geier_send(geier_context *context,
 	       const xmlDoc *input, xmlDoc **output);
 
 /* Kompletten Elster-Datensatz abschicken und Rückgabe abholen */
+int geier_send_encrypted(geier_context *context,
+			 const xmlDoc *input, xmlDoc **output);
 int geier_send_encrypted_text(geier_context *context,
 			      const unsigned char *input, size_t inlen,
 			      unsigned char **output, size_t *outlen);

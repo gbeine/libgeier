@@ -20,27 +20,30 @@
 
 #include <geier.h>
 
-int geier_send(geier_context *context,
-	       const xmlDoc *input, xmlDoc **output)
+int geier_send_encrypted(geier_context *context,
+			 const xmlDoc *input, xmlDoc **output)
 {
 	int retval = 0;
-	xmlDoc *in_encr;
-	xmlDoc *out_encr;
+	unsigned char *in_text;
+	size_t in_len;
+	unsigned char *out_text;
+	size_t out_len;
 
-	retval = geier_encrypt(context, input, &in_encr);
+	retval = geier_xml_to_text(context, input, &in_text, &in_len);
 	if (retval) { goto exit0; }
 
-	retval = geier_send_encrypted(context, in_encr, &out_encr);
+	retval = geier_send_encrypted_text(context,
+					   in_text, in_len,
+					   &out_text, &out_len);
 	if (retval) { goto exit1; }
 
-	retval = geier_decrypt(context, out_encr, output);
+	retval = geier_text_to_xml(context, out_text, out_len, output);
 	if (retval) { goto exit2; }
 
-	/* FIXME: wipe session key */
  exit2:
-	xmlFreeDoc(out_encr);
+	free(out_text);
  exit1:
-	xmlFreeDoc(in_encr);
+	free(in_text);
  exit0:
 	return retval;
 }

@@ -62,6 +62,7 @@ int main(int argc, char *argv[])
 	if (!context) { result = -2; goto exit;	}
 
 	context->cert_filename = "../etc/Elster2Cry.b64.cer";
+	context->clearing_uri_index = 2;
 
 	/* convert to XML */
 	result = geier_send_text(context,

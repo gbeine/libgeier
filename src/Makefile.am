@@ -4,6 +4,7 @@ libgeier_la_SOURCES = \
 	exit.c \
 	context.c context.h \
 	send_encrypted_text.c \
+	send_encrypted.c \
 	send.c \
 	send_text.c \
 	encrypt.c \

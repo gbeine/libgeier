@@ -21,6 +21,15 @@
 
 #include <libxml/tree.h>
 
+#define GEIER_ERROR_BASE   8000
+
+#define GEIER_ERROR_FORMAT      	 (GEIER_ERROR_BASE+0)
+#define GEIER_ERROR_NEW_PARSER_CTXT      (GEIER_ERROR_BASE+1)
+#define GEIER_ERROR_SCHEMA_PARSE         (GEIER_ERROR_BASE+2)
+#define GEIER_ERROR_NEW_VALID_CTXT       (GEIER_ERROR_BASE+3)
+#define GEIER_ERROR_SCHEMA_VALIDATE_DOC  (GEIER_ERROR_BASE+4)
+#define GEIER_ERROR_FIND_NODE_NO_UNIQUE_NODE  (GEIER_ERROR_BASE+5)
+
 /* Kontext, enthält Konfigurationsparameter, Sitzungsschlüssel, ... */
 typedef struct _geier_context geier_context;
 
@@ -70,9 +79,18 @@ int geier_text_to_xml(geier_context *context,
 		      const unsigned char *input, size_t inlen,
 		      xmlDoc **doc);
 
-/* später mehr */
-#if 0
-int geier_validate(const xmlDoc *input);
-#endif
+/* Eingabeformate */
+typedef enum _geier_format {
+	geier_format_encrypted,
+	geier_format_unencrypted,
+/*	geier_nutzdatenblock, */
+/*	geier_nutzdaten_raw,  */
+/*	geier_nutzdaten_user, */
+} geier_format;
+
+/* Validiere XML
+ * 0 = OK */
+int geier_validate(geier_context *context,
+		   geier_format f, const xmlDoc *input);
 
 #endif 

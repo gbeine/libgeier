@@ -23,7 +23,6 @@
  * We patch it in here.
  */
 
-#include <netinet/in.h> /* for ntohs() and htons() */
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>

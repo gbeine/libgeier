@@ -27,7 +27,7 @@ AM_INIT_AUTOMAKE
 AC_PREREQ(2.59)
 # we need the extra parentheses in order to cope with the comma
 AC_COPYRIGHT([configure.ac Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany])
-AC_REVISION($Revision: 1.5 $)
+AC_REVISION($Revision: 1.6 $)
 
 AC_CONFIG_SRCDIR(src/srcdir_marker)
 
@@ -55,9 +55,11 @@ AC_CHECK_LIB(crypto, PEM_read_X509,,AC_MSG_ERROR([OpenSSL libraries missing.]))
 # FIXME: check for libwww
 # FIXME: check for libxml2
 # FIXME: check for zlib
+# FIXME: check for libnss
 
 # checks for header files
 AC_HEADER_STDC
+AC_CHECK_HEADERS([stddef.h])
 AC_CHECK_HEADERS([fcntl.h])
 AC_CHECK_HEADERS([string.h])
 AC_CHECK_HEADERS([unistd.h])

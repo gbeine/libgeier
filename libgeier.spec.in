@@ -1,0 +1,125 @@
+# libgeier spec file, used to drive rpmbuild.
+# Spec File Version 0.1.2 - 28.02.2005
+
+#
+# Define vendor and version
+#
+%if "%{_vendor}" == "suse" || "%{_vendor}" == "pc"
+%define VENDOR SuSE
+%define VENDOR_VERS %{suse_version}
+%else
+%define VENDOR %{_vendor}
+%define VENDOR_VERS
+%define suse_version 0
+%endif
+
+#
+# Defaults for directories
+#
+%define _prefix			@prefix@
+%define mozilla_libs            /usr/mozilla/lib
+
+#
+# Set SuSE specific directories
+#
+%if %suse_version
+%define mozilla_libs		/opt/mozilla/lib
+%endif
+
+Summary:	@PACKAGE@ - Open Source Implementierung der ELSTER Schnittstelle. 
+Name:           @PACKAGE@
+Version:        @VERSION@
+Release:	1.%{VENDOR}%{VENDOR_VERS}
+Distribution:	%{VENDOR} %{VENDOR_VERS}
+URL:		http://www.taxbird.de/
+Source0:	%{name}-%{version}.tar.gz
+Patch0:		%{name}-configure.ac.patch
+License:	GPL
+Group:		Applications/Finance
+Vendor:		G-N-U GmbH
+Packager:	Jan Zimmerschied <jan@zimmerschied.de>
+BuildRoot:	%{_tmppath}/%{name}-%(id -un)
+
+#
+# Include dependencies manually
+#
+##AutoReq: 0
+
+BuildRequires: openssl-devel >= 0.9.6
+BuildRequires: libxml2 mozilla mozilla-devel
+BuildRequires: w3c-libwww w3c-libwww-devel
+Requires:      openssl       >= 0.9.6
+
+#
+# Description
+#
+%description
+libgeier ist die linuxseitige Implementierung der ELSTER Schnittstelle, die zur
+Datenübermittlung an die deutschen Finanzämter benötigt wird.
+Diese Software ist zur Zeit im ALPHA Stadium!
+
+#
+# Prepare to build
+#
+%prep
+%setup -q
+# configure.ac libary location fix
+%patch0
+
+#
+# configure & build section
+#
+%build
+# create configure script and in-files
+sh -x autogen.sh
+# configure libgeier
+%configure \
+	--with-mozilla-libs=%{mozilla_libs}
+
+
+# compile libgeier
+%__make
+
+#
+# Installation section
+#
+%install
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}
+
+%__make install-strip DESTDIR=%{buildroot}
+
+#
+# Clean section
+#
+%clean
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}
+
+#
+# Post install section
+#
+%post
+
+#
+# Pre uninstall section
+#
+%preun
+
+#
+# Post uninstall section
+#
+%postun
+
+
+#
+# Files section
+#
+%files
+%defattr(-,root,root)
+%{_libdir}/*
+%{_includedir}/*
+%{_datadir}/%{name}/*
+
+%changelog
+
+* Thu Feb 23 2005 Jan Zimmerschied <jan@zimmerschied.de> - 0.1
+- Initial version.

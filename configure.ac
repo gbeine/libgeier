@@ -28,7 +28,7 @@ AM_INIT_AUTOMAKE
 AC_PREREQ(2.59)
 # we need the extra parentheses in order to cope with the comma
 AC_COPYRIGHT([configure.ac Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany])
-AC_REVISION($Revision: 1.10 $)
+AC_REVISION($Revision: 1.11 $)
 
 AC_CONFIG_SRCDIR([srcdir_marker])
 
@@ -95,6 +95,12 @@ AC_CHECK_LIB([crypto], [PEM_read_X509],,AC_MSG_ERROR([Crypto libraries missing.]
 AC_CHECK_LIB([ssl], [SSL_CTX_new],,AC_MSG_ERROR([OpenSSL libraries missing.]))
 AC_CHECK_LIB([dl], [dlopen],,AC_MSG_ERROR([libdl librarie missing.]))
 
+# check for zlib
+AC_CHECK_LIB([z], [deflateBound],,AC_MSG_ERROR([libz library missing.]))
+
+#check for md5
+AC_CHECK_LIB([md5], [MD5_Init],,AC_MSG_ERROR([md5 library missing.]))
+
 # libxml2
 AC_FIND_HEADERS([libxml2],[libxml2],[libxml/tree.h],[/usr/local/libxml2/include /usr/lib/libxml2/include /usr/libxml2/include /usr/include/libxml2 /usr/pkg/include /usr/local/include /usr/include])
 CPPFLAGS="$CPPFLAGS -I$LIBXML2_HEADERS"
@@ -115,7 +121,7 @@ LIBS="$LIBS -lwwwinit -lwwwxml -lxmltok -lxmlparse -lwwwzip -lwwwhtml -lwwwhttp 
 AC_CHECK_LIB([wwwutils], [HTChunk_new],,AC_MSG_ERROR([libwwwutils library missing.]))
 
 # Mozilla NSS
-AC_FIND_HEADERS([mozilla],[Mozilla NSS],[nss/nss.h],[/usr/local/mozilla/include /usr/lib/mozilla/include /usr/mozilla/include /usr/include/mozilla /usr/pkg/include /usr/local/include /usr/include])
+AC_FIND_HEADERS([mozilla],[Mozilla NSS],[nss/nss.h],[/usr/local/mozilla/include /usr/lib/mozilla/include /usr/mozilla/include /usr/include/mozilla /usr/pkg/include /usr/local/include /usr/include /opt/mozilla/include])
 CPPFLAGS="$CPPFLAGS -I$MOZILLA_HEADERS -I$MOZILLA_HEADERS/nss -I$MOZILLA_HEADERS/nspr"
 AC_CHECK_HEADERS([nss.h])
 
@@ -124,14 +130,8 @@ AC_ARG_WITH([mozilla-libs],
    [LDFLAGS="$LDFLAGS -L$withval"]
 )
 LIBS="$LIBS -lsoftokn3 -lplc4 -lplds4 -lnspr4"
-AC_CHECK_LIB([nss3], NSS_NoDB_Init,,AC_MSG_ERROR([libnss3 missing.]))
+AC_CHECK_LIB([nss3], NSS_NoDB_Init,,AC_MSG_ERROR([libnss3 missing. Set path using --with-mozilla-libs.]))
 AC_CHECK_LIB([smime3], SEC_PKCS7DecodeItem,,AC_MSG_ERROR([libsmime3 missing.]))
-
-# check for zlib
-AC_CHECK_LIB([z], [deflateBound],,AC_MSG_ERROR([libz library missing.]))
-
-#check for md5
-AC_CHECK_LIB([md5], [MD5_Init],,AC_MSG_ERROR([md5 library missing.]))
 
 
 # checks for header files
@@ -166,5 +166,6 @@ AC_CHECK_FUNCS([strchr])
 
 # output
 AC_CONFIG_FILES([Makefile src/Makefile include/Makefile etc/Makefile 
-                 tests/Makefile])
+		 tests/Makefile
+		 libgeier.spec])
 AC_OUTPUT

@@ -3,5 +3,9 @@ Makefile.in
 .deps
 .libs
 test_base64
+test_gzip_deflate
+test_gzip_deflate.result
+test_gzip_inflate
+test_gzip_inflate.result
 test_pkcs7_encrypt
 test_pkcs7_encrypt.result

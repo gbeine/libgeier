@@ -26,6 +26,9 @@ typedef struct {
 	unsigned char des3_iv[8];
 } geier_session_key;
 
+/* Parameter for gzip */
+#define GEIER_WBITS_GZIP 31
+
 /* Kompletten Elster-Datensatz verschlüsseln, senden, entschlüsseln */
 int geier_send_text(const unsigned char *input, size_t inlen,
 		    unsigned char **output, size_t *outlen);

@@ -3,7 +3,9 @@ libgeier_la_SOURCES = \
 	send_encrypted_text.c \
 	base64.c base64.h bsd-base64.c bsd-base64.h \
 	pkcs7_encrypt.c pkcs7_encrypt.h \
-	asn1hack.c asn1hack.h
+	asn1hack.c asn1hack.h \
+	gzip_deflate.c gzip_deflate.h \
+	gzip_inflate.c gzip_inflate.h
 #	send.c \
 #	send_text.c \
 #	text_to_xml.c \

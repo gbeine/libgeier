@@ -24,39 +24,39 @@ int geier_send(geier_context *context,
 	       const xmlDoc *input, xmlDoc **output)
 {
 	int retval = 0;
-	xmlDoc **in_encr;
-	unsigned char **in_text;
-	unsigned char **out_text;
-	xmlDoc **out_encr;
-	int in_len;
-	int out_len;
+	xmlDoc *in_encr;
+	unsigned char *in_text;
+	size_t in_len;
+	unsigned char *out_text;
+	size_t out_len;
+	xmlDoc *out_encr;
 
-	retval = geier_encrypt(context, input, in_encr);
+	retval = geier_encrypt(context, input, &in_encr);
 	if (retval) { goto exit0; }
 
-	retval = geier_xml_to_text(context, *in_encr, in_text, &in_len);
+	retval = geier_xml_to_text(context, in_encr, &in_text, &in_len);
 	if (retval) { goto exit1; }
 
 	retval = geier_send_encrypted_text(context,
-					   *in_text, in_len,
-					   out_text, &out_len);
+					   in_text, in_len,
+					   &out_text, &out_len);
 	if (retval) { goto exit2; }
 
-	retval = geier_text_to_xml(context, *out_text, out_len, out_encr);
+	retval = geier_text_to_xml(context, out_text, out_len, &out_encr);
 	if (retval) { goto exit3; }
 
-	retval = geier_decrypt(context, *out_encr, output);
+	retval = geier_decrypt(context, out_encr, output);
 	if (retval) { goto exit4; }
 
+	/* FIXME: wipe session key */
  exit4:
-	xmlFreeDoc(*out_encr);
+	xmlFreeDoc(out_encr);
  exit3:
-	free(*out_text);
+	free(out_text);
  exit2:
-	free(*in_text);
+	free(in_text);
  exit1:
-	xmlFreeDoc(*in_encr);
-	free(key);
+	xmlFreeDoc(in_encr);
  exit0:
 	return retval;
 }

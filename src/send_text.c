@@ -28,23 +28,19 @@ int geier_send_text(geier_context *context,
 	xmlDoc *in;
 	xmlDoc *out;
 
-	retval = geier_text_to_xml(context, input, inlen, in);
-	if (retval) {
-		goto exit0;
-	}
-	retval = geier_send(context, in, out);
-	if (retval) {
-		goto exit1;
-	}
+	retval = geier_text_to_xml(context, input, inlen, &in);
+	if (retval) { goto exit0; }
+
+	retval = geier_send(context, in, &out);
+	if (retval) { goto exit1; }
+
 	retval = geier_xml_to_text(context, out, output, outlen);
-	if (retval) {
-		goto exit2;
-	}
+	if (retval) { goto exit2; }
 
  exit2:
-	xmlFreeDoc(in);
- exit1:
 	xmlFreeDoc(out);
+ exit1:
+	xmlFreeDoc(in);
  exit0:
 	return retval;
 }

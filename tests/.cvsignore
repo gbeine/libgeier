@@ -18,3 +18,5 @@ test_send_encrypted_text.result
 test_validate
 test_decrypt
 test_decrypt.result
+test_send
+test_send_text

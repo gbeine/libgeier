@@ -8,11 +8,13 @@ TESTS = \
 	test_gzip_deflate \
 	test_gzip_inflate \
 	test_decrypt \
-	test_validate
+	test_validate \
+	test_send_text
 
 # add tests run by hand here
 check_PROGRAMS = $(TESTS) \
 	test_encrypt \
+	test_send \
 	test_send_encrypted_text
 
 AM_CPPFLAGS = -Wall \

@@ -64,6 +64,7 @@ geier_context *geier_context_new(void)
 	}
 	context->cert_filename = DEFAULT_CERT_FILE;
 	context->clearing_timeout_ms = DEFAULT_CLEARING_TIMEOUT;
+	context->schema_dir_url = DEFAULT_SCHEMA_DIR_URL;
 
 	context->datenlieferant_xpathexpr = elster_datenlieferant_xpathexpr;
 	context->datenteil_xpathexpr = elster_datenteil_xpathexpr;

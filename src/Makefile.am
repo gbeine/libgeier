@@ -26,6 +26,7 @@ AM_CPPFLAGS = \
 	-I/usr/include/w3c-libwww \
 	-I../include \
 	-DDEFAULT_CERT_FILE=\"$(datadir)/Elster2Cry.b64.cer\" \
-	-DDEFAULT_CLEARING_TIMEOUT=30000
+	-DDEFAULT_CLEARING_TIMEOUT=30000 \
+	-DDEFAULT_SCHEMA_DIR_URL=\"file://$(datadir)/schemas\"
 
 CLEANFILES = *~

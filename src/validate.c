@@ -26,13 +26,6 @@
 
 #include <geier.h>
 
-/* FIXME: make configurable */
-/* FIXME: depends on type of declaration, year */
-
-/* #define GEIER_SCHEMA_UNENCRYPTED  "http://80.146.179.2/elo/xml/schemata/elster_UStA_200501_extern.xsd"*/
-#define GEIER_SCHEMA_UNENCRYPTED "file:///home/juergen/Elster/taxbird-cvs/taxbird/libgeier/etc/schemas/new/elster_UStA_200501_extern.xsd"
-
-/* #define GEIER_SCHEMA_UNENCRYPTED "file:///home/juergen/Elster/taxbird-cvs/taxbird/libgeier/etc/schemas/Elster_TH7.xsd" */
 
 static int validate(char *schema_url, const xmlDoc *doc);
 
@@ -40,11 +33,15 @@ int geier_validate(geier_context *context,
 		   geier_format f, const xmlDoc *input)
 {
 	int retval = 0;
+	xmlBuffer *buf = xmlBufferCreate();
 	unsigned char *schema_url = NULL;
 
 	switch (f) {
 	case geier_format_unencrypted:
-		schema_url = GEIER_SCHEMA_UNENCRYPTED;
+		xmlBufferCCat(buf, context->schema_dir_url);
+		/* FIXME: schema depends on type of declaration, year */
+		xmlBufferCCat(buf, "/elster_UStA_200501_extern.xsd");
+		schema_url = xmlBufferContent(buf);
 		break;
 	default:
 		retval = GEIER_ERROR_FORMAT;
@@ -56,6 +53,7 @@ int geier_validate(geier_context *context,
 
  exit1:
  exit0:
+	xmlBufferFree(buf);
 	return retval;
 }
 

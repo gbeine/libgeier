@@ -25,7 +25,8 @@ struct _geier_context {
 	unsigned char **clearing_uri_list;
 	int clearing_uri_list_length;
 	unsigned char *cert_filename;
-	unsigned char *clearing_timeout_ms;
+	int clearing_timeout_ms;
+	unsigned char *schema_dir_url;
 
 	unsigned char *datenlieferant_xpathexpr;
 	unsigned char *datenteil_xpathexpr;

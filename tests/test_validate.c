@@ -87,6 +87,7 @@ int main(int argc, char *argv[])
 		result = -2;
 		goto exit1;
 	}
+	context->schema_dir_url = "../etc/schemas";
 
 	/* convert to XML */
 	result = geier_text_to_xml(context,

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- Version_BY 200501.6 -->
+<!-- Version_BY 200501.6.2 -->
 <xs:schema xmlns:elster="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.elster.de/2002/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:complexType name="usta_AnmeldungssteuernCType">
 		<xs:sequence>
@@ -9,8 +9,8 @@
 		</xs:sequence>
 		<xs:attribute name="version" use="required">
 			<xs:simpleType>
-				<xs:restriction base="xs:int">
-					<xs:pattern value="200501"/>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="200501"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
@@ -29,7 +29,7 @@
 					<xs:restriction base="xs:string">
 						<xs:minLength value="1"/>
 						<xs:maxLength value="45"/>
-						<xs:pattern value="[^#x20\p{C}].[^\p{C}]*"/>
+						<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
@@ -38,7 +38,7 @@
 					<xs:restriction base="xs:string">
 						<xs:minLength value="1"/>
 						<xs:maxLength value="30"/>
-						<xs:pattern value="[^#x20\p{C}].[^\p{C}]*"/>
+						<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
@@ -47,7 +47,7 @@
 					<xs:restriction base="xs:string">
 						<xs:maxLength value="12"/>
 						<xs:minLength value="1"/>
-						<xs:pattern value="[^#x20\p{C}].[^\p{C}]*"/>
+						<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
@@ -56,7 +56,7 @@
 					<xs:restriction base="xs:string">
 						<xs:maxLength value="30"/>
 						<xs:minLength value="1"/>
-						<xs:pattern value="[^#x20\p{C}].[^\p{C}]*"/>
+						<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
@@ -64,8 +64,10 @@
 	</xs:complexType>
 	<!--- simple Elements & Types ____________________________________________________________ -->
 	<xs:simpleType name="usta_DefaultKZSType">
-		<xs:restriction base="xs:long">
-			<xs:totalDigits value="11"/>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="12"/>
+			<xs:minLength value="1"/>
+			<xs:pattern value="[\-]{0,1}\d{1,11}"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="usta_DefaultKZSTypewithCent">
@@ -75,10 +77,10 @@
 			<xs:documentation xml:lang="DE">Dezimaltrennzeichen ist das ","</xs:documentation>
 			<xs:documentation xml:lang="DE">2 Stellen nach dem Dezimaltrennzeichen</xs:documentation>
 		</xs:annotation>
-		<xs:restriction base="xs:decimal">
-			<xs:totalDigits value="11"/>
-			<xs:fractionDigits value="2" fixed="true"/>
-			<xs:pattern value="[\-]{0,1}[0-9]*[.][0-9][0-9]"/>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="13"/>
+			<xs:minLength value="1"/>
+			<xs:pattern value="[\-]{0,1}\d{1,9}[.]\d{2}"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="usta_PositiveKZSTypewithCent">
@@ -87,15 +89,17 @@
 			<xs:documentation xml:lang="DE">Dezimaltrennzeichen ist das ","</xs:documentation>
 			<xs:documentation xml:lang="DE">2 Stellen nach dem Dezimaltrennzeichen</xs:documentation>
 		</xs:annotation>
-		<xs:restriction base="xs:decimal">
-			<xs:totalDigits value="11"/>
-			<xs:fractionDigits value="2" fixed="true"/>
-			<xs:pattern value="[0-9]*[.][0-9][0-9]"/>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="12"/>
+			<xs:minLength value="1"/>
+			<xs:pattern value="\d{1,9}[.]\d{2}"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="usta_DefaultKZPositiveSType">
-		<xs:restriction base="xs:unsignedLong">
-			<xs:totalDigits value="11"/>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="11"/>
+			<xs:minLength value="1"/>
+			<xs:pattern value="\d{1,11}"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="usta_MyDateSType">
@@ -127,7 +131,7 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="usta_JahrSType">
-		<xs:restriction base="xs:gYear">
+		<xs:restriction base="xs:string">
 			<xs:enumeration value="2005"/>
 		</xs:restriction>
 	</xs:simpleType>
@@ -138,17 +142,17 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="usta_Kz10SType">
-		<xs:restriction base="xs:int">
+		<xs:restriction base="xs:string">
 			<xs:enumeration value="1"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="usta_Kz26SType">
-		<xs:restriction base="xs:int">
+		<xs:restriction base="xs:string">
 			<xs:enumeration value="1"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="usta_Kz29SType">
-		<xs:restriction base="xs:int">
+		<xs:restriction base="xs:string">
 			<xs:enumeration value="1"/>
 		</xs:restriction>
 	</xs:simpleType>
@@ -184,7 +188,7 @@
 			<xs:element name="Kz10" type="elster:usta_Kz10SType" minOccurs="0"/>
 			<xs:element name="Kz26" type="elster:usta_Kz26SType" minOccurs="0"/>
 			<xs:element name="Kz29" type="elster:usta_Kz29SType" minOccurs="0"/>
-			<xs:element name="Kz38"/>
+			<xs:element name="Kz38" type="elster:usta_DefaultKZPositiveSType"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="usta_UmsatzsteuervoranmeldungCType">

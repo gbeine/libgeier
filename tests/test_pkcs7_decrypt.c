@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "config.h"
+#include <config.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -25,8 +25,10 @@
 
 #include <geier.h>
 
-#include "context.h"
-#include "pkcs7_decrypt.h"
+#include <context.h>
+#include <chunk_from_file.h>
+
+#include <pkcs7_decrypt.h>
 
 
 static unsigned char key1[] = {
@@ -35,32 +37,6 @@ static unsigned char key1[] = {
 	0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
 };
 
-
-HTChunk *chunk_from_file(const char *filename)
-{
-	HTChunk *result = HTChunk_new(DEFAULT_HTCHUNK_GROWBY);
-	FILE *f;
-	unsigned char buf[1024];
-	size_t len;
-
-	f = fopen(filename, "r");
-	if (!f) { return NULL; }
-
-	while (1) {
-		len = fread(&buf, 1, sizeof(buf), f);
-		HTChunk_putb(result, buf, len);
-		if (len != sizeof(buf)) {
-			break;
-		}
-	}
-
-	if (ferror(f)) {
-		perror("");
-		HTChunk_delete(result);
-		result = NULL;
-	}
-	return result;
-}
 
 int main(int argc, char *argv[])
 {

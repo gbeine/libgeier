@@ -22,34 +22,10 @@
 #include <WWWUtil.h>
 
 #include <geier.h>
-#include "gzip_inflate.h"
+#include <chunk_from_file.h>
 
+#include <gzip_inflate.h>
 
-HTChunk *chunk_from_file(const char *filename)
-{
-	HTChunk *result = HTChunk_new(DEFAULT_HTCHUNK_GROWBY);
-	FILE *f;
-	unsigned char buf[1024];
-	size_t len;
-
-	f = fopen(filename, "r");
-	if (!f) { return NULL; }
-
-	while (1) {
-		len = fread(&buf, 1, sizeof(buf), f);
-		HTChunk_putb(result, buf, len);
-		if (len != sizeof(buf)) {
-			break;
-		}
-	}
-
-	if (ferror(f)) {
-		perror("");
-		HTChunk_delete(result);
-		result = NULL;
-	}
-	return result;
-}
 
 int main(int argc, char *argv[])
 {

@@ -24,40 +24,10 @@
 #include <WWWUtil.h>
 
 #include <context.h>
+#include <chunk_from_file.h>
 
 #include <geier.h>
 
-/*
-static unsigned char iv1[] = {
-	0x83, 0x4b, 0x6d, 0xc5, 0xa1, 0xc9, 0x32, 0x4e,
-};
-*/
-
-HTChunk *chunk_from_file(const char *filename)
-{
-	HTChunk *result = HTChunk_new(DEFAULT_HTCHUNK_GROWBY);
-	FILE *f;
-	unsigned char buf[1024];
-	size_t len;
-
-	f = fopen(filename, "r");
-	if (!f) { return NULL; }
-
-	while (1) {
-		len = fread(&buf, 1, sizeof(buf), f);
-		HTChunk_putb(result, buf, len);
-		if (len != sizeof(buf)) {
-			break;
-		}
-	}
-
-	if (ferror(f)) {
-		perror("");
-		HTChunk_delete(result);
-		result = NULL;
-	}
-	return result;
-}
 
 int main(int argc, char *argv[])
 {

@@ -24,35 +24,10 @@
 #include <WWWUtil.h>
 
 #include <context.h>
+#include <chunk_from_file.h>
 
 #include <geier.h>
 
-
-HTChunk *chunk_from_file(const char *filename)
-{
-	HTChunk *result = HTChunk_new(DEFAULT_HTCHUNK_GROWBY);
-	FILE *f;
-	unsigned char buf[1024];
-	size_t len;
-
-	f = fopen(filename, "r");
-	if (!f) { return NULL; }
-
-	while (1) {
-		len = fread(&buf, 1, sizeof(buf), f);
-		HTChunk_putb(result, buf, len);
-		if (len != sizeof(buf)) {
-			break;
-		}
-	}
-
-	if (ferror(f)) {
-		perror("");
-		HTChunk_delete(result);
-		result = NULL;
-	}
-	return result;
-}
 
 int main(int argc, char *argv[])
 {
@@ -86,7 +61,7 @@ int main(int argc, char *argv[])
 	context = geier_context_new();
 	if (!context) { result = -2; goto exit;	}
 
-	context->clearing_uri_index = 1;
+	context->clearing_uri_index = 0;
 	result = geier_send_encrypted_text(context,
 					   HTChunk_data(input),
 					   HTChunk_size(input),

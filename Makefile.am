@@ -1,5 +1,5 @@
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = src include tests
+SUBDIRS = src include etc tests
 
 CLEANFILES = *~

@@ -21,33 +21,36 @@
 
 #include <libxml/tree.h>
 
-typedef struct {
-	unsigned char des3_key[24];
-	unsigned char des3_iv[8];
-} geier_session_key;
+/* Kontext, enthält Konfigurationsparameter, Sitzungsschlüssel, ... */
+typedef struct _geier_context geier_context;
 
 /* Parameter for gzip */
 #define GEIER_WBITS_GZIP 31
 
-/* Kompletten Elster-Datensatz verschlüsseln, senden, entschlüsseln */
-int geier_send_text(const unsigned char *input, size_t inlen,
-		    unsigned char **output, size_t *outlen);
-int geier_send(const xmlDoc *input, xmlDoc **output);
+/* Kontext erzeugen und mit Defaultwerten initialisierten */
+/* Rückgabewert NULL bedeutet Fehler */
+geier_context *geier_context_new(void);
+void geier_context_free(geier_context *context);
 
-int geier_send_encrypted_text(const unsigned char *input, size_t inlen,
+/* Kompletten Elster-Datensatz verschlüsseln, senden, Rückgabe entschlüsseln */
+int geier_send_text(geier_context *context,
+		    const unsigned char *input, size_t inlen,
+		    unsigned char **output, size_t *outlen);
+int geier_send(geier_context *context,
+	       const xmlDoc *input, xmlDoc **output);
+
+int geier_send_encrypted_text(geier_context *context,
+			      const unsigned char *input, size_t inlen,
 			      unsigned char **output, size_t *outlen);
 
 /* Verschlüsselung */
 
-/* Erzeuge Session-Key */
-geier_session_key *geier_make_session_key(void);
-
 /* In komplettem zu sendendem Datensatz die nötigen Teile verschlüsseln */
-int geier_encrypt(geier_session_key *key,
+int geier_encrypt(geier_context *context,
 		  const xmlDoc *input, xmlDoc **output);
 
 /* In komplettem empfangenen Datensatz die nötigen Teile entschlüsseln */
-int geier_decrypt(geier_session_key *key,
+int geier_decrypt(geier_context *context,
 		  const xmlDoc *input, xmlDoc **output);
 
 /* Konversionen zwischen XML und Text */

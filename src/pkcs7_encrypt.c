@@ -19,6 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "config.h"
+
 #include <openssl/pem.h>
 #include <openssl/stack.h>
 #include <openssl/bio.h>
@@ -31,8 +33,10 @@
 
 #include <geier.h>
 
-#include "pkcs7_encrypt.h"
+#include "context.h"
 #include "asn1hack.h"
+
+#include "pkcs7_encrypt.h"
 
 #ifdef OPENSSL_NO_DES
 #error "OpenSSL 3DES-cipher not available. GEIER won't work that way!"
@@ -40,11 +44,15 @@
 
 static X509 *geier_encrypt_get_cert(const char *filename);
 
-static PKCS7 *p7_build(const geier_session_key *key,
+static PKCS7 *p7_build(geier_context *context,
 		       const X509 *x509_cert,
 		       const unsigned char *input, size_t inlen);
+static int p7_init_cipher_context(geier_context *context,
+				  const EVP_CIPHER *cipher,
+				  EVP_CIPHER_CTX *cipher_context);
 static int p7_set_cipher(const EVP_CIPHER *cipher, PKCS7 *p7);
-static int p7_set_enc_key(const geier_session_key *key,
+static int p7_set_enc_key(const EVP_CIPHER *cipher,
+			  unsigned char *key,
 			  const X509 *x509_cert,
 			  PKCS7 *p7);
 static int p7_set_iv(EVP_CIPHER_CTX *context, PKCS7 *p7);
@@ -52,29 +60,8 @@ static int p7_set_enc_data(EVP_CIPHER_CTX *context,
 			   const unsigned char *input, size_t inlen,
 			   PKCS7 *p7);
 
-/**
- * Allocate and initialize a session key.
- * Returns NULL on failure.
- */
-geier_session_key *geier_make_session_key(void)
-{
-	geier_session_key *key = NULL;
+static unsigned char *rand_malloc(size_t len);
 
-	key = malloc(sizeof(geier_session_key));
-	if (!key) {
-		goto exit0;
-	}
-	/* generate key and iv */
-	if (RAND_bytes(key->des3_key, sizeof(key->des3_key)) != 1
-	    || RAND_bytes(key->des3_iv, sizeof(key->des3_iv)) != 1) {
-		free(key);
-		key = NULL;
-		goto exit1;
-	}
- exit1:
- exit0:
-	return key;
-}
 
 /* Do PKCS#7 public key crypto (encrypting inlen bytes from *input on)
  * and apply our ASN.1 patch. Return result in **output, a buffer of length
@@ -84,8 +71,7 @@ geier_session_key *geier_make_session_key(void)
  * 
  * Caller has to call free() on **output buffer
  */
-int geier_pkcs7_encrypt(const char *cert_filename,
-			const geier_session_key *key,
+int geier_pkcs7_encrypt(geier_context *context,
 			const unsigned char *input, size_t inlen,
 			unsigned char **output, size_t *outlen)
 {
@@ -93,19 +79,19 @@ int geier_pkcs7_encrypt(const char *cert_filename,
 	PKCS7 *p7;
 	X509 *x509_cert;
 
-	if (!key || !output || !outlen) {
+	if (!context || !context->cert_filename || !output || !outlen) {
 		retval = -1;
 		goto exit0;
 	}
 
-	x509_cert = geier_encrypt_get_cert(cert_filename);
+	x509_cert = geier_encrypt_get_cert(context->cert_filename);
 	if (!x509_cert) {
 		retval = -1;
 		goto exit1;
 	}
 
 	/* build PKCS#7 structure */
-	p7 = p7_build(key, x509_cert, input, inlen);
+	p7 = p7_build(context, x509_cert, input, inlen);
 	if (!p7) {
 		retval = -1;
 		goto exit2;
@@ -167,58 +153,101 @@ static X509 *geier_encrypt_get_cert(const char *filename)
 }
 
 
-static PKCS7 *p7_build(const geier_session_key *key,
+static PKCS7 *p7_build(geier_context *context,
 		       const X509 *x509_cert,
 		       const unsigned char *input, size_t inlen)
 {
 	PKCS7 *p7 = NULL;
-	EVP_CIPHER_CTX context;
 	const EVP_CIPHER *cipher = EVP_des_ede3_cbc();
+	EVP_CIPHER_CTX cipher_context;
 
-	assert(EVP_CIPHER_key_length(cipher) == sizeof(key->des3_key));
-	assert(EVP_CIPHER_iv_length(cipher) == sizeof(key->des3_iv));
-  
 	/* initialize cipher context */
-	if (!EVP_EncryptInit(&context, cipher, key->des3_key, key->des3_iv)) {
-		goto exit3;
+	
+	if (p7_init_cipher_context(context, cipher, &cipher_context)) {
+		goto exit0;
 	}
-
 	/* create PKCS7 object now */
 	p7 = PKCS7_new();
-	if (!p7) { goto exit0; }
-	if (!PKCS7_set_type(p7, NID_pkcs7_enveloped)) { goto exit1; }
-	if (!PKCS7_set_cipher(p7, cipher)) { goto exit2; }
+	if (!p7) { goto exit1; }
+	if (!PKCS7_set_type(p7, NID_pkcs7_enveloped)) { goto exit2; }
+	if (!PKCS7_set_cipher(p7, cipher)) { goto exit3; }
 
 	/* add recipient (only in envelope mode) */
-	if (!PKCS7_add_recipient(p7, (X509 *)x509_cert)) { goto exit3; }
+	if (!PKCS7_add_recipient(p7, (X509 *)x509_cert)) { goto exit4; }
 
 	/* we need to initialize PKCS#7 stuff the hard way,
 	 * since we have got to remember (and know!) the 3DES key :-( */
-	if (p7_set_cipher(cipher, p7)) { goto exit4; }
+	if (p7_set_cipher(cipher, p7)) { goto exit5; }
 
 	/* encrypt 3des key with RSA and attach to PKCS#7 struct */
-	if (p7_set_enc_key(key, x509_cert, p7)) { goto exit5; }
-
+	if (p7_set_enc_key(cipher, context->session_key,
+			   x509_cert,
+			   p7)) {
+		goto exit6;
+	}
 	/* store IV in PKCS#7 structure
 	 * shalt be done before any encryption!!! */
-	if (p7_set_iv(&context, p7)) { goto exit6; }
+	if (p7_set_iv(&cipher_context, p7)) { goto exit7; }
 
 	/* now simply *lol* encrypt the data (3DES) ...
 	 *  -- can somebody serve my a cup of coffee in the meantime ?? */
-	if (p7_set_enc_data(&context, input, inlen, p7)) { goto exit7; }
+	if (p7_set_enc_data(&cipher_context, input, inlen, p7)) { goto exit8; }
 
 	return p7;
 
+ exit8:
  exit7:
  exit6:
  exit5:
  exit4:
  exit3:
  exit2:
- exit1:
 	PKCS7_free(p7);
+ exit1:
  exit0:
 	return NULL;
+}
+
+
+static int p7_init_cipher_context(geier_context *context,
+				  const EVP_CIPHER *cipher,
+				  EVP_CIPHER_CTX *cipher_context)
+{
+	int retval = 0;
+	unsigned char *key = NULL;
+	unsigned char *iv = NULL;
+	
+	if (context->session_key) {
+		key = context->session_key;
+	}
+	else {
+		key = rand_malloc(EVP_CIPHER_key_length(cipher));
+		if (!key) {
+			retval = -1;
+			goto exit0;
+		}
+		/* save for decryption */
+		context->session_key = key;
+	}
+	if (context->iv) {
+		iv = context->iv;
+	}
+	else {
+		key = rand_malloc(EVP_CIPHER_iv_length(cipher));
+		if (!key) {
+			retval = -1;
+			goto exit1;
+		}
+	}
+	if (!EVP_EncryptInit(cipher_context, cipher, key, iv)) {
+		retval = -1;
+		goto exit2;
+	}
+ exit2:
+ exit1:
+	if (!context->iv) { free(iv); }
+ exit0:
+	return retval;
 }
 
 static int p7_set_cipher(const EVP_CIPHER *cipher, PKCS7 *p7)
@@ -228,7 +257,8 @@ static int p7_set_cipher(const EVP_CIPHER *cipher, PKCS7 *p7)
 	return 0;
 }
 
-static int p7_set_enc_key(const geier_session_key *key,
+static int p7_set_enc_key(const EVP_CIPHER *cipher,
+			  unsigned char *key,
 			  const X509 *x509_cert,
 			  PKCS7 *p7)
 {
@@ -237,8 +267,8 @@ static int p7_set_enc_key(const geier_session_key *key,
 	EVP_PKEY *elster_pubkey = X509_get_pubkey((X509 *)x509_cert);
 
 	int len = EVP_PKEY_encrypt(buf,
-				   ((geier_session_key *)key)->des3_key,
-				   sizeof(key->des3_key),
+				   key,
+				   EVP_CIPHER_key_length(cipher),
 				   elster_pubkey);
 	if(len < 0) {
 		retval = -1;
@@ -301,4 +331,21 @@ static int p7_set_enc_data(EVP_CIPHER_CTX *context,
 	free(buf);
  exit0:
 	return retval;
+}
+
+
+static unsigned char *rand_malloc(size_t len)
+{
+	unsigned char *result = malloc(len);
+	if (!result) {
+		goto exit0;
+	}
+	if (RAND_bytes(result, len) != 1) {
+		free(result);
+		result = NULL;
+		goto exit1;
+	}
+ exit1:
+ exit0:
+	return result;
 }

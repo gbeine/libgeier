@@ -16,24 +16,26 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "config.h"
+
 #include <stdio.h>
 #include <string.h>
 
 #include <WWWUtil.h>
 
 #include <geier.h>
+
+#include "context.h"
 #include "pkcs7_encrypt.h"
 
 
-static geier_session_key key1 = {
-	{
-		0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
-		0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
-		0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
-	},
-	{
-		0x83, 0x4b, 0x6d, 0xc5, 0xa1, 0xc9, 0x32, 0x4e,
-	}
+static unsigned char key1[] = {
+	0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
+	0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
+	0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
+};
+static unsigned char iv1[] = {
+	0x83, 0x4b, 0x6d, 0xc5, 0xa1, 0xc9, 0x32, 0x4e,
 };
 
 #define HTCHUNK_GROWBY_DEFAULT  1024
@@ -66,8 +68,7 @@ HTChunk *chunk_from_file(const char *filename)
 
 int main(int argc, char *argv[])
 {
-	char *cert_file = NULL;
-	geier_session_key skey;
+	geier_context *context = geier_context_new();
 	unsigned char *output = NULL;
 	size_t outlen;
 	HTChunk *input = NULL;
@@ -78,7 +79,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "usage: %s\n", argv[0]);
 		exit(1);
 	}
-	cert_file = "data/pkcs7/certificate";
+	context->cert_filename = "data/pkcs7/certificate";
 	input = chunk_from_file("data/pkcs7/teststring");
 	expected = chunk_from_file("data/pkcs7/teststring.pkcs7-envelope.geier");
 
@@ -92,8 +93,9 @@ int main(int argc, char *argv[])
 	}
 
 	/* do encryption */
-	result = geier_pkcs7_encrypt(cert_file,
-				     &key1,
+	context->session_key = key1;
+	context->iv = iv1;
+	result = geier_pkcs7_encrypt(context,
 				     HTChunk_data(input), HTChunk_size(input),
 				     &output, &outlen);
 

@@ -1,5 +1,5 @@
-/* encrypt.h
- * Elster/Coala public key crypto routines
+/*
+ * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,23 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * Copyleft(C): 2004,05 by Stefan Siegl <ssiegl@gmx.de>, Germany
  */
 
-#ifndef GEIER_ENCRYPT_H
-#define GEIER_ENCRYPT_H
+#ifndef CONTEXT_H
+#define CONTEXT_H
 
-/* Do PKCS#7 public key crypto (encrypting inlen bytes from *input on)
- * and apply our ASN.1 patch. Return result in **output, a buffer of length
- * *outlen bytes, allocated with malloc().
- *
- * Return: 0 on success, **output and *outlen are only valid in case of success
- * 
- * Caller has to call free() on **output buffer
- */
-int geier_pkcs7_encrypt(geier_context *context,
-			const unsigned char *input, size_t inlen,
-			unsigned char **output, size_t *outlen);
+struct _geier_context {
+	/* configuration */
+	unsigned char **clearing_uri_list;
+	unsigned char *cert_filename;
+	unsigned char **encrypt_xpathexprs; /* location of nodes to encrypt */
 
-#endif 
+	/* state */
+	/* session key will be stored by first encryption for decryption */
+	/* for testing encryption we can set the session key directly */
+	unsigned char *session_key;
+
+	/* use only for testing */
+	unsigned char **encrypt_ivs; /* parallels encrypt_xpathexprs */
+	unsigned char *iv;
+};
+
+#endif

@@ -16,17 +16,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "config.h"
+
 #include <WWWLib.h>
 #include <WWWInit.h>
 
-#include <geier.h>
+#include "context.h"
 
-char *elster_clearing_uri_list[] = {
-	"http://80.146.179.2:80/Elster2/EMS",
-	"http://80.146.179.3:80/Elster2/EMS",
-	"http://193.109.238.58:80/Elster2/EMS",
-	"http://193.109.238.59:80/Elster2/EMS",
-};
+#include <geier.h>
 
 
 static int printer(const char *fmt, va_list args)
@@ -50,7 +47,8 @@ static int terminate_handler(HTRequest *request,
 	return YES;
 }
 
-int geier_send_encrypted_text(const unsigned char *input, size_t inlen,
+int geier_send_encrypted_text(geier_context *context,
+			      const unsigned char *input, size_t inlen,
 			      unsigned char **output, size_t *outlen)
 {
 	int retval = 0;
@@ -60,7 +58,7 @@ int geier_send_encrypted_text(const unsigned char *input, size_t inlen,
 	HTChunk *chunk = NULL;
 
 	/* FIXME: balance load between URIs */
-	dest_uri = elster_clearing_uri_list[1];
+	dest_uri = context->clearing_uri_list[1];
 	HTPrint("Posting to %s\n", dest_uri);
 
 	/* global setup */

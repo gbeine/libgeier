@@ -22,6 +22,7 @@
 
 #include "context.h"
 #include "find_node.h"
+#include "node_contents_to_text.h"
 
 #include <geier.h>
 
@@ -37,10 +38,6 @@ static int store_length_at_xpathexpr(
 static int encrypt_content(geier_context *context,
 			   xmlDoc *doc, xmlNode *node,
 			   xmlNode **new_node, size_t *new_content_len);
-
-#define INDENT_LEVEL 4
-#define ALLOW_FORMAT 0
-
 
 int geier_encrypt(geier_context *context,
 		  const xmlDoc *input, xmlDoc **output)
@@ -135,7 +132,6 @@ static int store_length_at_xpathexpr(geier_context *context,
 	if (retval) { goto exit0; }
 
 	/* create new node with length as content */
-	/* FIXME: should we check for errors here? */
 	new_node = xmlNewNode(node->ns, node->name);
 	text_node = xmlNewText(text);
 	xmlAddChild(new_node, text_node);
@@ -154,8 +150,6 @@ static int encrypt_content(geier_context *context,
 			   xmlNode **new_node, size_t *new_content_len)
 {
 	int retval = 0;
-	xmlBuffer *buf = NULL;
-	xmlNode *n = NULL;
 	unsigned char *content = NULL;
 	size_t content_len = 0;
 	unsigned char *gzipped = NULL;
@@ -167,24 +161,9 @@ static int encrypt_content(geier_context *context,
 	xmlNode *text_node = NULL;
 
 	/* convert contents of selected node to text */
-	buf = xmlBufferCreate();
-
-	/* convert all childs */
-	for (n = node->children; n != NULL; n = n->next) {
-		xmlBuffer *child_buf = xmlBufferCreate();
-		int child_len = xmlNodeDump(child_buf, doc, n,
-					    INDENT_LEVEL, ALLOW_FORMAT);
-
-		if (child_len < 0) {
-			xmlBufferFree(child_buf);
-			retval = -1;
-			goto exit0;
-		}
-		xmlBufferAdd(buf, xmlBufferContent(child_buf), child_len);
-		xmlBufferFree(child_buf);
-	}
-	content = xmlBufferContent(buf);
-	content_len = xmlBufferLength(buf);
+	retval = geier_node_contents_to_text(doc, node,
+					     &content, &content_len);
+	if (retval) { goto exit0; }
 
 	/* gzip it */
 	retval = geier_gzip_deflate(content, content_len,
@@ -214,7 +193,7 @@ static int encrypt_content(geier_context *context,
  exit2:
 	free(gzipped);
  exit1:
+	free(content);
  exit0:
-	xmlBufferFree(buf);
 	return retval;
 }

@@ -22,6 +22,7 @@
 
 #include "context.h"
 #include "find_node.h"
+#include "node_contents_to_text.h"
 
 #include <geier.h>
 
@@ -110,7 +111,6 @@ static int decrypt_content(geier_context *context,
 			   xmlNode **new_node)
 {
 	int retval = 0;
-	xmlBuffer *buf = NULL;
 	unsigned char *content = NULL;
 	size_t content_len = 0;
 	unsigned char *gzipped = NULL;
@@ -122,15 +122,10 @@ static int decrypt_content(geier_context *context,
 	xmlNode *text_node = NULL;
 
 	/* convert contents of selected node to text */
-	buf = xmlBufferCreate();
-	content_len = xmlNodeDump(buf, doc, node,
-				  INDENT_LEVEL, ALLOW_FORMAT);
-	if (content_len < 0) {
-		retval = -1;
-		goto exit0;
-	}
-	content = xmlBufferContent(buf);
-	
+	retval = geier_node_contents_to_text(doc, node,
+					     &content, &content_len);
+	if (retval) { goto exit0; }
+
 	/* convert base64 to gzip */
 	retval = geier_base64_decode(content, content_len,
 				     &gzipped, &gzipped_len);
@@ -148,11 +143,10 @@ static int decrypt_content(geier_context *context,
 	if (retval) { goto exit3; }
 
 	/* build new node */
-	/* FIXME: should we check for errors here? */
+	/* FIXME: we need to parse it! */
 	*new_node = xmlNewNode(node->ns, node->name);
 	text_node = xmlNewTextLen(decrypted, decrypted_len);
 	xmlAddChild(*new_node, text_node);
-
 
 	free(decrypted);
  exit3:
@@ -160,7 +154,7 @@ static int decrypt_content(geier_context *context,
  exit2:
 	free(gzipped);
  exit1:
+	free(content);
  exit0:
-	xmlBufferFree(buf);
 	return retval;
 }

@@ -11,6 +11,7 @@ libgeier_la_SOURCES = \
 	xml_to_text.c \
 	globals.c globals.h \
 	find_node.c find_node.h \
+	node_contents_to_text.c node_contents_to_text.h \
 	base64.c base64.h bsd-base64.c bsd-base64.h \
 	pkcs7_encrypt.c pkcs7_encrypt.h \
 	pkcs7_decrypt.c pkcs7_decrypt.h \

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Elster xmlns="http://www.elster.de/2002/XMLSchema">
+    <TransferHeader version="7">
+        <Verfahren>ElsterAnmeldung</Verfahren>
+        <DatenArt>UStVA</DatenArt>
+        <Vorgang>send-NoSig</Vorgang>
+        <Testmerker>700000004</Testmerker>
+        <HerstellerID>74931</HerstellerID>
+        <DatenLieferant>MIICAwYJKoZIhvcNAQcDoIIB9DCCAfACAQAxggF6MIIBdgIBADBeMFkxCzAJBgNVBAYTAkRFMQ8wDQYDVQQKEwZFTFNURVIxDDAKBgNVBAsTA0VCQTEPMA0GA1UEAxMGQ29kaW5nMRowGAYDVQQFExEyMDAzMDkzMDE0MzMyM3gwMAIBADANBgkqhkiG9w0BAQEFAASCAQB3mInjBsCGTp0juqxkz0i/LgoIlujj45Wo51HrwTDFcC9CyKg65ypY3B6duRZMfMETm4JXjJTlMW+sT4QLO56Wrtwwt0lYtjqbgn+FL2cdXedPUlzvZYVdzFq1eSXBX2poxe0EkxrFtEVPCIno/H/Nl29aLgkzBEfYa6aJj0DTWdLGBllEpHo5a6M15p6AR9iIF0pR/az754QypJoslA3u8Jp5/IySLS4TIQm1yyDRWz4DZFIzskfB6D6psyP2i4f2vjh8QsRMOdGooLyPcnKYZgn0g7hEK8g3QEgr5Xa4XbOiU/uT3kqnZslavYDXrKgFGtVJ72SVzpekzGEcpbLDMG0GCSqGSIb3DQEHATAUBggqhkiG9w0DBwQIg0ttxaHJMk6gSgRIK7aPRqNlP2CD/ZPy3EavZExxPFFxQ3qYm9BnlyYcvAbBzXVaSj+IRQaT23V78aa15FrqijJdsCj0Nd0iSuqUEbcPxctHfgcT</DatenLieferant>
+        <Datei>
+            <Verschluesselung>PKCS#7v1.5</Verschluesselung>
+            <Kompression>GZIP</Kompression>
+            <DatenGroesse>1660</DatenGroesse>
+            <TransportSchluessel/>
+        </Datei>
+        <VersionClient/>
+        <Zusatz>
+            <Info>Testzusatz</Info>
+        </Zusatz>
+    </TransferHeader>
+    <DatenTeil>MIIE2QYJKoZIhvcNAQcDoIIEyjCCBMYCAQAxggF6MIIBdgIBADBeMFkxCzAJBgNVBAYTAkRFMQ8wDQYDVQQKEwZFTFNURVIxDDAKBgNVBAsTA0VCQTEPMA0GA1UEAxMGQ29kaW5nMRowGAYDVQQFExEyMDAzMDkzMDE0MzMyM3gwMAIBADANBgkqhkiG9w0BAQEFAASCAQAezoIO+q5wYLY5Nn54h4TkaPYiWfIF1/z7BUVBmFZSLBUmYjz62/ua5GsGbKCAfcT3emcAqaITBe8s3DdUf63Pynky5oPNjIPF3ho6yR65J3k7rSQjFABRQLgnywJStirkn3hHzenmhhrSLkveqvNBd0e62mY5jTOgjhLp7EMJUQ9eUpo/k6IeqHTyS7we0cPvyQdBb8Wu/NjHAMyNaO30N70vVFCAHQipafRz08eVWJ6CqIajzcyN0MimAMOLrGBUvMOHcL0oc3u5OgY1BUn38zZcWq4rltvzfDoDQkSMmeoahbLtWRTaja14MX//Xrx0a/1S5KlpV0CkdEjxqZWuMIIDQQYJKoZIhvcNAQcBMBQGCCqGSIb3DQMHBAiDS23FockyTqCCAxwEggMYK7aPRqNlP2A7Sfqrl74GdhTleQf2OUrChJYnTjuWPTyndPXst7kHF8SepnFc54L5lIBsnROgTZEYY0wy5TUCBcVrg8JAdjcDpRku/7y2a6OyVhe1WVuSjsZNyOPMbhQcaAPqQD+E0Jdp8iGMnhc4dB1Wleauk7tISTrdo4mjtaA8u4t7bfXxHCa8dg2Pkc4bjYMwNxhTel0IpRBEjH+SUEeYdaPxs5wA+ReCvUpct0sbmuLvRceHq0+X7a11nAep7f8FjFvuA+cnx/nvckD2UgxnHL6KSFq4/YsB+5kH0mTqmSoJK8xgqAFXGw1io3WtL43dw/znM1DOyH6dx7TMUMuP7HA4E+8Uf5Da44V/0O4gmrLzao7TOnTIca5qlZCZ21Ku/tDtaCNO7xsw3S+KZAE+WnwVAlg2R6Unnm9kyH+6621/X4/KM1i1P3coAhSnl3h9AiBj6KyRN0O02AZ2LnweO1UNFR2GBdREaRKlu99Yz8VVZz+GABDs85Xn13PxcXDRySs4EG1pIlu7OcNeaOVSlz/Qq/fCVSTuTfnk2ivkVHqt/JWpvkCSMRwnwbTA6P4gVBRLJU3kitYQxg0rcTLlrpikgJpEmzJdpFax//7McgdD98mlIJuYfXsN08WWu0GaB8bITp3H0ri/rA44ufXOCdewIHondZJLturhy7AoKauyuRO0B2GbcYRp30Ix0ZAqwm0S5DNxJnnWHGL5x22BgfkjqbLG+5u/UvR3KIyuibEAEr0p+ItRhbbHib4npPLiciDC0zWiYEIZi6bml8GWM12M3j3vOOgxipG2yrzxP3zLLlSpjCEKm5T+qG9UjnKlP2busdTobMLKojxqlZXQxBsZjMkSFr1Sgu1LuvMpJae6ZCFbEjyNcR/Zn3Ww93TQ+YO6QpKBH2l1sivErD7I7CKqLsgSfsTaFZvFPvM2aZa8j7Q6bvRKlJaUS4YSn8pCjT9HzA58uDxeGesfpPgpgw9Ekfy+F5nfJ9UDgVcvcDYEbNesWBNMlKapfB092YWbTkYRR84WusBBVQIfzmdp+HCjvwu1</DatenTeil>
+</Elster>

@@ -21,9 +21,13 @@
 
 struct _geier_context {
 	/* configuration */
+	unsigned char *xml_encoding; /* the encoding to use for Elster-XML */
 	unsigned char **clearing_uri_list;
 	unsigned char *cert_filename;
-	unsigned char **encrypt_xpathexprs; /* location of nodes to encrypt */
+
+	unsigned char *datenlieferant_xpathexpr;
+	unsigned char *datenteil_xpathexpr;
+	unsigned char *datengroesse_xpathexpr;
 
 	/* state */
 	/* session key will be stored by first encryption for decryption */
@@ -31,7 +35,6 @@ struct _geier_context {
 	unsigned char *session_key;
 
 	/* use only for testing */
-	unsigned char **encrypt_ivs; /* parallels encrypt_xpathexprs */
 	unsigned char *iv;
 };
 

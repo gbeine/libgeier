@@ -17,6 +17,7 @@
  */
 
 #include <config.h>
+
 #include <stdio.h>
 #include <string.h>
 
@@ -26,6 +27,9 @@
 
 #include <geier.h>
 
+static unsigned char iv1[] = {
+	0x83, 0x4b, 0x6d, 0xc5, 0xa1, 0xc9, 0x32, 0x4e,
+};
 
 #define HTCHUNK_GROWBY_DEFAULT  1024
 
@@ -57,21 +61,21 @@ HTChunk *chunk_from_file(const char *filename)
 
 int main(int argc, char *argv[])
 {
-	geier_context *context = geier_context_new();
+	geier_context *context;
 	unsigned char *output = NULL;
 	size_t outlen;
 	HTChunk *input = NULL;
 	HTChunk *expected = NULL;
-	xmlDoc *indoc;
-	xmlDoc *outdoc;
+	xmlDoc *indoc = NULL;
+	xmlDoc *outdoc = NULL;
 	int result;
 
 	if (argc != 1) {
 		fprintf(stderr, "usage: %s\n", argv[0]);
 		exit(1);
 	}
-	input = chunk_from_file("data/testustva_unencrypted.xml");
-	expected = chunk_from_file("data/testustva_encrypted.xml");
+	input = chunk_from_file("data/test_ustva_unencrypted.xml");
+	expected = chunk_from_file("data/test_ustva_encrypted.xml");
 
 	if (!input) {
 		fprintf(stderr, "Loading input failed\n");
@@ -82,20 +86,33 @@ int main(int argc, char *argv[])
 		exit(2);
 	}
 
+	/* initialize library */
+	result = geier_init(1);
+	if (result) { goto exit; }
+
+	context = geier_context_new();
+	if (!context) { result = -2; goto exit;	}
+
+	context->cert_filename = "../etc/Elster2Cry.b64.cer";
+	context->iv = iv1;
+
 	/* convert to XML */
-	result = geier_text_to_xml(HTChunk_data(input), HTChunk_size(input),
+	result = geier_text_to_xml(context,
+				   HTChunk_data(input), HTChunk_size(input),
 				   &indoc);
 	if (result) { goto exit; }
 
 	/* do encryption */
-	result = geier_encrypt(context, indoc, &outdoc);
+ 	result = geier_encrypt(context, indoc, &outdoc);
 	if (result) { goto exit; }
+	fprintf(stderr, "(3)\n");
 
 	/* convert to text */
-	result = geier_xml_to_text(outdoc, &output, &outlen);
+	result = geier_xml_to_text(context, outdoc, &output, &outlen);
 	if (result) { goto exit; }
+	fprintf(stderr, "(4)\n");
 
-	/* wipe out rsa encrypted keys,
+	/* wipe out rsa encrypted and base64 encoded keys,
 	 * which differ each time due to randomness */
 	/* memset(output+202, 0, 256); */
 	/* memset(HTChunk_data(expected)+202, 0, 256); */
@@ -139,5 +156,6 @@ int main(int argc, char *argv[])
 		}
 		return 1;
 	}
+	geier_exit();
 	return 0;
 }

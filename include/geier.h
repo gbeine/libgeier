@@ -27,6 +27,14 @@ typedef struct _geier_context geier_context;
 /* Parameter for gzip */
 #define GEIER_WBITS_GZIP 31
 
+
+/* Initialisieren, muß als erstes aufgerufen werden */
+/* Erledigt Initialisierung der verwendeten Bibliotheken, z.B. libxml2 */
+/* debug:  erzeuge Debug-Ausgaben falls > 0 */
+int geier_init(int debug);
+/* Aufräumen, muß als letztes aufgerufen werden */
+int geier_exit(void);
+
 /* Kontext erzeugen und mit Defaultwerten initialisierten */
 /* Rückgabewert NULL bedeutet Fehler */
 geier_context *geier_context_new(void);
@@ -39,6 +47,7 @@ int geier_send_text(geier_context *context,
 int geier_send(geier_context *context,
 	       const xmlDoc *input, xmlDoc **output);
 
+/* Kompletten Elster-Datensatz abschicken und Rückgabe abholen */
 int geier_send_encrypted_text(geier_context *context,
 			      const unsigned char *input, size_t inlen,
 			      unsigned char **output, size_t *outlen);
@@ -54,9 +63,11 @@ int geier_decrypt(geier_context *context,
 		  const xmlDoc *input, xmlDoc **output);
 
 /* Konversionen zwischen XML und Text */
-int geier_xml_to_text(const xmlDoc *doc,
+int geier_xml_to_text(geier_context *context,
+		      const xmlDoc *doc,
 		      unsigned char **output, size_t *outlen);
-int geier_text_to_xml(const unsigned char *input, size_t inlen,
+int geier_text_to_xml(geier_context *context,
+		      const unsigned char *input, size_t inlen,
 		      xmlDoc **doc);
 
 /* später mehr */

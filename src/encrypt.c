@@ -29,7 +29,19 @@
 
 static int encrypt_at_xpathexpr(geier_context *context,
 				const unsigned char *xpathexpr,
-				xmlDoc *copy);
+				xmlDoc *doc,
+				size_t *content_len);
+static int store_length_at_xpathexpr(
+	geier_context *context,
+	const unsigned char *xpathexpr,
+	xmlDoc *doc,
+	size_t content_len);
+static int find_node(xmlDoc *doc,
+		     const unsigned char *xpathexpr,
+		     xmlNode **node);
+static int encrypt_content(geier_context *context,
+			   xmlDoc *doc, xmlNode *node,
+			   xmlNode **new_node, size_t *new_content_len);
 
 #define INDENT_LEVEL 4
 #define ALLOW_FORMAT 0
@@ -40,9 +52,9 @@ int geier_encrypt(geier_context *context,
 {
 	int retval = 0;
 	xmlDoc *copy = NULL;
-	int i = 0;
+	size_t content_len;
 
-	if (!context || context->iv || !input || !output) {
+	if (!context || !input || !output) {
 		retval = -1;
 		goto exit0;
 	}
@@ -51,20 +63,31 @@ int geier_encrypt(geier_context *context,
 		retval = -1;
 		goto exit1;
 	}
-	for (i=0; context->encrypt_xpathexprs[i]; i++) {
-		if (context->encrypt_ivs) {
-			context->iv = context->encrypt_ivs[i];
-		}
-		retval = encrypt_at_xpathexpr(context,
-					      context->encrypt_xpathexprs[i],
-					      copy);
-		context->iv = NULL;
-		if (retval) { goto exit2; }
-	}
+
+	/* Encrypt fields */
+	retval = encrypt_at_xpathexpr(context,
+				      context->datenlieferant_xpathexpr,
+				      copy,
+				      &content_len);
+	if (retval) { goto exit2; }
+	retval = encrypt_at_xpathexpr(context,
+				      context->datenteil_xpathexpr,
+				      copy,
+				      &content_len);
+	if (retval) { goto exit3; }
+
+	/* Store length */
+	retval = store_length_at_xpathexpr(context,
+					   context->datengroesse_xpathexpr,
+					   copy,
+					   content_len);
+	if (retval) { goto exit4; }
 
 	/* publish the encrypted document */
 	*output = copy;
 
+ exit4:
+ exit3:
  exit2:
 	if (retval) { xmlFreeDoc(copy); }
  exit1:
@@ -75,21 +98,69 @@ int geier_encrypt(geier_context *context,
 /* destructively encrypt the content of the element at xpathexpr */
 static int encrypt_at_xpathexpr(geier_context *context,
 				const unsigned char *xpathexpr,
-				xmlDoc *doc)
+				xmlDoc *doc,
+				size_t *content_len)
+{
+	int retval = 0;
+	xmlNode *node = NULL;
+	xmlNode *new_node = NULL;
+
+	retval = find_node(doc, xpathexpr, &node);
+	if (retval) { goto exit0; }
+
+	/* create new node with encrypted content */
+	retval = encrypt_content(context, doc, node, &new_node, content_len);
+	if (retval) { goto exit1; }
+	
+	/* replace it */
+	xmlReplaceNode(node, new_node);
+
+	/* clean up */
+	xmlFreeNode(node);
+ exit1:
+ exit0:
+	return retval;
+}
+
+
+static int store_length_at_xpathexpr(geier_context *context,
+				     const unsigned char *xpathexpr,
+				     xmlDoc *doc,
+				     size_t content_len)
+{
+	int retval = 0;
+	xmlNode *node = NULL;
+	xmlNode *new_node = NULL;
+	unsigned char text[32];
+	xmlNode *text_node = NULL;
+
+	sprintf(text, "%d", (int)content_len);
+
+	retval = find_node(doc, xpathexpr, &node);
+	if (retval) { goto exit0; }
+
+	/* create new node with length as content */
+	/* FIXME: should we check for errors here? */
+	new_node = xmlNewNode(node->ns, node->name);
+	text_node = xmlNewText(text);
+	xmlAddChild(new_node, text_node);
+
+	/* replace it */
+	xmlReplaceNode(node, new_node);
+
+	/* clean up */
+	xmlFreeNode(node);
+ exit0:
+	return retval;
+}
+
+static int find_node(xmlDoc *doc,
+		     const unsigned char *xpathexpr,
+		     xmlNode **node)
 {
 	int retval = 0;
 	xmlXPathContext *xpath_ctxt = NULL;
 	xmlXPathObject *xpath_obj = NULL;
-	xmlNode *node = NULL;
-	xmlBuffer *buf = NULL;
-	unsigned char *content = NULL;
-	size_t content_len = 0;
-	unsigned char *gzipped = NULL;
-	size_t gzipped_len = 0;
-	unsigned char *encrypted = NULL;
-	size_t encrypted_len = 0;
-	unsigned char *base64 = NULL;
-	size_t base64_len = 0;
 
 	xpath_ctxt = xmlXPathNewContext(doc);
 	if (!xpath_ctxt) {
@@ -101,57 +172,25 @@ static int encrypt_at_xpathexpr(geier_context *context,
 		retval = -1;
 		goto exit1;
 	}
-	/* check for single node */
-	if (xpath_obj->nodesetval->nodeNr != 1) {
+	if (!xpath_obj->nodesetval) {
 		retval = -1;
 		goto exit2;
 	}
-	/* extract it */
-	node = xpath_obj->nodesetval->nodeTab[0];
-	if (!node) {
+
+	/* check for single node */
+	if (xpath_obj->nodesetval->nodeNr != 1) {
 		retval = -1;
 		goto exit3;
 	}
-	
-	/* convert contents of selected node to text */
-	buf = xmlBufferCreate();
-	content_len = xmlNodeDump(buf, doc, node, INDENT_LEVEL, ALLOW_FORMAT);
-	if (content_len < 0) {
+	/* extract it */
+	*node = xpath_obj->nodesetval->nodeTab[0];
+	if (!*node) {
 		retval = -1;
 		goto exit4;
 	}
-	content = xmlBufferContent(buf);
-	
-	/* gzip it */
-	retval = geier_gzip_deflate(content, content_len,
-				    &gzipped, &gzipped_len);
-	if (retval) { goto exit5; }
-	
-	/* encrypt it */
-	retval = geier_pkcs7_encrypt(context,
-				     gzipped, gzipped_len,
-				     &encrypted, &encrypted_len);
-	if (retval) { goto exit6; }
 
-	/* convert it to base64 */
-	retval = geier_base64_encode(encrypted, encrypted_len,
-				     &base64, &base64_len);
-	if (retval) { goto exit7; }
-
-	/* replace content */
-	xmlNodeSetContentLen(node, base64, base64_len);
-
-	/* clean up */
-	free(base64);
- exit7:
-	free(encrypted);
- exit6:
-	free(gzipped);
- exit5:
  exit4:
-	xmlBufferFree(buf);
  exit3:
-	xmlFreeNode(node);
  exit2:
 	xmlXPathFreeObject(xpath_obj);
  exit1:
@@ -159,3 +198,71 @@ static int encrypt_at_xpathexpr(geier_context *context,
  exit0:
 	return retval;
 }
+
+
+static int encrypt_content(geier_context *context,
+			   xmlDoc *doc, xmlNode *node,
+			   xmlNode **new_node, size_t *new_content_len)
+{
+	int retval = 0;
+	xmlBuffer *buf = NULL;
+	unsigned char *content = NULL;
+	size_t content_len = 0;
+	unsigned char *gzipped = NULL;
+	size_t gzipped_len = 0;
+	unsigned char *encrypted = NULL;
+	size_t encrypted_len = 0;
+	unsigned char *base64 = NULL;
+	size_t base64_len = 0;
+	xmlNode *text_node = NULL;
+
+	/* convert contents of selected node to text */
+	buf = xmlBufferCreate();
+	content_len = xmlNodeDump(buf, doc, node,
+				  INDENT_LEVEL, ALLOW_FORMAT);
+	if (content_len < 0) {
+		retval = -1;
+		goto exit0;
+	}
+	content = xmlBufferContent(buf);
+	
+	/* gzip it */
+	retval = geier_gzip_deflate(content, content_len,
+				    &gzipped, &gzipped_len);
+	if (retval) { goto exit1; }
+	
+	/* encrypt it */
+	retval = geier_pkcs7_encrypt(context,
+				     gzipped, gzipped_len,
+				     &encrypted, &encrypted_len);
+	if (retval) { goto exit2; }
+
+	/* convert it to base64 */
+	retval = geier_base64_encode(encrypted, encrypted_len,
+				     &base64, &base64_len);
+	if (retval) { goto exit3; }
+	*new_content_len = base64_len;
+
+	/* build new node */
+	/* FIXME: should we check for errors here? */
+	*new_node = xmlNewNode(node->ns, node->name);
+	text_node = xmlNewTextLen(base64, base64_len);
+	xmlAddChild(*new_node, text_node);
+
+
+	free(base64);
+ exit3:
+	free(encrypted);
+ exit2:
+	free(gzipped);
+ exit1:
+ exit0:
+	xmlBufferFree(buf);
+	return retval;
+}
+
+
+
+
+
+

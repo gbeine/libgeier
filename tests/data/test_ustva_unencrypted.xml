@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Elster xmlns="http://www.elster.de/2002/XMLSchema">
+    <TransferHeader version="7">
+        <Verfahren>ElsterAnmeldung</Verfahren>
+        <DatenArt>UStVA</DatenArt>
+        <Vorgang>send-NoSig</Vorgang>
+        <Testmerker>700000004</Testmerker>
+        <HerstellerID>74931</HerstellerID>
+        <DatenLieferant><!-- verschlüsseln -->Geier</DatenLieferant>
+        <Datei>
+            <Verschluesselung>PKCS#7v1.5</Verschluesselung>
+            <Kompression>GZIP</Kompression>
+            <DatenGroesse><!-- richtige Laenge einfuegen -->11111</DatenGroesse>
+            <TransportSchluessel/>
+        </Datei>
+        <VersionClient/>
+        <Zusatz>
+            <Info>Testzusatz</Info>
+        </Zusatz>
+    </TransferHeader>
+    <DatenTeil><!-- verschlüsseln -->
+    <Nutzdatenblock>
+	<NutzdatenHeader version="9">
+	    <NutzdatenTicket>1</NutzdatenTicket>
+	    <Empfaenger id="F">9144</Empfaenger>
+	    <Hersteller>
+		<ProduktName>libgeier</ProduktName>
+		<ProduktVersion>0.1</ProduktVersion>
+            </Hersteller>
+            <DatenLieferant>Testlieferant</DatenLieferant>
+            <Zusatz>
+                <Info>Dies ist ein Test</Info>
+            </Zusatz>
+        </NutzdatenHeader>
+        <Nutzdaten>
+            <Anmeldungssteuern art="UStVA" version="200501">
+                <DatenLieferant>
+            	    <Name>Till Tester</Name>
+            	    <Strasse>Ausprobiererstr. 23</Strasse>
+            	    <PLZ>45678</PLZ>
+            	    <Ort>Testheim</Ort>
+                </DatenLieferant>
+                <Erstellungsdatum>20050102</Erstellungsdatum>
+                <Steuerfall>
+            	<Umsatzsteuervoranmeldung>
+            	    <Jahr>2005</Jahr>
+            	    <Zeitraum>41</Zeitraum>
+            	    <Steuernummer>9144058870702</Steuernummer>
+            	    <Kz09>74931*Name Steuerber.*Berufsbez.*089*59958327*Name Mandant</Kz09>
+            	    <Kz10>1</Kz10>
+            	    <Kz26>1</Kz26>
+            	    <Kz29>1</Kz29>
+		    <Kz35>-99999999999</Kz35>
+            	    <Kz36>123456789.00</Kz36>
+            	    <Kz39>99999999999</Kz39>
+            	    <Kz41>-99999999999</Kz41>
+            	    <Kz42>-99999999999</Kz42>
+            	    <Kz43>-99999999999</Kz43>
+            	    <Kz44>-99999999999</Kz44>
+            	    <Kz45>-99999999999</Kz45>
+            	    <Kz48>-99999999999</Kz48>
+            	    <Kz49>-99999999999</Kz49>
+            	    <Kz51>-99999999999</Kz51>
+            	    <Kz52>-99999999999</Kz52>
+            	    <Kz53>-999999999.99</Kz53>
+            	    <Kz59>-999999999.99</Kz59>
+            	    <Kz60>-99999999999</Kz60>
+            	    <Kz61>-999999999.99</Kz61>
+            	    <Kz62>-999999999.99</Kz62>
+            	    <Kz63>-999999999.99</Kz63>
+            	    <Kz64>-999999999.99</Kz64>
+            	    <Kz65>-999999999.99</Kz65>
+            	    <Kz66>-999999999.99</Kz66>
+            	    <Kz67>-999999999.99</Kz67>
+            	    <Kz69>-999999999.99</Kz69>
+            	    <Kz76>-99999999999</Kz76>
+            	    <Kz73>-99999999999</Kz73>
+            	    <Kz74>-999999999.99</Kz74>
+            	    <Kz77>-99999999999</Kz77>
+            	    <Kz80>-999999999.99</Kz80>
+            	    <Kz83>-999999999.99</Kz83>
+            	    <Kz84>-99999999999</Kz84>
+            	    <Kz85>-999999999.99</Kz85>
+            	    <Kz86>-99999999999</Kz86>
+            	    <Kz91>-99999999999</Kz91>
+            	    <Kz93>-99999999999</Kz93>
+            	    <Kz94>-99999999999</Kz94>
+            	    <Kz95>-99999999999</Kz95>
+            	    <Kz96>-999999999.99</Kz96>
+            	    <Kz97>-99999999999</Kz97>
+            	    <Kz98>-999999999.99</Kz98>
+            	</Umsatzsteuervoranmeldung>
+                </Steuerfall>
+            </Anmeldungssteuern>
+	</Nutzdaten>
+    </Nutzdatenblock>
+    </DatenTeil>
+</Elster>

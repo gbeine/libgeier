@@ -9,6 +9,8 @@ TESTS = \
 
 check_PROGRAMS = $(TESTS)
 
+AM_CFLAGS = -g -O2
+
 AM_CPPFLAGS = \
 	-I/usr/include/libxml2 \
 	-I/usr/include/w3c-libwww \
@@ -23,7 +25,10 @@ CLEANFILES = *~ test_pkcs7_encrypt.result \
 test_base64_LDADD = ../src/base64.o ../src/bsd-base64.o
 
 test_encrypt_LDADD = -lwwwutils -lxml2 -lssl -lxml \
+	../src/globals.o \
 	../src/context.o \
+	../src/init.o \
+	../src/exit.o \
 	../src/gzip_deflate.o \
 	../src/pkcs7_encrypt.o ../src/asn1hack.o \
 	../src/base64.o ../src/bsd-base64.o \

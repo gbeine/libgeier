@@ -17,34 +17,16 @@
  */
 
 #include "config.h"
-#include "context.h"
+#include "globals.h"
 
 #include <geier.h>
 
-
-int geier_xml_to_text(geier_context *context,
-		      const xmlDoc *doc,
-		      unsigned char **output, size_t *outlen)
+int geier_exit(void)
 {
-	int retval = 0;
-
-	fprintf(stderr, "(4.0)\n");
-
-	if (!doc || !output || !outlen) {
-		retval = -1;
-		goto exit0;
+	/* clean up after libxml2 */
+	xmlCleanupParser();
+	if (geier_debug) {
+		xmlMemoryDump();
 	}
-	fprintf(stderr, "(4.1)\n");
-	fprintf(stderr, "doc=0x%x\n", (int)doc);
-	fprintf(stderr, "output=0x%x\n", (int)output);
-	fprintf(stderr, "*output=0x%x\n", (int)*output);
-	fprintf(stderr, "outlen=0x%x\n", (int)outlen);
-	fprintf(stderr, "enc=%s\n", context->xml_encoding);
-
-	xmlDocDumpFormatMemoryEnc(doc, output, outlen,
-				  context->xml_encoding, 1);
-
-	fprintf(stderr, "(4.2)\n");
- exit0:
-	return retval;
+	return 0;
 }

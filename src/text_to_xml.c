@@ -16,12 +16,36 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "config.h"
+
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+
 #include <geier.h>
 
-int geier_text_to_xml(const unsigned char *input, size_t inlen,
+
+int geier_text_to_xml(geier_context *context,
+		      const unsigned char *input, size_t inlen,
 		      xmlDoc **doc)
 {
 	int retval = 0;
+	xmlNode *root_element = NULL;
+	xmlNode *n = NULL;
+
+	if (!input || !doc ) {
+		retval = -1;
+		goto exit0;
+	}
+
+	/* read as doc tree */
+	/* FIXME: check for options needed */
+	*doc = xmlReadMemory(input, inlen, "nobase.xml", NULL, 0);
+	if (!doc) {
+		retval = -1;
+		goto exit1;
+	}
+	
+ exit1:
  exit0:
 	return retval;
 }

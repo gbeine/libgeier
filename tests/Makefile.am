@@ -18,6 +18,21 @@ check_PROGRAMS = $(TESTS) \
 	test_send \
 	test_send_encrypted_text
 
+
+TESTDATADIR = $(top_srcdir)/tests/data
+
+dist_check_DATA = \
+	$(TESTDATADIR)/pkcs7/certificate \
+	$(TESTDATADIR)/pkcs7/teststring \
+	$(TESTDATADIR)/pkcs7/teststring.gzip \
+	$(TESTDATADIR)/pkcs7/teststring.gzip.pkcs7-encrypted \
+	$(TESTDATADIR)/pkcs7/teststring.pkcs7-envelope.geier \
+	$(TESTDATADIR)/session_key \
+	$(TESTDATADIR)/test_ustva_encrypted.xml \
+	$(TESTDATADIR)/test_ustva_reply.xml \
+	$(TESTDATADIR)/test_ustva_reply_encrypted.xml \
+	$(TESTDATADIR)/test_ustva_unencrypted.xml
+
 # FIXME: let configure determine library header locations
 AM_CPPFLAGS = -Wall \
 	-I/usr/include/libxml2 \
@@ -25,7 +40,7 @@ AM_CPPFLAGS = -Wall \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/include \
 	-DETCDIR=\"$(top_srcdir)/etc\" \
-	-DTESTDATADIR=\"$(top_srcdir)/tests/data\" \
+	-DTESTDATADIR=\"$(TESTDATADIR)\" \
 	-DDEFAULT_HTCHUNK_GROWBY=1024
 
 LDADD = $(top_builddir)/src/libgeier.la

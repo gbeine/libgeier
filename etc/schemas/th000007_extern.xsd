@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- edited with XML Spy v4.3 U (http://www.xmlspy.com) by Michael Wilz (Rechenzentrum der Finanzverwaltung NRW) -->
+<!-- Version 7.31-->
+<xs:schema targetNamespace="http://www.elster.de/2002/XMLSchema" xmlns:elster="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<!-- RootElement = Elster _______________________________________________________________-->
+	<xs:element name="TransferHeader" type="elster:TransferHeaderCType"/>
+	<xs:complexType name="TransferHeaderCType">
+		<xs:sequence>
+			<xs:element name="Verfahren" type="elster:VerfahrenSType"/>
+			<xs:element name="DatenArt" type="elster:DatenArtSType"/>
+			<xs:element name="Vorgang" type="elster:VorgangSType"/>
+			<xs:element name="TransferTicket" type="elster:thTransferTicketSType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">für Rückübermittlung des TransferHeaders aus der Clearingstelle wird in der Clearingstelle eingefügt</xs:documentation>
+					<xs:documentation xml:lang="de">das TAG darf vom Datenlieferant nicht geliefert werden (auch nicht leer)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Testmerker" type="elster:TestmerkerSType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">Muss vom Datenlieferant gefüllt werden; wenn nicht vorhanden dann Echtfall ; Echfall aber auch wenn Testmerker = "0" oder = "000000000"</xs:documentation>
+					<xs:documentation xml:lang="de">gilt für die gesamte Datenlieferung !!!</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="HerstellerID" type="elster:HerstellerIDSType"/>
+			<xs:element name="DatenLieferant">
+				<xs:annotation>
+					<xs:documentation xml:lang="DE">Datenlieferant ist derjenige, der die Datenlieferung an die Finazverwaltung (Cklearingstelle) übermittelt </xs:documentation>
+					<xs:documentation xml:lang="DE">Der Inhalt des Tags "DatenLieferant" ist nach dem selben verfahren zu verschlüsseln, wie die gesamte Datenlieferung</xs:documentation>
+					<xs:documentation xml:lang="DE">Der Inhalt des Tags "DatenLieferant" darf vor Verschlüsselung nicht länger asl 256 Zeichen haben</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="EingangsDatum" type="elster:thEingangsDatumSType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="DE">Serverseitiges Eingangsdatum wird erst in der Clearingstelle eingefügt</xs:documentation>
+					<xs:documentation xml:lang="DE">Datum, Uhrzeit, wann die signierten Daten bei Server eingegangen sind Wird serverseitig gefüllt</xs:documentation>
+					<xs:documentation xml:lang="DE">JJJJMMTThhmmss:Zahl, 14-stellig - extern nicht zu füllen - </xs:documentation>
+					<xs:documentation xml:lang="de">Optional für Datenlieferungen (dann aber nur leer !!!) - wird erstmalig in der Clearingstelle gefüllt - bei Antworten aus der CS ist dieses Tag enthalten !</xs:documentation>
+					<xs:documentation xml:lang="de">das TAG soll vom Datenlieferant nicht geliefert werden (auch nicht leer)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Datei" type="elster:DateiCType"/>
+			<xs:element name="RC" type="elster:RCCType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">ReturnCode ist nur bei Rücklieferungen aus der Clearingstelle vorhanden  wird  in der Clearingstelle eingefüllt</xs:documentation>
+					<xs:documentation xml:lang="de">das TAG darf vom Datenlieferant nicht geliefert werden (auch nicht leer)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VersionClient" type="elster:VersionClientSType"/>
+			<xs:element name="Zusatz" type="elster:ZusatzCType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">Optinal - kann vom Datenlieferant für eigene Zusätze / Informationen genutzt werden</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="version" type="xs:string" use="required"/>
+	</xs:complexType>
+	<!-- Definierung einfacher Elements________________________________________________________-->
+	<!-- A -->
+	<!-- B -->
+	<!-- C -->
+	<!-- D -->
+	<xs:simpleType name="DatenArtSType">
+		<xs:annotation>
+			<xs:documentation xml:lang="DE">Art der Daten, um welche Daten handelt es sich (inhaltlich)</xs:documentation>
+			<xs:documentation xml:lang="DE">Verarbeitendes Programm stößt je Datentyp bestimmte Verarbeitung an.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Registrierung"/>
+			<xs:enumeration value="Kontoabfrage"/>
+			<xs:enumeration value="AntraegeUndRechte"/>
+			<xs:enumeration value="ESt"/>
+			<xs:enumeration value="USt"/>
+			<xs:enumeration value="GewSt"/>
+			<xs:enumeration value="ESt"/>
+			<xs:enumeration value="USt"/>
+			<xs:enumeration value="LStB"/>
+			<xs:enumeration value="ProtokollAnforderung"/>
+			<xs:enumeration value="ZM"/>
+			<xs:enumeration value="ZMDO"/>
+			<xs:enumeration value="UStMBk"/>
+			<xs:enumeration value="MfaStMLF"/>
+			<xs:enumeration value="UStVA"/>
+			<xs:enumeration value="Authent"/>
+			<xs:enumeration value="Steuerkontobabfrage"/>
+			<xs:enumeration value="Steuernummernpruefung"/>
+			<xs:enumeration value="Brief"/>
+			<xs:enumeration value="LStA"/>
+			<xs:enumeration value="VVAEO"/>
+			<xs:enumeration value="VVAEOT"/>
+			<xs:enumeration value="Allgemein"/>
+			<xs:enumeration value="UpdateDatei"/>
+			<xs:enumeration value="Auftrag"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DatenGroesseSType">
+		<xs:annotation>
+			<xs:documentation xml:lang="DE">Grösse des DatenTeil in Byte</xs:documentation>
+			<xs:documentation xml:lang="DE">unverhältnismäßig große Dateien können bereits vor der Entschlüsselung ausgesondert 
+			werden.Schutz vor Sabotage.Die Größe der Datei bezieht sich den DatenTeil nach Komprimierung  und Verschlüsselung inclusive der Tags für den DatenTeil			
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:positiveInteger">
+			<xs:totalDigits value="42"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- E -->
+	<xs:simpleType name="thEingangsDatumSType">
+		<xs:union memberTypes="elster:th_LeerLISTE elster:ndh_DatumLISTE"/>
+	</xs:simpleType>
+	<xs:simpleType name="th_LeerLISTE">
+		<xs:list itemType="elster:LeerSType"/>
+	</xs:simpleType>
+	<xs:simpleType name="ndh_DatumLISTE">
+		<xs:list itemType="elster:DatumSType"/>
+	</xs:simpleType>
+	<!-- F -->
+	<!-- G -->
+	<!-- H -->
+	<!-- I -->
+	<!-- J -->
+	<!-- K -->
+	<xs:simpleType name="KompressionSType">
+		<xs:annotation>
+			<xs:documentation xml:lang="DE">Mit welcher Kompression wurden die Daten komprimiert.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="GZIP"/>
+			<xs:enumeration value="none"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- L -->
+	<xs:simpleType name="LeerSType">
+		<xs:annotation>
+			<xs:documentation xml:lang="DE">Für Tags die Grundsätzlich nicht geliefert werden dürfen - wird hilfsweise zugelassen diese leer zu liefern ! </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value=""/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- M -->
+	<!-- N -->
+	<!-- O -->
+	<!-- P -->
+	<!-- Q -->
+	<!-- R -->
+	<!-- S -->
+	<xs:simpleType name="StatusSType">
+		<xs:annotation>
+			<xs:documentation xml:lang="DE">welchen Status (der Bearbeitung) hat die Anfrage</xs:documentation>
+			<xs:documentation xml:lang="DE">Koordination des Transferstandes</xs:documentation>
+			<xs:documentation xml:lang="DE">Authentifizierung - Benutzername (Client an Server)</xs:documentation>
+			<xs:documentation xml:lang="DE">Authentifizierung - angenommen (Server an Client)</xs:documentation>
+			<xs:documentation xml:lang="DE">Senden - ok</xs:documentation>
+			<xs:documentation xml:lang="DE">Senden - Fehler</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- T -->
+	<xs:simpleType name="TestmerkerSType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="0"/>
+			<xs:enumeration value="000000000"/>
+			<xs:enumeration value="700000001"/>
+			<xs:enumeration value="700000004"/>
+			<xs:enumeration value="300000001"/>
+			<xs:enumeration value="220002000">
+				<xs:annotation>
+					<xs:documentation xml:lang="DE">ElsterLohn : Protokollerzeugung und weiterleiten ins BL</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="220000000">
+				<xs:annotation>
+					<xs:documentation xml:lang="DE">ElsterLohn : nur Protokollerzeugung in CS</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="230000001">
+				<xs:annotation>
+					<xs:documentation xml:lang="DE">ElsterKontoabfrage : Komplettest </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="230000002">
+				<xs:annotation>
+					<xs:documentation xml:lang="DE">ElsterKontoabfrage : Komplettest - mit Rollback</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="400000010">
+				<xs:annotation>
+					<xs:documentation xml:lang="DE">TEST ELAD ElsterLohn</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="thTransferTicketSType">
+		<xs:union memberTypes="elster:th_LeerLISTE elster:thTransferTicketLISTE"/>
+	</xs:simpleType>
+	<xs:simpleType name="thTransferTicketLISTE">
+		<xs:list itemType="elster:TransferTicketSType"/>
+	</xs:simpleType>
+	<xs:simpleType name="TransportSchluesselSType">
+		<xs:annotation>
+			<xs:documentation xml:lang="DE">Öffentlicher Schlüssel des Clients</xs:documentation>
+			<xs:documentation xml:lang="DE">Für die Transportverschlüsselung vom Server zum Client ist der öffentlicher Schlüssel des Clients/Datenlieferers nötig, dieser muss beim Hinweg zum Server mitgeschickt werden</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- U -->
+	<!-- V -->
+	<xs:simpleType name="VerschluesselungSType">
+		<xs:annotation>
+			<xs:documentation xml:lang="DE">Mit welcher Verschlüsselungsart wurden die Daten verschlüsselt</xs:documentation>
+			<xs:documentation xml:lang="DE">Protokoll der Verschlüsselung. Es kann vorkommen, dass verschieden Verschlüsselungsarten eingesetzt werden, eine Unterscheidung ist hier nötig, um das richtige Entschlüsselungstool anzusteuern, Protokoll der Verschlüsselung</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="PKCS#7v1.5"/>
+			<xs:enumeration value="PKCS#7v1.5enveloped"/>
+			<xs:enumeration value="none"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="VersionClientSType">
+		<xs:annotation>
+			<xs:documentation xml:lang="DE">Wenn bei einer Verschlüsselungssoftware eine neuere Version eingesetzt wird, ist es u.U. wichtig, ob die erhaltenen Daten schon mit der neuen oder noch mit der alten Verschlüsselung verschlüsselt wurden, um die Daten entschlüsseln zu können.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="42"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="VerfahrenSType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ElsterAnmeldung"/>
+			<xs:enumeration value="ElsterKontoabfrage"/>
+			<xs:enumeration value="ElsterLohn"/>
+			<xs:enumeration value="ElsterExtern"/>
+			<xs:enumeration value="ElsterErklaerung"/>
+			<xs:enumeration value="ElsterFT"/>
+			<xs:enumeration value="ElsterSuch"/>
+			<xs:enumeration value="ElsterSuchExtern"/>
+			<xs:enumeration value="Geld"/>
+			<xs:enumeration value="Antrag"/>
+			<xs:enumeration value="ElsterBescheid"/>
+			<xs:enumeration value="StErkl"/>
+			<xs:enumeration value="ElsterESt"/>
+			<xs:enumeration value="Alg"/>
+			<xs:enumeration value="StKto"/>
+			<xs:enumeration value="DummyWorker"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="VorgangSType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="get-Sig"/>
+			<xs:enumeration value="vis-NoSig"/>
+			<xs:enumeration value="send-Sig"/>
+			<xs:enumeration value="send-NoSig"/>
+			<xs:enumeration value="validate-Sig"/>
+			<xs:enumeration value="validate-NoSig"/>
+			<xs:enumeration value="sendCorrect-Sig"/>
+			<xs:enumeration value="sendCorrect-NoSig"/>
+			<xs:enumeration value="get-Sig-Offline"/>
+			<xs:enumeration value="send-Sig-Offline"/>
+			<xs:enumeration value="send-NoSig-Offline"/>
+			<xs:enumeration value="validate-Sig-Offline"/>
+			<xs:enumeration value="validate-NoSig-Offline"/>
+			<xs:enumeration value="sendCorrect-Sig-Offline"/>
+			<xs:enumeration value="sendCorrect-NoSig-Offline"/>
+			<xs:enumeration value="get-NoSig"/>
+			<xs:enumeration value="get-NoSig-Offline"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- W -->
+	<!-- X -->
+	<!-- Y -->
+	<!-- Z -->
+	<!-- Definierung globaler complex Types __________________________________________________ -->
+	<!-- A -->
+	<!-- B -->
+	<!-- C -->
+	<!-- D -->
+	<xs:complexType name="DateiCType">
+		<xs:sequence>
+			<xs:element name="Verschluesselung" type="elster:VerschluesselungSType"/>
+			<xs:element name="Kompression" type="elster:KompressionSType"/>
+			<xs:element name="DatenGroesse" type="elster:DatenGroesseSType"/>
+			<xs:element name="TransportSchluessel" type="elster:TransportSchluesselSType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- E -->
+	<!-- F -->
+	<!-- G -->
+	<!-- J -->
+	<!-- K -->
+	<!-- L -->
+	<!-- M -->
+	<!-- N -->
+	<!-- O -->
+	<!-- P -->
+	<!-- Q -->
+	<!-- R -->
+	<!-- S -->
+	<!-- T -->
+	<!-- U -->
+	<!-- V -->
+	<!-- W -->
+	<!-- X -->
+	<!-- Y -->
+	<!-- Z -->
+	<!-- Definierung globaler Gruppen _______________________________________________________ -->
+</xs:schema>

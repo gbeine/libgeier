@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Version_BY 200501.6 -->
+<xs:schema xmlns:elster="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.elster.de/2002/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:complexType name="usta_AnmeldungssteuernCType">
+		<xs:sequence>
+			<xs:element name="DatenLieferant" type="elster:usta_DatenlieferantType"/>
+			<xs:element name="Erstellungsdatum" type="elster:usta_MyDateSType"/>
+			<xs:element name="Steuerfall" type="elster:usta_SteuerfallCType"/>
+		</xs:sequence>
+		<xs:attribute name="version" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:int">
+					<xs:pattern value="200501"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="art" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="UStVA"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="usta_DatenlieferantType">
+		<xs:sequence>
+			<xs:element name="Name">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+						<xs:maxLength value="45"/>
+						<xs:pattern value="[^#x20\p{C}].[^\p{C}]*"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Strasse">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+						<xs:maxLength value="30"/>
+						<xs:pattern value="[^#x20\p{C}].[^\p{C}]*"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="PLZ">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="12"/>
+						<xs:minLength value="1"/>
+						<xs:pattern value="[^#x20\p{C}].[^\p{C}]*"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Ort">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="30"/>
+						<xs:minLength value="1"/>
+						<xs:pattern value="[^#x20\p{C}].[^\p{C}]*"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<!--- simple Elements & Types ____________________________________________________________ -->
+	<xs:simpleType name="usta_DefaultKZSType">
+		<xs:restriction base="xs:long">
+			<xs:totalDigits value="11"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="usta_DefaultKZSTypewithCent">
+		<xs:annotation>
+			<xs:documentation xml:lang="DE">Vorzeichen: es ist nur das "-" als Vorzeichen zulässig "+" nicht !!!</xs:documentation>
+			<xs:documentation xml:lang="DE">9 Stellen (Ziffern) vor dem Dezimaltrennzeichen</xs:documentation>
+			<xs:documentation xml:lang="DE">Dezimaltrennzeichen ist das ","</xs:documentation>
+			<xs:documentation xml:lang="DE">2 Stellen nach dem Dezimaltrennzeichen</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:totalDigits value="11"/>
+			<xs:fractionDigits value="2" fixed="true"/>
+			<xs:pattern value="[\-]{0,1}[0-9]*[.][0-9][0-9]"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="usta_PositiveKZSTypewithCent">
+		<xs:annotation>
+			<xs:documentation xml:lang="DE">9 Stellen (Ziffern) vor dem Dezimaltrennzeichen</xs:documentation>
+			<xs:documentation xml:lang="DE">Dezimaltrennzeichen ist das ","</xs:documentation>
+			<xs:documentation xml:lang="DE">2 Stellen nach dem Dezimaltrennzeichen</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:totalDigits value="11"/>
+			<xs:fractionDigits value="2" fixed="true"/>
+			<xs:pattern value="[0-9]*[.][0-9][0-9]"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="usta_DefaultKZPositiveSType">
+		<xs:restriction base="xs:unsignedLong">
+			<xs:totalDigits value="11"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="usta_MyDateSType">
+		<xs:annotation>
+			<xs:documentation xml:lang="DE">JJJJMMDD</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="\d{4}((0[1-9])|(1[0-2]))((3[0-1])|(2[0-9])|(1[0-9])|(0[1-9]))"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="usta_ZeitraumSType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="01"/>
+			<xs:enumeration value="02"/>
+			<xs:enumeration value="03"/>
+			<xs:enumeration value="04"/>
+			<xs:enumeration value="05"/>
+			<xs:enumeration value="06"/>
+			<xs:enumeration value="07"/>
+			<xs:enumeration value="08"/>
+			<xs:enumeration value="09"/>
+			<xs:enumeration value="10"/>
+			<xs:enumeration value="11"/>
+			<xs:enumeration value="12"/>
+			<xs:enumeration value="41"/>
+			<xs:enumeration value="42"/>
+			<xs:enumeration value="43"/>
+			<xs:enumeration value="44"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="usta_JahrSType">
+		<xs:restriction base="xs:gYear">
+			<xs:enumeration value="2005"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="usta_Kz09SType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="95"/>
+			<xs:pattern value="([0-9]{5})(\*([^\p{C}*]{0,85})\*([^\p{C}*]{0,85})\*([0-9]{0,85})\*([^\p{C}*]{0,85})\*([^\p{C}*]{0,85}))?"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="usta_Kz10SType">
+		<xs:restriction base="xs:int">
+			<xs:enumeration value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="usta_Kz26SType">
+		<xs:restriction base="xs:int">
+			<xs:enumeration value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="usta_Kz29SType">
+		<xs:restriction base="xs:int">
+			<xs:enumeration value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="usta_SteuerfallCType">
+		<xs:choice>
+			<xs:element name="Umsatzsteuervoranmeldung" type="elster:usta_UmsatzsteuervoranmeldungCType"/>
+			<xs:element name="Dauerfristverlaengerung" type="elster:usta_DauerfristverlaengerungCType"/>
+			<xs:element name="Umsatzsteuersondervorauszahlung" type="elster:usta_UmsatzsteuersondervorauszahlungCType"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="usta_DauerfristverlaengerungCType">
+		<xs:sequence>
+			<xs:element name="Jahr" type="elster:usta_JahrSType"/>
+			<xs:element name="Steuernummer" type="elster:allg_StNrSType"/>
+			<xs:element name="Kz09" type="elster:usta_Kz09SType">
+				<xs:annotation>
+					<xs:documentation xml:lang="DE">Die Kz 09 ist eine Pflichtkennzahl uns muss übermittelt werden</xs:documentation>
+					<xs:documentation xml:lang="DE">Kz 09 baut sich aus folgenden Informationen zusammen: HerstellerID*Name des Berater*Berufsbezeichnung*TelNr Berater/Vorwahl*TelNr Berater/Anschluss*Name des Mandanten</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="usta_UmsatzsteuersondervorauszahlungCType">
+		<xs:sequence>
+			<xs:element name="Jahr" type="elster:usta_JahrSType"/>
+			<xs:element name="Steuernummer" type="elster:allg_StNrSType"/>
+			<xs:element name="Kz09" type="elster:usta_Kz09SType">
+				<xs:annotation>
+					<xs:documentation xml:lang="DE">Die Kz 09 ist eine Pflichtkennzahl uns muss übermittelt werden</xs:documentation>
+					<xs:documentation xml:lang="DE">Kz 09 baut sich aus folgenden Informationen zusammen: HerstellerID*Name des Berater*Berufsbezeichnung*TelNr Berater/Vorwahl*TelNr Berater/Anschluss*Name des Mandanten</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Kz10" type="elster:usta_Kz10SType" minOccurs="0"/>
+			<xs:element name="Kz26" type="elster:usta_Kz26SType" minOccurs="0"/>
+			<xs:element name="Kz29" type="elster:usta_Kz29SType" minOccurs="0"/>
+			<xs:element name="Kz38"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="usta_UmsatzsteuervoranmeldungCType">
+		<xs:all>
+			<xs:element name="Jahr" type="elster:usta_JahrSType"/>
+			<xs:element name="Zeitraum" type="elster:usta_ZeitraumSType"/>
+			<xs:element name="Steuernummer" type="elster:allg_StNrSType"/>
+			<xs:element name="Kz09" type="elster:usta_Kz09SType">
+				<xs:annotation>
+					<xs:documentation xml:lang="DE">Die Kz 09 ist eine Pflichtkennzahl uns muss übermittelt werden</xs:documentation>
+					<xs:documentation xml:lang="DE">Kz 09 baut sich aus folgenden Informationen zusammen: HerstellerID*Name des Berater*Berufsbezeichnung*TelNr Berater/Vorwahl*TelNr Berater/Anschluss*Name des Mandanten</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Kz10" type="elster:usta_Kz10SType" minOccurs="0"/>
+			<xs:element name="Kz26" type="elster:usta_Kz26SType" minOccurs="0"/>
+			<xs:element name="Kz29" type="elster:usta_Kz29SType" minOccurs="0"/>
+			<xs:element name="Kz35" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz36" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
+			<xs:element name="Kz39" type="elster:usta_PositiveKZSTypewithCent" minOccurs="0"/>
+			<xs:element name="Kz41" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz42" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz43" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz44" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz45" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz48" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz49" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz51" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz52" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz53" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
+			<xs:element name="Kz59" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
+			<xs:element name="Kz60" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz61" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
+			<xs:element name="Kz62" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
+			<xs:element name="Kz63" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
+			<xs:element name="Kz64" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
+			<xs:element name="Kz65" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
+			<xs:element name="Kz66" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
+			<xs:element name="Kz67" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
+			<xs:element name="Kz69" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
+			<xs:element name="Kz73" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz74" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
+			<xs:element name="Kz76" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz77" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz80" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
+			<xs:element name="Kz83" type="elster:usta_DefaultKZSTypewithCent"/>
+			<xs:element name="Kz84" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz85" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
+			<xs:element name="Kz86" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz91" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz93" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz94" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz95" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz96" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
+			<xs:element name="Kz97" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz98" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
+		</xs:all>
+	</xs:complexType>
+</xs:schema>

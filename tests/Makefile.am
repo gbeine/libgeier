@@ -21,8 +21,10 @@ check_PROGRAMS = $(TESTS) \
 AM_CPPFLAGS = -Wall \
 	-I/usr/include/libxml2 \
 	-I/usr/include/w3c-libwww \
-	-I../src \
-	-I../include \
+	-I$(srcdir)/../src \
+	-I$(srcdir)/../include \
+	-DETCDIR=\"$(srcdir)/../etc\" \
+	-DTESTDATADIR=\"$(srcdir)/data\" \
 	-DDEFAULT_HTCHUNK_GROWBY=1024
 
 LDADD = -L../src -lgeier

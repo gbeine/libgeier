@@ -42,13 +42,13 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "usage: %s\n", argv[0]);
 		exit(1);
 	}
-	input = chunk_from_file("data/test_ustva_encrypted.xml");
+	input = chunk_from_file(TESTDATADIR "/test_ustva_encrypted.xml");
 	if (!input) {
 		fprintf(stderr, "Loading input failed\n");
 		exit(2);
 	}
 
-	expected = chunk_from_file("data/test_ustva_reply_encrypted.xml");
+	expected = chunk_from_file(TESTDATADIR "/test_ustva_reply_encrypted.xml");
 	if (!expected) {
 		fprintf(stderr, "Loading expected failed\n");
 		exit(2);

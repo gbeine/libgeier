@@ -54,14 +54,13 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "usage: %s\n", argv[0]);
 		exit(1);
 	}
-	context->cert_filename = "data/pkcs7/certificate";
-	input = chunk_from_file("data/pkcs7/teststring");
-	expected = chunk_from_file("data/pkcs7/teststring.pkcs7-envelope.geier");
-
+	context->cert_filename = TESTDATADIR "/pkcs7/certificate";
+	input = chunk_from_file(TESTDATADIR "/pkcs7/teststring");
 	if (!input) {
 		fprintf(stderr, "Loading input failed\n");
 		exit(2);
 	}
+	expected = chunk_from_file(TESTDATADIR "/pkcs7/teststring.pkcs7-envelope.geier");
 	if (!expected) {
 		fprintf(stderr, "Loading expected failed\n");
 		exit(2);

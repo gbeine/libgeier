@@ -41,14 +41,14 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "usage: %s\n", argv[0]);
 		exit(1);
 	}
-	input = chunk_from_file("data/test_ustva_unencrypted.xml");
+	input = chunk_from_file(TESTDATADIR "/test_ustva_unencrypted.xml");
 	if (!input) {
 #include <chunk_from_file.h>
 		fprintf(stderr, "Loading input failed\n");
 		exit(2);
 	}
 
-	expected = chunk_from_file("data/test_ustva_reply.xml");
+	expected = chunk_from_file(TESTDATADIR "/test_ustva_reply.xml");
 	if (!expected) {
 		fprintf(stderr, "Loading expected failed\n");
 		exit(2);
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 	context = geier_context_new();
 	if (!context) { result = -2; goto exit;	}
 
-	context->cert_filename = "../etc/Elster2Cry.b64.cer";
+	context->cert_filename = ETCDIR "/Elster2Cry.b64.cer";
 	context->clearing_uri_index = 2;
 
 	/* convert to XML */

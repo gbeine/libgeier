@@ -45,12 +45,12 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "usage: %s\n", argv[0]);
 		exit(1);
 	}
-	input = chunk_from_file("data/test_ustva_reply_encrypted.xml");
+	input = chunk_from_file(TESTDATADIR "/test_ustva_reply_encrypted.xml");
 	if (!input) {
 		fprintf(stderr, "Loading input failed\n");
 		exit(2);
 	}
-	expected = chunk_from_file("data/test_ustva_reply.xml");
+	expected = chunk_from_file(TESTDATADIR "/test_ustva_reply.xml");
 	if (!expected) {
 		fprintf(stderr, "Loading expected failed\n");
 		exit(2);
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 	if (!context) { result = -2; goto exit;	}
 
 	/* load session key */
-	key = chunk_from_file("data/session_key");
+	key = chunk_from_file(TESTDATADIR "/session_key");
 	if (!key) {
 		fprintf(stderr, "Loading key failed\n");
 		exit(2);

@@ -32,7 +32,7 @@ AM_CPPFLAGS = -Wall \
 	-I/usr/include/w3c-libwww \
 	-I/usr/include/mozilla/nspr \
 	-I/usr/include/mozilla/nss \
-	-I../include \
+	-I$(srcdir)/../include \
 	-DDEFAULT_CERT_FILE=\"$(datadir)/Elster2Cry.b64.cer\" \
 	-DDEFAULT_CLEARING_TIMEOUT=30000 \
 	-DDEFAULT_SCHEMA_DIR_URL=\"file://$(datadir)/schemas\" \

@@ -1,6 +1,11 @@
 AUTOMAKE_OPTIONS = foreign
 
-TESTS = test_base64 test_pkcs7_encrypt test_gzip_deflate test_gzip_inflate
+TESTS = \
+	test_base64 \
+	test_encrypt \
+	test_pkcs7_encrypt \
+	test_gzip_deflate \
+	test_gzip_inflate
 
 check_PROGRAMS = $(TESTS)
 
@@ -17,8 +22,17 @@ CLEANFILES = *~ test_pkcs7_encrypt.result \
 
 test_base64_LDADD = ../src/base64.o ../src/bsd-base64.o
 
+test_encrypt_LDADD = -lwwwutils -lxml2 -lssl -lxml \
+	../src/context.o \
+	../src/gzip_deflate.o \
+	../src/pkcs7_encrypt.o ../src/asn1hack.o \
+	../src/base64.o ../src/bsd-base64.o \
+	../src/xml_to_text.o ../src/text_to_xml.o \
+	../src/encrypt.o
+
 test_pkcs7_encrypt_LDADD = -lwwwutils -lssl \
-	../src/context.o ../src/pkcs7_encrypt.o ../src/asn1hack.o
+	../src/context.o \
+	../src/pkcs7_encrypt.o ../src/asn1hack.o
 
 test_gzip_deflate_LDADD = -lwwwutils -lz \
 	../src/gzip_deflate.o

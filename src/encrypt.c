@@ -88,6 +88,8 @@ static int encrypt_at_xpathexpr(geier_context *context,
 	size_t gzipped_len = 0;
 	unsigned char *encrypted = NULL;
 	size_t encrypted_len = 0;
+	unsigned char *base64 = NULL;
+	size_t base64_len = 0;
 
 	xpath_ctxt = xmlXPathNewContext(doc);
 	if (!xpath_ctxt) {
@@ -131,10 +133,17 @@ static int encrypt_at_xpathexpr(geier_context *context,
 				     &encrypted, &encrypted_len);
 	if (retval) { goto exit6; }
 
+	/* convert it to base64 */
+	retval = geier_base64_encode(encrypted, encrypted_len,
+				     &base64, &base64_len);
+	if (retval) { goto exit7; }
+
 	/* replace content */
-	xmlNodeSetContentLen(node, encrypted, encrypted_len);
+	xmlNodeSetContentLen(node, base64, base64_len);
 
 	/* clean up */
+	free(base64);
+ exit7:
 	free(encrypted);
  exit6:
 	free(gzipped);

@@ -9,3 +9,4 @@ test_gzip_inflate
 test_gzip_inflate.result
 test_pkcs7_encrypt
 test_pkcs7_encrypt.result
+test_encrypt

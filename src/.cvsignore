@@ -1,0 +1,6 @@
+Makefile
+Makefile.in
+libgeier.la
+.deps
+.libs
+*.lo

@@ -21,27 +21,32 @@
 
 # FIXME: we need a proper project bugreport email address
 AC_INIT([libgeier],[0.1],[juergen@jstuber.net])
+AC_CONFIG_HEADERS([src/config.h])
 AM_INIT_AUTOMAKE
 
 AC_PREREQ(2.59)
 # we need the extra parentheses in order to cope with the comma
 AC_COPYRIGHT([configure.ac Copyright (C) 2005 Juergen Stuber, Germany])
-AC_REVISION($Revision: 1.2 $)
+AC_REVISION($Revision: 1.3 $)
 
 AC_CONFIG_SRCDIR(src/srcdir_marker)
 
 # checks for programs
 AC_PROG_CC
 AC_PROG_LIBTOOL
+AC_PROG_RANLIB
 
 # checks for libraries
 
 # checks for header files
 AC_HEADER_STDC
 AC_CHECK_HEADERS([fcntl.h])
-AC_CHECK_HEADERS([netinet/in.h])
 AC_CHECK_HEADERS([string.h])
 AC_CHECK_HEADERS([unistd.h])
+AC_CHECK_HEADERS([arpa/inet.h])
+AC_CHECK_HEADERS([netinet/in.h])
+AC_CHECK_HEADERS([sys/param.h])
+AC_CHECK_HEADERS([sys/socket.h])
 
 # checks for typedefs
 AC_TYPE_SIZE_T
@@ -53,9 +58,12 @@ AC_C_CONST
 
 # checks for library functions
 AC_FUNC_MALLOC
+AC_FUNC_REALLOC
 AC_FUNC_MEMCMP
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([memmove])
+AC_CHECK_FUNCS([memset])
+AC_CHECK_FUNCS([strchr])
 
 # check for OpenSSL
 for dir in $withval /usr/local/ssl /usr/lib/ssl /usr/ssl /usr/pkg /usr/local /usr; do
@@ -71,5 +79,7 @@ AC_CHECK_LIB(crypto, PEM_read_X509,,AC_MSG_ERROR([OpenSSL libraries missing.]))
 
 # checks for system services
 
-AC_CONFIG_FILES([Makefile src/Makefile include/Makefile tests/Makefile])
+# output
+AC_CONFIG_FILES([Makefile src/Makefile include/Makefile etc/Makefile 
+                 tests/Makefile])
 AC_OUTPUT

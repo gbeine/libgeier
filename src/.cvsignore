@@ -4,3 +4,5 @@ libgeier.la
 .deps
 .libs
 *.lo
+src/config.h
+src/config.h.in

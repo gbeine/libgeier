@@ -6,3 +6,5 @@ config.log
 config.status
 configure
 libtool
+autoscan.log
+configure.scan

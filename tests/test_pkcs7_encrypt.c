@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
 	}
 	cert_file = "data/pkcs7/certificate";
 	input = chunk_from_file("data/pkcs7/teststring");
-	expected = chunk_from_file("data/pkcs7/teststring.pkcs7-envelope");
+	expected = chunk_from_file("data/pkcs7/teststring.pkcs7-envelope.geier");
 
 	if (!input) {
 		fprintf(stderr, "Loading input failed\n");
@@ -97,9 +97,11 @@ int main(int argc, char *argv[])
 				     HTChunk_data(input), HTChunk_size(input),
 				     &output, &outlen);
 
-	{
-	}
-	
+	/* wipe out rsa encrypted keys,
+	 * which differ each time due to randomness */
+	memset(output+202, 0, 256);
+	memset(HTChunk_data(expected)+202, 0, 256);
+
 	/* check result */
 	if (result != 0
 	    || outlen != HTChunk_size(expected)

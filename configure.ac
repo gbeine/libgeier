@@ -26,7 +26,7 @@ AM_INIT_AUTOMAKE
 AC_PREREQ(2.59)
 # we need the extra parentheses in order to cope with the comma
 AC_COPYRIGHT([configure.ac Copyright (C) 2005 Juergen Stuber, Germany])
-AC_REVISION($Revision: 1.1 $)
+AC_REVISION($Revision: 1.2 $)
 
 AC_CONFIG_SRCDIR(src/srcdir_marker)
 
@@ -56,6 +56,18 @@ AC_FUNC_MALLOC
 AC_FUNC_MEMCMP
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([memmove])
+
+# check for OpenSSL
+for dir in $withval /usr/local/ssl /usr/lib/ssl /usr/ssl /usr/pkg /usr/local /usr; do
+    if test -f "$dir/include/openssl/ssl.h"; then
+	CFLAGS="$CFLAGS -I$dir/include/";
+	CXXFLAGS="$CXXFLAGS -I$dir/include/";
+	break;
+    fi
+done
+
+LDFLAGS="$LDFLAGS -L$dir/lib";
+AC_CHECK_LIB(crypto, PEM_read_X509,,AC_MSG_ERROR([OpenSSL libraries missing.]))
 
 # checks for system services
 

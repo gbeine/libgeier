@@ -36,6 +36,9 @@ int geier_gzip_inflate(const unsigned char *input, size_t inlen,
 	unsigned char *buf;
 	int err = Z_OK;
 
+	/* Ensure that data is not NULL. */
+	HTChunk_ensure(out_chunk, 1);
+
 	if (!input || !output || !outlen) {
 		retval = -1;
 		goto exit0;
@@ -73,7 +76,8 @@ int geier_gzip_inflate(const unsigned char *input, size_t inlen,
 		goto exit4;
 	}
 	*outlen = HTChunk_size(out_chunk);
-	*output = HTChunk_toCString(out_chunk); /* frees chunk */
+	*output = HTChunk_toCString(out_chunk); /* free chunk, keep contents */
+
  exit4:
  exit3:
  exit2:

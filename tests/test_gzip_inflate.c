@@ -24,11 +24,10 @@
 #include <geier.h>
 #include "gzip_inflate.h"
 
-#define HTCHUNK_GROWBY_DEFAULT  1024
 
 HTChunk *chunk_from_file(const char *filename)
 {
-	HTChunk *result = HTChunk_new(HTCHUNK_GROWBY_DEFAULT);
+	HTChunk *result = HTChunk_new(DEFAULT_HTCHUNK_GROWBY);
 	FILE *f;
 	unsigned char buf[1024];
 	size_t len;

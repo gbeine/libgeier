@@ -38,11 +38,10 @@ static unsigned char iv1[] = {
 	0x83, 0x4b, 0x6d, 0xc5, 0xa1, 0xc9, 0x32, 0x4e,
 };
 
-#define HTCHUNK_GROWBY_DEFAULT  1024
 
 HTChunk *chunk_from_file(const char *filename)
 {
-	HTChunk *result = HTChunk_new(HTCHUNK_GROWBY_DEFAULT);
+	HTChunk *result = HTChunk_new(DEFAULT_HTCHUNK_GROWBY);
 	FILE *f;
 	unsigned char buf[1024];
 	size_t len;

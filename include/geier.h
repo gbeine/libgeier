@@ -19,6 +19,14 @@
 #ifndef GEIER_H
 #define GEIER_H
 
+#ifdef __cplusplus 
+#define GEIER_BEGIN_PROTOS	extern "C" {
+#define GEIER_END_PROTOS	}
+#else
+#define GEIER_BEGIN_PROTOS
+#define GEIER_END_PROTOS
+#endif
+
 #include <libxml/tree.h>
 
 #define GEIER_ERROR_BASE   8000
@@ -36,6 +44,8 @@ typedef struct _geier_context geier_context;
 /* Parameter for gzip */
 #define GEIER_WBITS_GZIP 31
 
+
+GEIER_BEGIN_PROTOS
 
 /* Initialisieren, muß als erstes aufgerufen werden */
 /* Erledigt Initialisierung der verwendeten Bibliotheken, z.B. libxml2 */
@@ -94,5 +104,7 @@ typedef enum _geier_format {
  * 0 = OK */
 int geier_validate(geier_context *context,
 		   geier_format f, const xmlDoc *input);
+
+GEIER_END_PROTOS
 
 #endif 

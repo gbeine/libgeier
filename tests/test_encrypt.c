@@ -105,12 +105,10 @@ int main(int argc, char *argv[])
 	/* do encryption */
  	result = geier_encrypt(context, indoc, &outdoc);
 	if (result) { goto exit; }
-	fprintf(stderr, "(3)\n");
 
 	/* convert to text */
 	result = geier_xml_to_text(context, outdoc, &output, &outlen);
 	if (result) { goto exit; }
-	fprintf(stderr, "(4)\n");
 
 	/* wipe out rsa encrypted and base64 encoded keys,
 	 * which differ each time due to randomness */

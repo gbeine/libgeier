@@ -27,7 +27,7 @@ AM_INIT_AUTOMAKE
 AC_PREREQ(2.59)
 # we need the extra parentheses in order to cope with the comma
 AC_COPYRIGHT([configure.ac Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany])
-AC_REVISION($Revision: 1.6 $)
+AC_REVISION($Revision: 1.7 $)
 
 AC_CONFIG_SRCDIR(src/srcdir_marker)
 
@@ -52,10 +52,21 @@ done
 LDFLAGS="$LDFLAGS -L$dir/lib";
 AC_CHECK_LIB(crypto, PEM_read_X509,,AC_MSG_ERROR([OpenSSL libraries missing.]))
 
-# FIXME: check for libwww
-# FIXME: check for libxml2
-# FIXME: check for zlib
-# FIXME: check for libnss
+# check for libwww libraries
+AC_CHECK_LIB(wwwinit, HTProfile_newClient,,AC_MSG_ERROR([libwwwinit library missing.]))
+AC_CHECK_LIB(wwwutils, HTChunk_new,,AC_MSG_ERROR([libwwwutils library missing.]))
+AC_CHECK_LIB(wwwcore, HTRequest_new,,AC_MSG_ERROR([libwwwcore library missing.]))
+AC_CHECK_LIB(wwwapp, HTPostAbsolute,,AC_MSG_ERROR([libwwwapp library missing.]))
+
+# check for libxml2
+AC_CHECK_LIB(xml2, xmlNewNode,,AC_MSG_ERROR([libxml2 library missing.]))
+
+# check for zlib
+AC_CHECK_LIB(z, deflateBound,,AC_MSG_ERROR([libz library missing.]))
+
+# check for libnss
+AC_CHECK_LIB(nss3, NSS_NoDB_Init,,AC_MSG_ERROR([libnss3 missing.], [-lnspr4]))
+AC_CHECK_LIB(smime3, SEC_PKCS7DecodeItem,,AC_MSG_ERROR([libsmime3 missing.]))
 
 # checks for header files
 AC_HEADER_STDC

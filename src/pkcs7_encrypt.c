@@ -79,19 +79,16 @@ int geier_pkcs7_encrypt(geier_context *context,
 	PKCS7 *p7;
 	X509 *x509_cert;
 
-	fprintf(stderr, "(3.0)\n");
 	if (!context || !context->cert_filename || !output || !outlen) {
 		retval = -1;
 		goto exit0;
 	}
-	fprintf(stderr, "(3.1)\n");
 
 	x509_cert = geier_encrypt_get_cert(context->cert_filename);
 	if (!x509_cert) {
 		retval = -1;
 		goto exit1;
 	}
-	fprintf(stderr, "(3.2)\n");
 
 	/* build PKCS#7 structure */
 	p7 = p7_build(context, x509_cert, input, inlen);
@@ -99,7 +96,6 @@ int geier_pkcs7_encrypt(geier_context *context,
 		retval = -1;
 		goto exit2;
 	}
-	fprintf(stderr, "(3.3)\n");
 
 	/* output data */
 	{
@@ -111,7 +107,6 @@ int geier_pkcs7_encrypt(geier_context *context,
 			retval = -1;
 			goto exit3;
 		}
-		fprintf(stderr, "(3.4)\n");
 
 		{
 			unsigned char *p = *output;

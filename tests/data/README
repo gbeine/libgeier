@@ -1,0 +1,24 @@
+# This is a short note how to check correct encryption
+# The session key must be preserved from the encryption
+
+# content of DatenTeil in test_ustva_encrypted.xml
+# has been encrypted with session_key.hex
+# best is to get the data from strace to be sure it is the one sent
+
+# copy and paste base64 encoded part
+base64-decode > encrypted.der
+
+# take a look at the ASN.1 structure with all data (-a)
+dumpasn1 -a encrypted.der
+# from output copy iv, paste and remove spaces to get iv.hex
+sed -e 's/ //g' > iv.hex
+
+# from output copy contents, paste, remove leading spaces and colon
+# and convert hex to binary (xxd comes with vim)
+cut -b 24- | xxd -r -p > encrypted_content.bin
+
+# decrypt and unzip
+openssl enc -d -des-ede3-cbc -in encrypted_content.bin -K `cat session_key.hex` -iv `cat iv.hex` | gzip -dc > datenteil.decrypted
+
+# compare
+diff -uw datenteil.decrypted datenteil.orig

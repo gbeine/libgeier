@@ -16,35 +16,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "config.h"
+#ifndef GEIER_ENCRYPT_H
+#define GEIER_ENCRYPT_H
 
-#include <geier.h>
+/* find a node determined by an XPath expression */
+int find_node(xmlDoc *doc,
+	      const unsigned char *xpathexpr,
+	      xmlNode **node);
 
-int geier_send_text(geier_context *context,
-		    const unsigned char *input, size_t inlen,
-		    unsigned char **output, size_t *outlen)
-{
-	int retval = 0;
-	xmlDoc *in;
-	xmlDoc *out;
-
-	retval = geier_text_to_xml(context, input, inlen, in);
-	if (retval) {
-		goto exit0;
-	}
-	retval = geier_send(context, in, out);
-	if (retval) {
-		goto exit1;
-	}
-	retval = geier_xml_to_text(context, out, output, outlen);
-	if (retval) {
-		goto exit2;
-	}
-
- exit2:
-	xmlFreeDoc(in);
- exit1:
-	xmlFreeDoc(out);
- exit0:
-	return retval;
-}
+#endif

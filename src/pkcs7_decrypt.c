@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
+ * Copyright (C) 2005 Jürgen Stuber <juergen@jstuber.net>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,34 +17,19 @@
  */
 
 #include "config.h"
+#include "context.h"
 
 #include <geier.h>
 
-int geier_send_text(geier_context *context,
-		    const unsigned char *input, size_t inlen,
-		    unsigned char **output, size_t *outlen)
+#include "pkcs7_decrypt.h"
+
+
+/* Decrypt PKCS#7 encrypted content using the session key in the context.
+ */
+int geier_pkcs7_decrypt(geier_context *context,
+			const unsigned char *input, size_t inlen,
+			unsigned char **output, size_t *outlen)
 {
 	int retval = 0;
-	xmlDoc *in;
-	xmlDoc *out;
-
-	retval = geier_text_to_xml(context, input, inlen, in);
-	if (retval) {
-		goto exit0;
-	}
-	retval = geier_send(context, in, out);
-	if (retval) {
-		goto exit1;
-	}
-	retval = geier_xml_to_text(context, out, output, outlen);
-	if (retval) {
-		goto exit2;
-	}
-
- exit2:
-	xmlFreeDoc(in);
- exit1:
-	xmlFreeDoc(out);
- exit0:
 	return retval;
 }

@@ -1,5 +1,6 @@
-/* encrypt.h
- * Elster/Coala public key crypto routines
+/*
+ * Copyright (C) 2004,2005  Stefan Siegl <ssiegl@gmx.de>, Germany
+ *               2005       Jürgen Stuber <juergen@jstuber.net>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,12 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * Copyleft(C): 2004,05 by Stefan Siegl <ssiegl@gmx.de>, Germany
  */
 
-#ifndef GEIER_ENCRYPT_H
-#define GEIER_ENCRYPT_H
+#ifndef GEIER_PKCS7_ENCRYPT_H
+#define GEIER_PKCS7_ENCRYPT_H
 
 /* Do PKCS#7 public key crypto (encrypting inlen bytes from *input on)
  * and apply our ASN.1 patch. Return result in **output, a buffer of length

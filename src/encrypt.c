@@ -18,12 +18,10 @@
 
 #include "config.h"
 
-#include <libxml/xpath.h>
-#include <libxml/parser.h>
-#include <libxml/xpathInternals.h>
 #include <libxml/tree.h>
 
 #include "context.h"
+#include "find_node.h"
 
 #include <geier.h>
 
@@ -36,9 +34,6 @@ static int store_length_at_xpathexpr(
 	const unsigned char *xpathexpr,
 	xmlDoc *doc,
 	size_t content_len);
-static int find_node(xmlDoc *doc,
-		     const unsigned char *xpathexpr,
-		     xmlNode **node);
 static int encrypt_content(geier_context *context,
 			   xmlDoc *doc, xmlNode *node,
 			   xmlNode **new_node, size_t *new_content_len);
@@ -154,58 +149,13 @@ static int store_length_at_xpathexpr(geier_context *context,
 	return retval;
 }
 
-static int find_node(xmlDoc *doc,
-		     const unsigned char *xpathexpr,
-		     xmlNode **node)
-{
-	int retval = 0;
-	xmlXPathContext *xpath_ctxt = NULL;
-	xmlXPathObject *xpath_obj = NULL;
-
-	xpath_ctxt = xmlXPathNewContext(doc);
-	if (!xpath_ctxt) {
-		retval = -1;
-		goto exit0;
-	}
-	xpath_obj = xmlXPathEvalExpression(xpathexpr, xpath_ctxt);
-	if (!xpath_obj) {
-		retval = -1;
-		goto exit1;
-	}
-	if (!xpath_obj->nodesetval) {
-		retval = -1;
-		goto exit2;
-	}
-
-	/* check for single node */
-	if (xpath_obj->nodesetval->nodeNr != 1) {
-		retval = -1;
-		goto exit3;
-	}
-	/* extract it */
-	*node = xpath_obj->nodesetval->nodeTab[0];
-	if (!*node) {
-		retval = -1;
-		goto exit4;
-	}
-
- exit4:
- exit3:
- exit2:
-	xmlXPathFreeObject(xpath_obj);
- exit1:
-	xmlXPathFreeContext(xpath_ctxt);
- exit0:
-	return retval;
-}
-
-
 static int encrypt_content(geier_context *context,
 			   xmlDoc *doc, xmlNode *node,
 			   xmlNode **new_node, size_t *new_content_len)
 {
 	int retval = 0;
 	xmlBuffer *buf = NULL;
+	xmlNode *n = NULL;
 	unsigned char *content = NULL;
 	size_t content_len = 0;
 	unsigned char *gzipped = NULL;
@@ -218,14 +168,24 @@ static int encrypt_content(geier_context *context,
 
 	/* convert contents of selected node to text */
 	buf = xmlBufferCreate();
-	content_len = xmlNodeDump(buf, doc, node,
-				  INDENT_LEVEL, ALLOW_FORMAT);
-	if (content_len < 0) {
-		retval = -1;
-		goto exit0;
+
+	/* convert all childs */
+	for (n = node->children; n != NULL; n = n->next) {
+		xmlBuffer *child_buf = xmlBufferCreate();
+		int child_len = xmlNodeDump(child_buf, doc, n,
+					    INDENT_LEVEL, ALLOW_FORMAT);
+
+		if (child_len < 0) {
+			xmlBufferFree(child_buf);
+			retval = -1;
+			goto exit0;
+		}
+		xmlBufferAdd(buf, xmlBufferContent(child_buf), child_len);
+		xmlBufferFree(child_buf);
 	}
 	content = xmlBufferContent(buf);
-	
+	content_len = xmlBufferLength(buf);
+
 	/* gzip it */
 	retval = geier_gzip_deflate(content, content_len,
 				    &gzipped, &gzipped_len);
@@ -244,11 +204,9 @@ static int encrypt_content(geier_context *context,
 	*new_content_len = base64_len;
 
 	/* build new node */
-	/* FIXME: should we check for errors here? */
-	*new_node = xmlNewNode(node->ns, node->name);
 	text_node = xmlNewTextLen(base64, base64_len);
+	*new_node = xmlNewNode(node->ns, node->name);
 	xmlAddChild(*new_node, text_node);
-
 
 	free(base64);
  exit3:
@@ -260,9 +218,3 @@ static int encrypt_content(geier_context *context,
 	xmlBufferFree(buf);
 	return retval;
 }
-
-
-
-
-
-

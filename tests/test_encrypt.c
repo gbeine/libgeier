@@ -152,6 +152,13 @@ int main(int argc, char *argv[])
 
 			}
 			fprintf(stderr, "\n");
+
+			fprintf(stderr, "Session key: ");
+			for (i=0; i<24; i++) {
+				fprintf(stderr, "%02x", context->session_key[i]);
+			}
+			fprintf(stderr, "\n");
+
 		}
 		return 1;
 	}

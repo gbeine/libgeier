@@ -88,6 +88,7 @@ int main(int argc, char *argv[])
 	context = geier_context_new();
 	if (!context) { result = -2; goto exit;	}
 
+	context->clearing_uri_index = 1;
 	result = geier_send_encrypted_text(context,
 					   HTChunk_data(input),
 					   HTChunk_size(input),

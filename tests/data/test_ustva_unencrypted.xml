@@ -10,7 +10,7 @@
         <Datei>
             <Verschluesselung>PKCS#7v1.5</Verschluesselung>
             <Kompression>GZIP</Kompression>
-            <DatenGroesse><!-- richtige Laenge einfuegen -->11111</DatenGroesse>
+            <DatenGroesse>11111</DatenGroesse>
             <TransportSchluessel/>
         </Datei>
         <VersionClient/>
@@ -52,7 +52,7 @@
             	    <Kz29>1</Kz29>
 		    <Kz35>-99999999999</Kz35>
             	    <Kz36>123456789.00</Kz36>
-            	    <Kz39>99999999999</Kz39>
+            	    <Kz39>999999999.99</Kz39>
             	    <Kz41>-99999999999</Kz41>
             	    <Kz42>-99999999999</Kz42>
             	    <Kz43>-99999999999</Kz43>

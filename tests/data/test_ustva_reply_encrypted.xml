@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><Elster xmlns="http://www.elster.de/2002/XMLSchema"><TransferHeader version="7"><Verfahren>ElsterAnmeldung</Verfahren><DatenArt>UStVA</DatenArt><Vorgang>send-NoSig</Vorgang><TransferTicket>0000000603188200205</TransferTicket><Testmerker>700000004</Testmerker><HerstellerID>74931</HerstellerID><DatenLieferant>MIAGCSqGSIb3DQEHBqCAMIACAQAwgAYJKoZIhvcNAQcBMBQGCCqGSIb3DQMHBAiV
+nSyk+N64PKCABCBgsf5L3vnaI8t8FUq2ziBehR+uCOfyqPco20B6X3GMaAAAAAAA
+AAAAAAA=</DatenLieferant><EingangsDatum>20050128151542</EingangsDatum><Datei><Verschluesselung>PKCS#7v1.5</Verschluesselung><Kompression>GZIP</Kompression><DatenGroesse>1620</DatenGroesse><TransportSchluessel>MIAGCSqGSIb3DQEHBqCAMIACAQAwgAYJKoZIhvcNAQcBMBQGCCqGSIb3DQMHBAid
+A+94Efpv/aCABBj6BzKe41JDxtaQrg4pr3JZ3Z9FcYVrbPoAAAAAAAAAAAAA</TransportSchluessel></Datei><RC><Rueckgabe><Code>0</Code><Text></Text></Rueckgabe><Stack><Code></Code><Text></Text></Stack></RC><VersionClient></VersionClient><Zusatz><Info>Testzusatz</Info></Zusatz></TransferHeader><DatenTeil>MIAGCSqGSIb3DQEHBqCAMIACAQAwgAYJKoZIhvcNAQcBMBQGCCqGSIb3DQMHBAgJ
+STdFoh1sUqCABIIDSMSOtNdbcZZ0HL8r4MnNruLbqFBdHKMDCM7w7rb+y8P+3/ek
+/dhj03uXhEk4AoxqJNYLnrryZ8B/hDjqFabSNSHYpphzsWJjmcbVT+xK+6sGqfmr
+rDg7XydOcWepTnvxxU6seMFxIrmBG7u8G3ZUt5qeKXJTdrZa3mPgEhKAOnqf/9sC
+9FVCIe3N9lKKCjVk0U0foCMy1AVnvZ+VSzon7Pu9pf08Fic8zxHUE2ClF5MlReBm
+A0u233787hJ/6gT+hj8QqHz9EO7s8ZVjRIBzpczJtS03CQpN4uwHwLyzEBG7rol1
+j9TdP4l7+7tcCjdt5skHLk32PhagY1YdzPrQfi3WF13ZbMsv6+8gBYYR0k3vpA0j
+0vKLMJi/VGXo6oSL4KvpFWg+ZSaQ2sdwqXKj0bEAUYmLcJ41z/irMq/IpH1G+/hM
+IFscGw3mj8W+fRu2p7qzlF84pQMy1wzHmhngWUdsEI0HLnj2FWfMFUA/McDzV1kc
+wHOgRIF/Uil71ZerNVBoKi1pOoXpWfzU3xX0bXfLONAzs9ok6LTeLrBXXE/7DguE
+smn8qmz7jHNOENYPg20TiR6gF8akxjAwrseQJgZkV8myzR6+jse9Egw6gveX/H7S
+F/AChsRwsWQUFmn0dUvkmDBgI3wgYLayolvOWncwhDd1JBG6r3cZE1TCXl5aTc6o
+p6EikD0xNgKGywJXjRzJaqSmooCrSizW5gD6XuBBxfD55FqI9359hhJqx7ykekKs
+j7d9PKWkRsp65OicOYXiBkqGE4vUumAx2zyOuiIjh+5EBMWbQnjHtg49mbyb3fwr
+0dUmYi5Pg1MvTQI/qpo5TYwk7a6oA/fgwCR2AhXRhAqkeR3+n9bnV6UQ+eZ0hgeR
+jB+DRvaY8/m98d6IrkK+3jdx7ex7oGf4nWscyjkbIhukrgll3x3+QDidt6O05ea2
+O+m5fnnPhR8wXmW7+/s8tMqXnhK4z3ptSbgzlmOnlvmyInXu1C0zkgiu9PjZSbsc
+k/KaejUHGbXVzveoOnsbog/nySejzdfLu7JgiYWc3mG8p1r3TcCjyNWHMHUn1Mj6
+wU9LhuZYcq1C/CgOdfFazoeYVkdmvXnNgJiPtSkeItTrNyd+wgAAAAAAAAAAAAA=</DatenTeil></Elster>

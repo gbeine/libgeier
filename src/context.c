@@ -17,6 +17,9 @@
  */
 
 #include "config.h"
+
+#include <stdlib.h>
+
 #include <geier.h>
 #include "context.h"
 
@@ -30,7 +33,8 @@ static unsigned char *elster_clearing_uri_list[] = {
 	NULL
 };
 
-/* XPath expression for the nodes whose content shall be encrypted.
+/* XPath expression for the nodes whose content shall be encrypted
+ * and/or decrypted.
  * Note that only the content is encrypted, the enclosing element
  * must be preserved.
  * FIXME: use Elster namespace instead of local-name hack?  How?
@@ -39,6 +43,8 @@ static unsigned char *elster_datenlieferant_xpathexpr =
 "/*[local-name()='Elster']/*[local-name()='TransferHeader']/*[local-name()='DatenLieferant']";
 static unsigned char *elster_datenteil_xpathexpr =
 "/*[local-name()='Elster']/*[local-name()='DatenTeil']";
+static unsigned char *elster_transportschluessel_xpathexpr =
+"/*[local-name()='Elster']/*[local-name()='TransferHeader']/*[local-name()='Datei/*[local-name()='TransportSchluessel']";
 
 /* XPath expression for length of encrypted data part */
 static unsigned char *elster_datengroesse_xpathexpr =
@@ -50,12 +56,21 @@ geier_context *geier_context_new(void)
 
 	context->xml_encoding = elster_xml_encoding;
 	context->clearing_uri_list = elster_clearing_uri_list;
+	{
+		int i;
+		for (i=0; context->clearing_uri_list[i]; i++) {
+		}
+		context->clearing_uri_list_length = i;
+	}
 	context->cert_filename = DEFAULT_CERT_FILE;
+	context->clearing_timeout_ms = DEFAULT_CLEARING_TIMEOUT;
 
 	context->datenlieferant_xpathexpr = elster_datenlieferant_xpathexpr;
 	context->datenteil_xpathexpr = elster_datenteil_xpathexpr;
 	context->datengroesse_xpathexpr = elster_datengroesse_xpathexpr;
+	context->transportschluessel_xpathexpr = elster_transportschluessel_xpathexpr;
 
+	context->clearing_uri_index = rand() % context->clearing_uri_list_length;
 	context->session_key = NULL;
 	context->iv = NULL;
 

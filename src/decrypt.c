@@ -16,12 +16,151 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "config.h"
+
+#include <libxml/tree.h>
+
+#include "context.h"
+#include "find_node.h"
+
 #include <geier.h>
 
-int geier_decrypt(geier_session_key *key, const xmlDoc *input,
-		  xmlDoc **output)
+static int decrypt_at_xpathexpr(geier_context *context,
+				const unsigned char *xpathexpr,
+				xmlDoc *doc);
+static int decrypt_content(geier_context *context,
+			   xmlDoc *doc, xmlNode *node,
+			   xmlNode **new_node);
+
+#define INDENT_LEVEL 4
+#define ALLOW_FORMAT 0
+
+
+int geier_decrypt(geier_context *context,
+		  const xmlDoc *input, xmlDoc **output)
 {
 	int retval = 0;
+	xmlDoc *copy = NULL;
+
+	if (!context || !input || !output) {
+		retval = -1;
+		goto exit0;
+	}
+	copy = xmlCopyDoc((xmlDoc *)input, 1);
+	if (!copy) {
+		retval = -1;
+		goto exit1;
+	}
+
+	/* Decrypt fields */
+	retval = decrypt_at_xpathexpr(context,
+				      context->datenlieferant_xpathexpr,
+				      copy);
+	if (retval) { goto exit2; }
+	retval = decrypt_at_xpathexpr(context,
+				      context->datenteil_xpathexpr,
+				      copy);
+	if (retval) { goto exit3; }
+	retval = decrypt_at_xpathexpr(context,
+				      context->transportschluessel_xpathexpr,
+				      copy);
+	if (retval) { goto exit4; }
+
+	/* publish the decrypted document */
+	*output = copy;
+
+ exit4:
+ exit3:
+ exit2:
+	if (retval) { xmlFreeDoc(copy); }
+ exit1:
  exit0:
+	return retval;
+}
+
+/* destructively decrypt the content of the element at xpathexpr */
+static int decrypt_at_xpathexpr(geier_context *context,
+				const unsigned char *xpathexpr,
+				xmlDoc *doc)
+{
+	int retval = 0;
+	xmlNode *node = NULL;
+	xmlNode *new_node = NULL;
+
+	retval = find_node(doc, xpathexpr, &node);
+	if (retval) { goto exit0; }
+
+	/* create new node with decrypted content */
+	retval = decrypt_content(context, doc, node, &new_node);
+	if (retval) { goto exit1; }
+	
+	/* replace it */
+	xmlReplaceNode(node, new_node);
+
+	/* clean up */
+	xmlFreeNode(node);
+ exit1:
+ exit0:
+	return retval;
+}
+
+
+static int decrypt_content(geier_context *context,
+			   xmlDoc *doc, xmlNode *node,
+			   xmlNode **new_node)
+{
+	int retval = 0;
+	xmlBuffer *buf = NULL;
+	unsigned char *content = NULL;
+	size_t content_len = 0;
+	unsigned char *gzipped = NULL;
+	size_t gzipped_len = 0;
+	unsigned char *encrypted = NULL;
+	size_t encrypted_len = 0;
+	unsigned char *decrypted = NULL;
+	size_t decrypted_len = 0;
+	xmlNode *text_node = NULL;
+
+	/* convert contents of selected node to text */
+	buf = xmlBufferCreate();
+	content_len = xmlNodeDump(buf, doc, node,
+				  INDENT_LEVEL, ALLOW_FORMAT);
+	if (content_len < 0) {
+		retval = -1;
+		goto exit0;
+	}
+	content = xmlBufferContent(buf);
+	
+	/* convert base64 to gzip */
+	retval = geier_base64_decode(content, content_len,
+				     &gzipped, &gzipped_len);
+	if (retval) { goto exit1; }
+
+	/* ungzip it */
+	retval = geier_gzip_inflate(gzipped, gzipped_len,
+				    &encrypted, &encrypted_len);
+	if (retval) { goto exit2; }
+	
+	/* decrypt it */
+	retval = geier_pkcs7_decrypt(context,
+				     encrypted, encrypted_len,
+				     &decrypted, &decrypted_len);
+	if (retval) { goto exit3; }
+
+	/* build new node */
+	/* FIXME: should we check for errors here? */
+	*new_node = xmlNewNode(node->ns, node->name);
+	text_node = xmlNewTextLen(decrypted, decrypted_len);
+	xmlAddChild(*new_node, text_node);
+
+
+	free(decrypted);
+ exit3:
+	free(encrypted);
+ exit2:
+	free(gzipped);
+ exit1:
+ exit0:
+	xmlBufferFree(buf);
 	return retval;
 }

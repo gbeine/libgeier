@@ -1,6 +1,4 @@
 /*
- * Elster/Coala public key crypto routines
- *
  * Copyright (C) 2004,2005  Stefan Siegl <ssiegl@gmx.de>, Germany
  *               2005       Jürgen Stuber <juergen@jstuber.net>, Germany
  *

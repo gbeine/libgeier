@@ -16,9 +16,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "config.h"
+
 #include <geier.h>
 
-int geier_send(const xmlDoc *input, xmlDoc **output)
+int geier_send(geier_context *context,
+	       const xmlDoc *input, xmlDoc **output)
 {
 	int retval = 0;
 	geier_session_key *key;
@@ -29,27 +32,22 @@ int geier_send(const xmlDoc *input, xmlDoc **output)
 	int in_len;
 	int out_len;
 
-	retval = geier_encrypt(input, in_encr, &key);
-	if (retval) {
-		goto exit0;
-	}
-	retval = geier_xml_to_text(*in_encr, in_text, &in_len);
-	if (retval) {
-		goto exit1;
-	}
-	retval = geier_send_encrypted_text(*in_text, in_len,
+	retval = geier_encrypt(context, input, in_encr);
+	if (retval) { goto exit0; }
+
+	retval = geier_xml_to_text(context, *in_encr, in_text, &in_len);
+	if (retval) { goto exit1; }
+
+	retval = geier_send_encrypted_text(context,
+					   *in_text, in_len,
 					   out_text, &out_len);
-	if (retval) {
-		goto exit2;
-	}
-	retval = geier_text_to_xml(*out_text, out_len, out_encr);
-	if (retval) {
-		goto exit3;
-	}
-	retval = geier_decrypt(*out_encr, key, output);
-	if (retval) {
-		goto exit4;
-	}
+	if (retval) { goto exit2; }
+
+	retval = geier_text_to_xml(context, *out_text, out_len, out_encr);
+	if (retval) { goto exit3; }
+
+	retval = geier_decrypt(context, *out_encr, output);
+	if (retval) { goto exit4; }
 
  exit4:
 	xmlFreeDoc(*out_encr);

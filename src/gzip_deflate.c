@@ -56,7 +56,8 @@ int geier_gzip_deflate(const unsigned char *input, size_t inlen,
 		retval = -1;
 		goto exit1;
 	}
-	bound = deflateBound(&strm, inlen);
+	/* FIXME: should we make this more precise? */
+	bound = deflateBound(&strm, inlen)+16;
 	*output = malloc(bound);
 	if (!*output) {
 		retval = -ENOMEM;

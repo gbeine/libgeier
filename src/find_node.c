@@ -16,68 +16,56 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <stdlib.h>
-#include <errno.h>
-#include <zlib.h>
+#include "config.h"
+
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
 
 #include <geier.h>
 
-#include "gzip_inflate.h"
+#include "find_node.h"
 
-int geier_gzip_inflate(const unsigned char *input, size_t inlen,
-		       size_t maxoutlen,
-		       unsigned char **output, size_t *outlen)
+/* find a node determined by an XPath expression */
+int find_node(xmlDoc *doc,
+	      const unsigned char *xpathexpr,
+	      xmlNode **node)
 {
 	int retval = 0;
-	z_stream strm;
-	int err = 0;
-	unsigned char *new;
+	xmlXPathContext *xpath_ctxt = NULL;
+	xmlXPathObject *xpath_obj = NULL;
 
-	if (!input || !output || !outlen) {
+	xpath_ctxt = xmlXPathNewContext(doc);
+	if (!xpath_ctxt) {
 		retval = -1;
 		goto exit0;
 	}
-	strm.next_in = input;
-	strm.avail_in = inlen;
-	strm.zalloc = Z_NULL;
-	strm.zfree = Z_NULL;
-	strm.opaque = NULL;
-
-	err = inflateInit2(&strm, GEIER_WBITS_GZIP);
-	if (err != Z_OK) {
+	xpath_obj = xmlXPathEvalExpression(xpathexpr, xpath_ctxt);
+	if (!xpath_obj) {
 		retval = -1;
 		goto exit1;
 	}
-	*output = malloc(maxoutlen);
-	if (!*output) {
-		retval = -ENOMEM;
+	if (!xpath_obj->nodesetval) {
+		retval = -1;
 		goto exit2;
 	}
-	strm.next_out = *output;
-	strm.avail_out = maxoutlen;
-	err = inflate(&strm, Z_FINISH);
-	if (err != Z_STREAM_END) {
-		retval = -1;
+	/* check for single node */
+	if (xpath_obj->nodesetval->nodeNr != 1) {
+		retval = GEIER_ERROR_FIND_NODE_NO_UNIQUE_NODE;
 		goto exit3;
 	}
-	err = inflateEnd(&strm);
-	if (err != Z_OK) {
+	/* extract it */
+	*node = xpath_obj->nodesetval->nodeTab[0];
+	if (!*node) {
 		retval = -1;
 		goto exit4;
 	}
-	*outlen = strm.total_out;
-	new = realloc(*output, *outlen);
-	if (!new) {
-		retval = -1;
-		goto exit5;
-	}
-	*output = new;
- exit5:
+
  exit4:
  exit3:
  exit2:
-	if (retval) { free(*output); }
+	xmlXPathFreeObject(xpath_obj);
  exit1:
+	xmlXPathFreeContext(xpath_ctxt);
  exit0:
 	return retval;
 }

@@ -58,8 +58,11 @@ int geier_send_encrypted_text(geier_context *context,
 	HTChunk *chunk = NULL;
 	HTStream *target = NULL;
 
+	/* set timeout */
+	HTHost_setEventTimeout(context->clearing_timeout_ms);
+
 	/* FIXME: balance load between URIs */
-	dest_uri = context->clearing_uri_list[0];
+	dest_uri = context->clearing_uri_list[context->clearing_uri_index];
 	HTPrint("Posting to %s\n", dest_uri);
 
 	/* global setup */
@@ -71,9 +74,8 @@ int geier_send_encrypted_text(geier_context *context,
 	/* setup source anchor */
 	src = HTTmpAnchor(NULL);
 	HTAnchor_setDocument(src, (unsigned char *)input);
+	HTAnchor_setLength(src, inlen);
 	HTAnchor_setFormat(src, HTAtom_for("application/xml"));
-	/* Length is only needed for HTTP version < 1.1 */
-	HTAnchor_setLength(src, strlen(input));
 	
 	/* setup request */
 	request = HTRequest_new();
@@ -81,7 +83,7 @@ int geier_send_encrypted_text(geier_context *context,
         target = HTStreamToChunk(request, &chunk, 0);
         HTRequest_setOutputStream(request, target);
 	/* FIXME: raw output including headers only for testing */
-	HTRequest_setOutputFormat(request, WWW_RAW);
+	HTRequest_setOutputFormat(request, WWW_SOURCE);
 
 	/* close connection immediately */
 	HTRequest_addConnection(request, "close", "");

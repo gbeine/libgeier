@@ -27,7 +27,7 @@ AM_INIT_AUTOMAKE
 AC_PREREQ(2.59)
 # we need the extra parentheses in order to cope with the comma
 AC_COPYRIGHT([configure.ac Copyright (C) 2005 Juergen Stuber, Germany])
-AC_REVISION($Revision: 1.3 $)
+AC_REVISION($Revision: 1.4 $)
 
 AC_CONFIG_SRCDIR(src/srcdir_marker)
 
@@ -37,6 +37,24 @@ AC_PROG_LIBTOOL
 AC_PROG_RANLIB
 
 # checks for libraries
+
+# check for OpenSSL
+# FIXME: isn't there a more standard way to do this?
+# FIXME: should we mess directly with CFLAGS, CXXFLAGS and LDFLAGS?
+for dir in $withval /usr/local/ssl /usr/lib/ssl /usr/ssl /usr/pkg /usr/local /usr; do
+    if test -f "$dir/include/openssl/ssl.h"; then
+	CFLAGS="$CFLAGS -I$dir/include/";
+	CXXFLAGS="$CXXFLAGS -I$dir/include/";
+	break;
+    fi
+done
+
+LDFLAGS="$LDFLAGS -L$dir/lib";
+AC_CHECK_LIB(crypto, PEM_read_X509,,AC_MSG_ERROR([OpenSSL libraries missing.]))
+
+# FIXME: check for libwww
+# FIXME: check for libxml2
+# FIXME: check for zlib
 
 # checks for header files
 AC_HEADER_STDC
@@ -64,18 +82,6 @@ AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([memmove])
 AC_CHECK_FUNCS([memset])
 AC_CHECK_FUNCS([strchr])
-
-# check for OpenSSL
-for dir in $withval /usr/local/ssl /usr/lib/ssl /usr/ssl /usr/pkg /usr/local /usr; do
-    if test -f "$dir/include/openssl/ssl.h"; then
-	CFLAGS="$CFLAGS -I$dir/include/";
-	CXXFLAGS="$CXXFLAGS -I$dir/include/";
-	break;
-    fi
-done
-
-LDFLAGS="$LDFLAGS -L$dir/lib";
-AC_CHECK_LIB(crypto, PEM_read_X509,,AC_MSG_ERROR([OpenSSL libraries missing.]))
 
 # checks for system services
 

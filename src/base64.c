@@ -68,7 +68,7 @@ int geier_base64_decode(const unsigned char *input, size_t inlen,
 	if (!output || !outlen) {
 		return -1;
 	}
-	*outlen = (inlen+2)*2;
+	*outlen = inlen;
 	*output = malloc(*outlen);
 	if (!*output) {
 		return -1;

@@ -20,6 +20,8 @@
 #ifndef GZIP_DEFLATE_H
 #define GZIP_DEFLATE_H
 
+#include <stddef.h>
+
 int geier_gzip_deflate(const unsigned char *input, size_t inlen,
 		       unsigned char **output, size_t *outlen);
 

@@ -19,6 +19,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <base64.h>
+
 /* Test cases from RFC 3548 */
 unsigned char d1[6] = {0x14, 0xfb, 0x9c, 0x03, 0xd9, 0x7e};
 unsigned char e1[8] = "FPucA9l+";

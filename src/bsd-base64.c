@@ -215,7 +215,8 @@ b64_pton(char const *src, size_t srcsize,
 {
 	size_t srcindex;
 	size_t tarindex;
-	int state, ch;
+	int state;
+	int ch = -1;
 	char *pos;
 
 	state = 0;

@@ -19,65 +19,67 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <zlib.h>
+#include <WWWUtil.h>
 
 #include <geier.h>
 
 #include "gzip_inflate.h"
 
+#define BUF_SIZE  DEFAULT_HTCHUNK_GROWBY
+
 int geier_gzip_inflate(const unsigned char *input, size_t inlen,
-		       size_t maxoutlen,
 		       unsigned char **output, size_t *outlen)
 {
 	int retval = 0;
+	HTChunk *out_chunk = HTChunk_new(DEFAULT_HTCHUNK_GROWBY);
 	z_stream strm;
-	int err = 0;
-	unsigned char *new;
+	unsigned char *buf;
+	int err = Z_OK;
 
 	if (!input || !output || !outlen) {
 		retval = -1;
 		goto exit0;
 	}
-	strm.next_in = input;
+	strm.next_in = (unsigned char *)input;
 	strm.avail_in = inlen;
 	strm.zalloc = Z_NULL;
 	strm.zfree = Z_NULL;
 	strm.opaque = NULL;
 
+	buf = malloc(BUF_SIZE);
+	if (!buf) {
+		retval = -ENOMEM;
+		goto exit1;
+	}
 	err = inflateInit2(&strm, GEIER_WBITS_GZIP);
 	if (err != Z_OK) {
 		retval = -1;
-		goto exit1;
-	}
-	*output = malloc(maxoutlen);
-	if (!*output) {
-		retval = -ENOMEM;
 		goto exit2;
 	}
-	strm.next_out = *output;
-	strm.avail_out = maxoutlen;
-	err = inflate(&strm, Z_FINISH);
-	if (err != Z_STREAM_END) {
-		retval = -1;
-		goto exit3;
+	while (err != Z_STREAM_END) {
+		strm.next_out = buf;
+		strm.avail_out = BUF_SIZE;
+		err = inflate(&strm, Z_NO_FLUSH);
+		if (err != Z_OK && err != Z_STREAM_END) {
+			retval = -1;
+			goto exit3;
+		}
+		/* Append filled part of buffer to output. */
+		HTChunk_putb(out_chunk, buf, strm.next_out-buf);
 	}
 	err = inflateEnd(&strm);
 	if (err != Z_OK) {
 		retval = -1;
 		goto exit4;
 	}
-	*outlen = strm.total_out;
-	new = realloc(*output, *outlen);
-	if (!new) {
-		retval = -1;
-		goto exit5;
-	}
-	*output = new;
- exit5:
+	*outlen = HTChunk_size(out_chunk);
+	*output = HTChunk_toCString(out_chunk); /* frees chunk */
  exit4:
  exit3:
  exit2:
-	if (retval) { free(*output); }
  exit1:
+	free(buf);
  exit0:
+	if (retval) { HTChunk_delete(out_chunk); }
 	return retval;
 }

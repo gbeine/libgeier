@@ -60,12 +60,8 @@ int main(int argc, char *argv[])
 {
 	int retval = 0;
 	geier_context *context;
-	unsigned char *output = NULL;
-	size_t outlen;
 	HTChunk *input = NULL;
-	HTChunk *expected = NULL;
 	xmlDoc *indoc = NULL;
-	xmlDoc *outdoc = NULL;
 	int result;
 
 	if (argc != 1) {
@@ -110,10 +106,6 @@ int main(int argc, char *argv[])
  exit0:
 	/* check result */
 	if (result != 0) {
-		
-		int i;
-		unsigned char *d = HTChunk_data(expected);
-
 		fprintf(stderr, "result = %d\n", result);
 		retval = 1;
 	}

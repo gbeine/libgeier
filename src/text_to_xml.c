@@ -29,8 +29,6 @@ int geier_text_to_xml(geier_context *context,
 		      xmlDoc **doc)
 {
 	int retval = 0;
-	xmlNode *root_element = NULL;
-	xmlNode *n = NULL;
 
 	if (!input || !doc ) {
 		retval = -1;

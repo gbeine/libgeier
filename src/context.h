@@ -19,6 +19,8 @@
 #ifndef CONTEXT_H
 #define CONTEXT_H
 
+#include <stddef.h>
+
 struct _geier_context {
 	/* configuration */
 	unsigned char *xml_encoding; /* the encoding to use for Elster-XML */
@@ -39,6 +41,7 @@ struct _geier_context {
 	/* session key will be stored by first encryption for decryption */
 	/* for testing encryption we can set the session key directly */
 	unsigned char *session_key;
+	size_t session_key_len;
 
 	/* use only for testing */
 	unsigned char *iv;

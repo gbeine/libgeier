@@ -16,22 +16,25 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <stdio.h>
 #include <string.h>
 
 #include <WWWUtil.h>
 
-#include <context.h>
-
 #include <geier.h>
 
-/*
-static unsigned char iv1[] = {
-	0x83, 0x4b, 0x6d, 0xc5, 0xa1, 0xc9, 0x32, 0x4e,
+#include "context.h"
+#include "pkcs7_decrypt.h"
+
+
+static unsigned char key1[] = {
+	0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
+	0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
+	0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
 };
-*/
+
 
 HTChunk *chunk_from_file(const char *filename)
 {
@@ -61,21 +64,19 @@ HTChunk *chunk_from_file(const char *filename)
 
 int main(int argc, char *argv[])
 {
-	geier_context *context = NULL;
+	geier_context *context = geier_context_new();
 	unsigned char *output = NULL;
 	size_t outlen;
 	HTChunk *input = NULL;
 	HTChunk *expected = NULL;
-	xmlDoc *indoc = NULL;
-	xmlDoc *outdoc = NULL;
 	int result;
 
 	if (argc != 1) {
 		fprintf(stderr, "usage: %s\n", argv[0]);
 		exit(1);
 	}
-	input = chunk_from_file("data/test_ustva_unencrypted.xml");
-	expected = chunk_from_file("data/test_ustva_encrypted.xml");
+	input = chunk_from_file("data/pkcs7/teststring.gzip.pkcs7-encrypted");
+	expected = chunk_from_file("data/pkcs7/teststring.gzip");
 
 	if (!input) {
 		fprintf(stderr, "Loading input failed\n");
@@ -86,37 +87,14 @@ int main(int argc, char *argv[])
 		exit(2);
 	}
 
-	/* initialize library */
-	result = geier_init(1);
-	if (result) { goto exit; }
-
-	context = geier_context_new();
-	if (!context) { result = -2; goto exit;	}
-
-	context->cert_filename = "../etc/Elster2Cry.b64.cer";
-	/* context->cert_filename = "data/user.crt"; */
-	/* context->iv = iv1; */
-
-	/* convert to XML */
-	result = geier_text_to_xml(context,
-				   HTChunk_data(input), HTChunk_size(input),
-				   &indoc);
-	if (result) { goto exit; }
-
 	/* do encryption */
- 	result = geier_encrypt(context, indoc, &outdoc);
-	if (result) { goto exit; }
+	context->session_key = key1;
+	context->session_key_len = sizeof(key1);
 
-	/* convert to text */
-	result = geier_xml_to_text(context, outdoc, &output, &outlen);
-	if (result) { goto exit; }
+	result = geier_pkcs7_decrypt(context,
+				     HTChunk_data(input), HTChunk_size(input),
+				     &output, &outlen);
 
-	/* wipe out rsa encrypted and base64 encoded keys,
-	 * which differ each time due to randomness */
-	/* memset(output+202, 0, 256); */
-	/* memset(HTChunk_data(expected)+202, 0, 256); */
-
- exit:
 	/* check result */
 	if (result != 0
 	    || outlen != HTChunk_size(expected)
@@ -138,7 +116,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "\n");
 
 		if (!result) {			
-			FILE *f = fopen("test_encrypt.result","w");
+			FILE *f = fopen("test_pkcs7_decrypt.result","w");
 			fwrite(output, 1, outlen, f);
 			fclose(f);
 
@@ -152,16 +130,8 @@ int main(int argc, char *argv[])
 
 			}
 			fprintf(stderr, "\n");
-
-			fprintf(stderr, "Session key: ");
-			for (i=0; i<24; i++) {
-				fprintf(stderr, "%02x", context->session_key[i]);
-			}
-			fprintf(stderr, "\n");
-
 		}
 		return 1;
 	}
-	geier_exit();
 	return 0;
 }

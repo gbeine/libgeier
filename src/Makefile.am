@@ -22,12 +22,16 @@ libgeier_la_SOURCES = \
 #	send_text.c \
 #	decrypt.c
 
-AM_CPPFLAGS = \
+# FIXME: configure include directories
+AM_CPPFLAGS = -Wall \
 	-I/usr/include/libxml2 \
 	-I/usr/include/w3c-libwww \
+	-I/usr/include/mozilla/nspr \
+	-I/usr/include/mozilla/nss \
 	-I../include \
 	-DDEFAULT_CERT_FILE=\"$(datadir)/Elster2Cry.b64.cer\" \
 	-DDEFAULT_CLEARING_TIMEOUT=30000 \
-	-DDEFAULT_SCHEMA_DIR_URL=\"file://$(datadir)/schemas\"
+	-DDEFAULT_SCHEMA_DIR_URL=\"file://$(datadir)/schemas\" \
+	-DDEFAULT_HTCHUNK_GROWBY=1024
 
 CLEANFILES = *~

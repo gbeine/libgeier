@@ -20,8 +20,9 @@
 #ifndef GZIP_INFLATE_H
 #define GZIP_INFLATE_H
 
+#include <stddef.h>
+
 int geier_gzip_inflate(const unsigned char *input, size_t inlen,
-		       size_t maxoutlen,
 		       unsigned char **output, size_t *outlen);
 
 #endif

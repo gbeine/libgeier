@@ -32,7 +32,7 @@ int geier_xml_to_text(geier_context *context,
 		retval = -1;
 		goto exit0;
 	}
-	xmlDocDumpFormatMemoryEnc(doc, output, outlen,
+	xmlDocDumpFormatMemoryEnc((xmlDoc *)doc, output, outlen,
 				  context->xml_encoding, 1);
 
  exit0:

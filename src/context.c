@@ -16,11 +16,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <geier.h>
+
 #include "config.h"
 
 #include <stdlib.h>
+#include <string.h>
 
-#include <geier.h>
 #include "context.h"
 
 static unsigned char *elster_xml_encoding = "ISO-8859-1";
@@ -73,6 +75,7 @@ geier_context *geier_context_new(void)
 
 	context->clearing_uri_index = rand() % context->clearing_uri_list_length;
 	context->session_key = NULL;
+	context->session_key_len = 0;
 	context->iv = NULL;
 
 	return context;
@@ -80,10 +83,9 @@ geier_context *geier_context_new(void)
 
 void geier_context_free(geier_context *context)
 {
-	int i = 0;
-
 	if (context->session_key) {
-		/* FIXME: wipe key */
+		/* wipe key first */
+		memset(context->session_key, 0, context->session_key_len);
 		free(context->session_key);
 	}
 	if (context->iv) {

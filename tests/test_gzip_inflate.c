@@ -24,7 +24,6 @@
 #include <geier.h>
 #include "gzip_inflate.h"
 
-#define INFLATE_MAX_OUTLEN      100000
 #define HTCHUNK_GROWBY_DEFAULT  1024
 
 HTChunk *chunk_from_file(const char *filename)
@@ -79,7 +78,6 @@ int main(int argc, char *argv[])
 
 	/* do encryption */
 	result = geier_gzip_inflate(HTChunk_data(input), HTChunk_size(input),
-				    INFLATE_MAX_OUTLEN,
 				    &output, &outlen);
 
 	/* check result */

@@ -16,14 +16,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <geier.h>
+
 #include "config.h"
 
+#include <string.h>
 #include <libxml/tree.h>
 
 #include "context.h"
 #include "find_node.h"
-
-#include <geier.h>
 
 
 #define INDENT_LEVEL 4
@@ -56,7 +57,7 @@ int geier_node_contents_to_text(xmlDoc *doc, xmlNode *node,
 		xmlBufferAdd(buf, xmlBufferContent(child_buf), child_len);
 		xmlBufferFree(child_buf);
 	}
-	content = xmlBufferContent(buf);
+	content = (unsigned char *)xmlBufferContent(buf);
 	content_len = xmlBufferLength(buf);
 
 	*output = malloc(content_len);

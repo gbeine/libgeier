@@ -226,6 +226,7 @@ static int p7_init_cipher_context(geier_context *context,
 		}
 		/* save for decryption */
 		context->session_key = key;
+		context->session_key_len = EVP_CIPHER_key_length(cipher);
 	}
 	if (context->iv) {
 		iv = context->iv;

@@ -41,7 +41,7 @@ int geier_validate(geier_context *context,
 		xmlBufferCCat(buf, context->schema_dir_url);
 		/* FIXME: schema depends on type of declaration, year */
 		xmlBufferCCat(buf, "/elster_UStA_200501_extern.xsd");
-		schema_url = xmlBufferContent(buf);
+		schema_url = (unsigned char *)xmlBufferContent(buf);
 		break;
 	default:
 		retval = GEIER_ERROR_FORMAT;
@@ -85,7 +85,7 @@ static int validate(char *schema_url, const xmlDoc *doc)
 	}
 	
 	/* validate */
-	res = xmlSchemaValidateDoc(validation_context, doc);
+	res = xmlSchemaValidateDoc(validation_context, (xmlDoc *)doc);
 	if (res) {
 		fprintf(stderr, "schema validation failed with return code %d\n", res);
 		retval = GEIER_ERROR_SCHEMA_VALIDATE_DOC;

@@ -40,7 +40,7 @@ int geier_gzip_deflate(const unsigned char *input, size_t inlen,
 		retval = -1;
 		goto exit0;
 	}
-	strm.next_in = input;
+	strm.next_in = (unsigned char *)input;
 	strm.avail_in = inlen;
 	strm.zalloc = Z_NULL;
 	strm.zfree = Z_NULL;

@@ -24,7 +24,6 @@ int geier_send(geier_context *context,
 	       const xmlDoc *input, xmlDoc **output)
 {
 	int retval = 0;
-	geier_session_key *key;
 	xmlDoc **in_encr;
 	unsigned char **in_text;
 	unsigned char **out_text;

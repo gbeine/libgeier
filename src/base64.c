@@ -16,25 +16,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <errno.h>
 #include <geier.h>
 
-static unsigned char e[64] =
-"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-static char d[256];
+#include "config.h"
 
-/* Example for padding:
-0 0 
-1 4 AB==
-2 4 ABC=
-3 4 ABCD
-4 8 ABCDEF==
-5 8 ABCDEFG=
-6 8 ABCDEFGH
-...
-*/
+#include <errno.h>
+#include "bsd-base64.h"
 
-static void init_d(void);
+#include "base64.h"
+
 
 int geier_base64_encode(const unsigned char *input, size_t inlen,
 			 unsigned char **output, size_t *outlen)

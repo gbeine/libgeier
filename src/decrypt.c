@@ -23,8 +23,12 @@
 #include "context.h"
 #include "find_node.h"
 #include "node_contents_to_text.h"
+#include "base64.h"
+#include "gzip_inflate.h"
 
 #include <geier.h>
+
+#include "pkcs7_decrypt.h"
 
 static int decrypt_at_xpathexpr(geier_context *context,
 				const unsigned char *xpathexpr,

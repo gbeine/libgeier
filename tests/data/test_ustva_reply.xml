@@ -13,7 +13,7 @@
       <Verschluesselung>PKCS#7v1.5</Verschluesselung>
       <Kompression>GZIP</Kompression>
       <DatenGroesse>1620</DatenGroesse>
-      <TransportSchluessel></TransportSchluessel>
+      <TransportSchluessel/>
     </Datei>
     <RC>
       <Rueckgabe>
@@ -30,67 +30,93 @@
       <Info>Testzusatz</Info>
     </Zusatz>
   </TransferHeader>
-  <DatenTeil>&lt;Nutzdatenblock&gt;&lt;NutzdatenHeader version="9"&gt;&lt;NutzdatenTicket&gt;1&lt;/NutzdatenTicket&gt;&lt;Empfaenger id="F"&gt;9144&lt;/Empfaenger&gt;&lt;Hersteller&gt;&lt;ProduktName&gt;libgeier&lt;/ProduktName&gt;&lt;ProduktVersion&gt;0.1&lt;/ProduktVersion&gt;&lt;/Hersteller&gt;&lt;DatenLieferant&gt;Testlieferant&lt;/DatenLieferant&gt;&lt;RC&gt;&lt;SigIntern&gt;&lt;/SigIntern&gt;&lt;VerarbeitungsVersion&gt;&lt;/VerarbeitungsVersion&gt;&lt;Rueckgabe&gt;&lt;Code&gt;0&lt;/Code&gt;&lt;Text&gt;Daten wurden erfolgreich abgespeichert.&lt;/Text&gt;&lt;/Rueckgabe&gt;&lt;Stack&gt;&lt;Code&gt;&lt;/Code&gt;&lt;Text&gt;&lt;/Text&gt;&lt;/Stack&gt;&lt;/RC&gt;&lt;Zusatz&gt;
-                &lt;Info&gt;Dies ist ein Test&lt;/Info&gt;
-            &lt;/Zusatz&gt;&lt;/NutzdatenHeader&gt;&lt;Nutzdaten&gt;
-            &lt;Anmeldungssteuern art="UStVA" version="200501"&gt;
-                &lt;DatenLieferant&gt;
-            	    &lt;Name&gt;Till Tester&lt;/Name&gt;
-            	    &lt;Strasse&gt;Ausprobiererstr. 23&lt;/Strasse&gt;
-            	    &lt;PLZ&gt;45678&lt;/PLZ&gt;
-            	    &lt;Ort&gt;Testheim&lt;/Ort&gt;
-                &lt;/DatenLieferant&gt;
-                &lt;Erstellungsdatum&gt;20050102&lt;/Erstellungsdatum&gt;
-                &lt;Steuerfall&gt;
-            	&lt;Umsatzsteuervoranmeldung&gt;
-            	    &lt;Jahr&gt;2005&lt;/Jahr&gt;
-            	    &lt;Zeitraum&gt;01&lt;/Zeitraum&gt;
-            	    &lt;Steuernummer&gt;9144058870702&lt;/Steuernummer&gt;
-            	    &lt;Kz09&gt;74931*Name Steuerber.*Berufsbez.*089*59958327*Name Mandant&lt;/Kz09&gt;
-            	    &lt;Kz10&gt;1&lt;/Kz10&gt;
-            	    &lt;Kz26&gt;1&lt;/Kz26&gt;
-            	    &lt;Kz29&gt;1&lt;/Kz29&gt;
-		    &lt;Kz35&gt;-99999999999&lt;/Kz35&gt;
-            	    &lt;Kz36&gt;123456789.00&lt;/Kz36&gt;
-            	    &lt;Kz39&gt;999999999.99&lt;/Kz39&gt;
-            	    &lt;Kz41&gt;-99999999999&lt;/Kz41&gt;
-            	    &lt;Kz42&gt;-99999999999&lt;/Kz42&gt;
-            	    &lt;Kz43&gt;-99999999999&lt;/Kz43&gt;
-            	    &lt;Kz44&gt;-99999999999&lt;/Kz44&gt;
-            	    &lt;Kz45&gt;-99999999999&lt;/Kz45&gt;
-            	    &lt;Kz48&gt;-99999999999&lt;/Kz48&gt;
-            	    &lt;Kz49&gt;-99999999999&lt;/Kz49&gt;
-            	    &lt;Kz51&gt;-99999999999&lt;/Kz51&gt;
-            	    &lt;Kz52&gt;-99999999999&lt;/Kz52&gt;
-            	    &lt;Kz53&gt;-999999999.99&lt;/Kz53&gt;
-            	    &lt;Kz59&gt;-999999999.99&lt;/Kz59&gt;
-            	    &lt;Kz60&gt;-99999999999&lt;/Kz60&gt;
-            	    &lt;Kz61&gt;-999999999.99&lt;/Kz61&gt;
-            	    &lt;Kz62&gt;-999999999.99&lt;/Kz62&gt;
-            	    &lt;Kz63&gt;-999999999.99&lt;/Kz63&gt;
-            	    &lt;Kz64&gt;-999999999.99&lt;/Kz64&gt;
-            	    &lt;Kz65&gt;-999999999.99&lt;/Kz65&gt;
-            	    &lt;Kz66&gt;-999999999.99&lt;/Kz66&gt;
-            	    &lt;Kz67&gt;-999999999.99&lt;/Kz67&gt;
-            	    &lt;Kz69&gt;-999999999.99&lt;/Kz69&gt;
-            	    &lt;Kz76&gt;-99999999999&lt;/Kz76&gt;
-            	    &lt;Kz73&gt;-99999999999&lt;/Kz73&gt;
-            	    &lt;Kz74&gt;-999999999.99&lt;/Kz74&gt;
-            	    &lt;Kz77&gt;-99999999999&lt;/Kz77&gt;
-            	    &lt;Kz80&gt;-999999999.99&lt;/Kz80&gt;
-            	    &lt;Kz83&gt;-999999999.99&lt;/Kz83&gt;
-            	    &lt;Kz84&gt;-99999999999&lt;/Kz84&gt;
-            	    &lt;Kz85&gt;-999999999.99&lt;/Kz85&gt;
-            	    &lt;Kz86&gt;-99999999999&lt;/Kz86&gt;
-            	    &lt;Kz91&gt;-99999999999&lt;/Kz91&gt;
-            	    &lt;Kz93&gt;-99999999999&lt;/Kz93&gt;
-            	    &lt;Kz94&gt;-99999999999&lt;/Kz94&gt;
-            	    &lt;Kz95&gt;-99999999999&lt;/Kz95&gt;
-            	    &lt;Kz96&gt;-999999999.99&lt;/Kz96&gt;
-            	    &lt;Kz97&gt;-99999999999&lt;/Kz97&gt;
-            	    &lt;Kz98&gt;-999999999.99&lt;/Kz98&gt;
-            	&lt;/Umsatzsteuervoranmeldung&gt;
-                &lt;/Steuerfall&gt;
-            &lt;/Anmeldungssteuern&gt;
-	&lt;/Nutzdaten&gt;&lt;/Nutzdatenblock&gt;</DatenTeil>
+  <DatenTeil>
+    <Nutzdatenblock>
+      <NutzdatenHeader version="9">
+        <NutzdatenTicket>1</NutzdatenTicket>
+        <Empfaenger id="F">9144</Empfaenger>
+        <Hersteller>
+          <ProduktName>libgeier</ProduktName>
+          <ProduktVersion>0.1</ProduktVersion>
+        </Hersteller>
+        <DatenLieferant>Testlieferant</DatenLieferant>
+        <RC>
+          <SigIntern/>
+          <VerarbeitungsVersion/>
+          <Rueckgabe>
+            <Code>0</Code>
+            <Text>Daten wurden erfolgreich abgespeichert.</Text>
+          </Rueckgabe>
+          <Stack>
+            <Code/>
+            <Text/>
+          </Stack>
+        </RC>
+        <Zusatz>
+                <Info>Dies ist ein Test</Info>
+            </Zusatz>
+      </NutzdatenHeader>
+      <Nutzdaten>
+            <Anmeldungssteuern art="UStVA" version="200501">
+                <DatenLieferant>
+            	    <Name>Till Tester</Name>
+            	    <Strasse>Ausprobiererstr. 23</Strasse>
+            	    <PLZ>45678</PLZ>
+            	    <Ort>Testheim</Ort>
+                </DatenLieferant>
+                <Erstellungsdatum>20050102</Erstellungsdatum>
+                <Steuerfall>
+            	<Umsatzsteuervoranmeldung>
+            	    <Jahr>2005</Jahr>
+            	    <Zeitraum>01</Zeitraum>
+            	    <Steuernummer>9144058870702</Steuernummer>
+            	    <Kz09>74931*Name Steuerber.*Berufsbez.*089*59958327*Name Mandant</Kz09>
+            	    <Kz10>1</Kz10>
+            	    <Kz26>1</Kz26>
+            	    <Kz29>1</Kz29>
+		    <Kz35>-99999999999</Kz35>
+            	    <Kz36>123456789.00</Kz36>
+            	    <Kz39>999999999.99</Kz39>
+            	    <Kz41>-99999999999</Kz41>
+            	    <Kz42>-99999999999</Kz42>
+            	    <Kz43>-99999999999</Kz43>
+            	    <Kz44>-99999999999</Kz44>
+            	    <Kz45>-99999999999</Kz45>
+            	    <Kz48>-99999999999</Kz48>
+            	    <Kz49>-99999999999</Kz49>
+            	    <Kz51>-99999999999</Kz51>
+            	    <Kz52>-99999999999</Kz52>
+            	    <Kz53>-999999999.99</Kz53>
+            	    <Kz59>-999999999.99</Kz59>
+            	    <Kz60>-99999999999</Kz60>
+            	    <Kz61>-999999999.99</Kz61>
+            	    <Kz62>-999999999.99</Kz62>
+            	    <Kz63>-999999999.99</Kz63>
+            	    <Kz64>-999999999.99</Kz64>
+            	    <Kz65>-999999999.99</Kz65>
+            	    <Kz66>-999999999.99</Kz66>
+            	    <Kz67>-999999999.99</Kz67>
+            	    <Kz69>-999999999.99</Kz69>
+            	    <Kz76>-99999999999</Kz76>
+            	    <Kz73>-99999999999</Kz73>
+            	    <Kz74>-999999999.99</Kz74>
+            	    <Kz77>-99999999999</Kz77>
+            	    <Kz80>-999999999.99</Kz80>
+            	    <Kz83>-999999999.99</Kz83>
+            	    <Kz84>-99999999999</Kz84>
+            	    <Kz85>-999999999.99</Kz85>
+            	    <Kz86>-99999999999</Kz86>
+            	    <Kz91>-99999999999</Kz91>
+            	    <Kz93>-99999999999</Kz93>
+            	    <Kz94>-99999999999</Kz94>
+            	    <Kz95>-99999999999</Kz95>
+            	    <Kz96>-999999999.99</Kz96>
+            	    <Kz97>-99999999999</Kz97>
+            	    <Kz98>-999999999.99</Kz98>
+            	</Umsatzsteuervoranmeldung>
+                </Steuerfall>
+            </Anmeldungssteuern>
+	</Nutzdaten>
+    </Nutzdatenblock>
+  </DatenTeil>
 </Elster>

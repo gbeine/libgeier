@@ -123,7 +123,9 @@ static int decrypt_content(geier_context *context,
 	size_t decrypted_len = 0;
 	unsigned char *inflated = NULL;
 	size_t inflated_len = 0;
-	xmlNode *text_node = NULL;
+	xmlNode *node_list = NULL;
+	int result = 0;
+	xmlNode *new = NULL;
 
 	/* convert contents of selected node to text */
 	retval = geier_node_contents_to_text(doc, node,
@@ -146,12 +148,25 @@ static int decrypt_content(geier_context *context,
 				    &inflated, &inflated_len);
 	if (retval) { goto exit3; }
 
-	/* build new node */
-	/* FIXME: we need to parse it! */
-	*new_node = xmlNewNode(node->ns, node->name);
-	text_node = xmlNewTextLen(inflated, inflated_len);
-	xmlAddChild(*new_node, text_node);
+	/* parse and build new node */
+	new = xmlNewNode(node->ns, node->name);
+	if (strlen(inflated) > 0) {
+		/* FIXME: Make sure inflated is zero-terminated
+		 *        (it is, but only by coincidence). */
+		result = xmlParseBalancedChunkMemory(doc, NULL, NULL, 0,
+						     inflated, &node_list);
+		if (result) {
+			retval = -1;
+			goto exit4;
+		}
+		xmlAddChildList(new, node_list);
+	}
 
+	/* publish the new node */
+	*new_node = new;
+
+ exit4:
+	if (retval) { xmlFreeNode(new); }
 	free(inflated);
  exit3:
 	free(decrypted);

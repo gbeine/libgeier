@@ -21,10 +21,10 @@
 
 #include <WWWUtil.h>
 
-/* FIXME: is this correct? */
-#include <mozilla/nss/nss.h>
-#include <mozilla/nss/pk11func.h>
-#include <mozilla/nss/secpkcs7.h>
+/* Mozilla header files */
+#include <nss/nss.h>
+#include <nss/pk11func.h>
+#include <nss/secpkcs7.h>
 
 #include <geier.h>
 

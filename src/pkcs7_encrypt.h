@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2004,2005  Stefan Siegl <ssiegl@gmx.de>, Germany
- *               2005       Jürgen Stuber <juergen@jstuber.net>, Germany
+ * Copyright (C) 2004, 2005  Stefan Siegl <ssiegl@gmx.de>, Germany
+ *               2005        Jürgen Stuber <juergen@jstuber.net>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

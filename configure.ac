@@ -1,5 +1,5 @@
 # Configure.ac script for Libgeier
-# Copyright (C) 2005 Juergen Stuber, Germany
+# Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
 #
 # This file is part of Libgeier.
 # 
@@ -26,8 +26,8 @@ AM_INIT_AUTOMAKE
 
 AC_PREREQ(2.59)
 # we need the extra parentheses in order to cope with the comma
-AC_COPYRIGHT([configure.ac Copyright (C) 2005 Juergen Stuber, Germany])
-AC_REVISION($Revision: 1.4 $)
+AC_COPYRIGHT([configure.ac Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany])
+AC_REVISION($Revision: 1.5 $)
 
 AC_CONFIG_SRCDIR(src/srcdir_marker)
 

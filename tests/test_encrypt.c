@@ -94,7 +94,8 @@ int main(int argc, char *argv[])
 	if (!context) { result = -2; goto exit;	}
 
 	context->cert_filename = "../etc/Elster2Cry.b64.cer";
-	context->iv = iv1;
+	/* context->cert_filename = "data/user.crt"; */
+	/* context->iv = iv1; */
 
 	/* convert to XML */
 	result = geier_text_to_xml(context,

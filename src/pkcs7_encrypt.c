@@ -112,7 +112,7 @@ int geier_pkcs7_encrypt(geier_context *context,
 			unsigned char *p = *output;
 			len = i2d_PKCS7(p7, &p);
 		}
-		*outlen = asn1hack_doit(asn1hack_octet_string_patch, *output);
+		*outlen = asn1hack_doit(*output);
 	}
  exit3:
 	PKCS7_free(p7);
@@ -233,8 +233,8 @@ static int p7_init_cipher_context(geier_context *context,
 		iv = context->iv;
 	}
 	else {
-		key = rand_malloc(EVP_CIPHER_iv_length(cipher));
-		if (!key) {
+		iv = rand_malloc(EVP_CIPHER_iv_length(cipher));
+		if (!iv) {
 			retval = -1;
 			goto exit1;
 		}

@@ -59,7 +59,7 @@ int geier_send_encrypted_text(geier_context *context,
 	HTStream *target = NULL;
 
 	/* FIXME: balance load between URIs */
-	dest_uri = context->clearing_uri_list[1];
+	dest_uri = context->clearing_uri_list[0];
 	HTPrint("Posting to %s\n", dest_uri);
 
 	/* global setup */

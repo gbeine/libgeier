@@ -6,7 +6,7 @@
         <Vorgang>send-NoSig</Vorgang>
         <Testmerker>700000004</Testmerker>
         <HerstellerID>74931</HerstellerID>
-        <DatenLieferant><!-- verschlüsseln -->Geier</DatenLieferant>
+        <DatenLieferant>libgeier</DatenLieferant>
         <Datei>
             <Verschluesselung>PKCS#7v1.5</Verschluesselung>
             <Kompression>GZIP</Kompression>
@@ -18,7 +18,7 @@
             <Info>Testzusatz</Info>
         </Zusatz>
     </TransferHeader>
-    <DatenTeil><!-- verschlüsseln -->
+    <DatenTeil>
     <Nutzdatenblock>
 	<NutzdatenHeader version="9">
 	    <NutzdatenTicket>1</NutzdatenTicket>
@@ -44,7 +44,7 @@
                 <Steuerfall>
             	<Umsatzsteuervoranmeldung>
             	    <Jahr>2005</Jahr>
-            	    <Zeitraum>41</Zeitraum>
+            	    <Zeitraum>01</Zeitraum>
             	    <Steuernummer>9144058870702</Steuernummer>
             	    <Kz09>74931*Name Steuerber.*Berufsbez.*089*59958327*Name Mandant</Kz09>
             	    <Kz10>1</Kz10>

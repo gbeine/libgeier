@@ -28,7 +28,7 @@
 
 static int printer(const char *fmt, va_list args)
 {
-	return vfprintf(stdout, fmt, args);
+	return vfprintf(stderr, fmt, args);
 }
 
 static int tracer(const char *fmt, va_list args)
@@ -61,15 +61,15 @@ int geier_send_encrypted_text(geier_context *context,
 	/* set timeout */
 	HTHost_setEventTimeout(context->clearing_timeout_ms);
 
-	/* FIXME: balance load between URIs */
-	dest_uri = context->clearing_uri_list[context->clearing_uri_index];
-	HTPrint("Posting to %s\n", dest_uri);
-
 	/* global setup */
 	HTProfile_newNoCacheClient("geier", "0.1");
 	HTPrint_setCallback(printer);
 	HTTrace_setCallback(tracer);
 	HTNet_addAfter(terminate_handler, NULL, NULL, HT_ALL, HT_FILTER_LAST);
+
+	/* FIXME: balance load between URIs */
+	dest_uri = context->clearing_uri_list[context->clearing_uri_index];
+	HTPrint("Posting to %s\n", dest_uri);
 
 	/* setup source anchor */
 	src = HTTmpAnchor(NULL);

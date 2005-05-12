@@ -25,6 +25,7 @@
 #ifndef GEIER_ASN1HACK_H
 #define GEIER_ASN1HACK_H
 
-int asn1hack_doit(unsigned char *asn1_buf_ptr);
+int geier_asn1hack(const unsigned char *input, size_t inlen,
+		   unsigned char **output, size_t *outlen);
 
 #endif /* GEIER_ASN1HACK_H */

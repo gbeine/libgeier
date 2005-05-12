@@ -24,29 +24,38 @@
  */
 
 #include <stdio.h>
-#include <unistd.h>
+#include <errno.h>
+#include <assert.h>
 #include <string.h>
-#include <fcntl.h>
+#include <stdlib.h>
 
 #include "asn1hack.h"
 
+
+
+/* forward declaration of asn1hack_stack type */
 typedef struct _asn1hack_stack asn1hack_stack;
 
-/* function type called for each stack level in asn1hack_stack */
-typedef int (*asn1hack_stack_callee)(asn1hack_stack *level,
-				     unsigned char *asn1_buf_ptr,
-				     unsigned int asn1_child_len);
 
-struct _asn1hack_stack {
-	unsigned char asn1_type_id;
-	asn1hack_stack_callee callee;
-};
+
+/* function type called for each stack level in asn1hack_stack */
+typedef int (*asn1hack_stack_callee)(const unsigned char *input,
+				     size_t inlen, unsigned char *output,
+				     size_t *outlen,
+				     const asn1hack_stack *patch);
+
 
 
 /* skip ASN.1 element and look for next sub element (next stack level) */
-static int asn1hack_forward(asn1hack_stack *stack_level,
-			    unsigned char *asn1_buf_ptr,
-			    unsigned int asn1_child_len);
+static int asn1hack_forward(const unsigned char *input, size_t inlen,
+			    unsigned char *output, size_t *outlen,
+			    const asn1hack_stack *stack_level);
+
+/* patch ASN.1 element and return */
+static int asn1hack_do_octet_string_patch(const unsigned char *input,
+					  size_t inlen, unsigned char *output,
+					  size_t *outlen,
+					  const asn1hack_stack *stack_level);
 
 /* return the length of the encoding of len, including specifier */
 static int len_to_llen(size_t len);
@@ -57,49 +66,118 @@ static int get_len(const unsigned char *asn1_buf_ptr);
 /* write length of ASN.1 element */
 static void set_len(unsigned char *asn1_len_ptr, int new_length);
 
-/* adjust length of ASN.1 element from old_layer1_clen to new_layer1_clen bytes,
- * where *asn1_len_ptr points to the start of the length specifier
- * RETURN: new_layer1_clen
- */
-static int asn1hack_adjust_child_len(unsigned char *asn1_len_ptr,
-				     unsigned int old_layer1_clen,
-				     unsigned int new_layer1_clen);
+/* return the length of this ASN.1 element's header */
+#define head_len(a) (lenspec_len(&(a)[1]) + 1)
+
+/* return the length of this ASN.1 lenspec */
+#define lenspec_len(a) ( 1 + (*(a) <= 0x80 ? 0 : *(a) - 0x80) )
 
 
-/* patch ASN.1 element and return */
-static int asn1hack_do_octet_string_patch(asn1hack_stack *stack_level,
-					  unsigned char *asn1_buf_ptr,
-					  unsigned int asn1_child_len);
 
-asn1hack_stack asn1hack_octet_string_patch[] = {
+/* hackstack definitions */
+struct _asn1hack_stack{
+	unsigned char asn1_type_id;
+	asn1hack_stack_callee callee;
+};
+
+static asn1hack_stack asn1hack_octet_string_patch[] = {
 	{ 0x30 /* root sequence           */, asn1hack_forward },
 	{ 0xA0 /* [0] tag                 */, asn1hack_forward },
 	{ 0x30 /* envelope sequence       */, asn1hack_forward },
-	{ 0x30 /* enc.data sequence       */, asn1hack_forward },
-	{ 0x80 /* [0] holding enc.data    */, asn1hack_do_octet_string_patch },
-	{ 0x00 /* STOP HERE               */, NULL }
+	{ 0x30 /* enc.data sequence       */, asn1hack_do_octet_string_patch },
+	{ 0x80 /* [0] holding enc.data    */, NULL }
 };
 
 
-int asn1hack_doit(unsigned char *buf)
-{
-	int retval = 0;
-	asn1hack_stack *patch = asn1hack_octet_string_patch;
-	size_t len = get_len(buf+1);
-	size_t lhead = 1 + len_to_llen(len);
 
-	if (len < 0) {
-		retval = -1;
-		goto exit0;
+int geier_asn1hack(const unsigned char *input, size_t inlen,
+		   unsigned char **output, size_t *outlen)
+{
+	if(!input || !output || !outlen) return -1;
+
+	/* apply octet_string_patch ... */
+	size_t depth = sizeof(asn1hack_octet_string_patch) /
+		sizeof(asn1hack_stack);
+
+	/* make room for inlen characters, plus four extra for each level,
+	 * (this is the maximum amount of bytes, the struct may grow by,
+	 * from undef (1 byte) to (0x84 + 4 len. bytes)) 
+	 * plus 6 extra bytes for OCTET_STRING patch
+	 */
+	*outlen = inlen + 4 * depth + 6;
+	if(! (*output = malloc(*outlen))) return -ENOMEM;
+
+	return asn1hack_forward(input, inlen, *output, outlen, 
+				asn1hack_octet_string_patch);
+}
+
+
+
+/* apply level of the hack stack and try to recurse... 
+ * return 0 on success, error number on failure */
+static int asn1hack_forward(const unsigned char *input, size_t inlen,
+			    unsigned char *output, size_t *outlen,
+			    const asn1hack_stack *patch)
+{
+	int patched = 0;
+	assert(input && output && outlen);
+	assert(input[0] == patch->asn1_type_id);
+
+	*outlen = 0;
+
+	/* leave element type untouched ... */
+	*output = *input;
+
+	/* store a pointer, where the length spec shall be written out to,
+	 * this needs to be done after our children were touched, however  */
+	unsigned char *lenspec_ptr = &output[1];
+
+	/* skip the header for the time being ... */
+	inlen -= head_len(input);
+	input += head_len(input);
+
+	output += 6; /* maximum length, we may need */
+
+	for(; inlen;) {
+		size_t el_len = input[1] == 0x80 ? inlen :
+			(get_len(&input[1]) + head_len(input));
+
+		if(! patched && *input == patch[1].asn1_type_id) {
+			/* we need to further cope with this ASN.1 element */
+			size_t el_len_new;
+
+			if(patch->callee(input, el_len, output, &el_len_new,
+					 &patch[1]))
+				return -1; /* damn. */
+			
+			input += el_len;
+			inlen -= el_len;
+			output += el_len_new;
+			*outlen += el_len_new;
+
+			patch ++; /* apply patch only once per level */
+
+		} else {
+			/* just copy this field, it's of no interest for us */
+			memmove(output, input, el_len);
+
+			input += el_len;
+			inlen -= el_len;
+			output += el_len;
+			*outlen += el_len;
+		}
 	}
 
-	retval = lhead
-		+ asn1hack_adjust_child_len(buf+1, 
-					    len,
-					    asn1hack_forward(patch, buf, len));
- exit0:
-	return retval;
+	set_len(lenspec_ptr, *outlen);
+
+	if(lenspec_len(lenspec_ptr) < 5)
+		memmove(lenspec_ptr + lenspec_len(lenspec_ptr),
+			lenspec_ptr + 5, *outlen);
+
+	*outlen += 1 + lenspec_len(lenspec_ptr);
+	return 0;	
 }
+
 
 
 /* return the length of the encoding of len, including specifier */
@@ -111,6 +189,7 @@ static int len_to_llen(size_t len)
 		len < 0x1000000 ? 4 :
 		5;
 }
+
 
 
 /* read length of ASN.1 element reference
@@ -149,10 +228,11 @@ static int get_len(const unsigned char *buf)
 	return -1; /* failing */
 }
 
+
+
 /* write length of ASN.1 element */
 static void set_len(unsigned char *buf, int new_length) 
 {
-	/* FIXME: fails if new length needs different space */
 	size_t llen = len_to_llen(new_length);
 
 	if (llen == 1) {
@@ -163,103 +243,50 @@ static void set_len(unsigned char *buf, int new_length)
 
 		buf[0] = (unsigned char)(0x80 | (llen-1));
 		for (i=1; i<llen; i++) {
-			buf[i] = (unsigned char)(new_length >> (8 * (llen-i-1))) & 0xff;
+			buf[i] = (unsigned char)
+				(new_length >> (8 * (llen-i-1))) & 0xff;
 		}
 	}
-}
-
-
-
-/* skip ASN.1 element and look for next sub element (next stack level) */
-static int asn1hack_forward(asn1hack_stack *stack_level,
-			    unsigned char *asn1_buf_ptr,
-			    unsigned int asn1_child_len)
-{
-	/* asn1_buf_ptr points to the beginning of this ASN.1 element now */
-
-	asn1_buf_ptr ++; /* skip type specifier */
-	asn1_buf_ptr += len_to_llen(asn1_child_len); /* skip length specifier */
-
-	/* FIXME even this scanner should care for memory allocation boundaries */
-	for(;;) {
-		int layer1_clen = get_len(&asn1_buf_ptr[1]);
-
-		if(asn1_buf_ptr[0] == stack_level[1].asn1_type_id) {
-			/* found beginning of the child we're looking for */
-			int new_layer1_clen = stack_level[1].callee(&stack_level[1],
-								    asn1_buf_ptr, layer1_clen);
-
-			if(new_layer1_clen < 0)
-				return -1; /* error occured, get outta here */
-
-			if(asn1hack_adjust_child_len(&asn1_buf_ptr[1],
-						     layer1_clen, new_layer1_clen) < 0)
-				return -1; /* failed. strange thing. */
-
-			return asn1_child_len + new_layer1_clen - layer1_clen;
-		}
-
-		/* skip to next child on same level */
-		asn1_buf_ptr ++; /* type specifier */
-		asn1_buf_ptr += len_to_llen(layer1_clen); /* length specifier */
-		asn1_buf_ptr += layer1_clen;
-	}
-}
-
-
-static int asn1hack_adjust_child_len(unsigned char *asn1_len_ptr,
-				     unsigned int old_layer1_clen,
-				     unsigned int new_layer1_clen)
-{
-	if(old_layer1_clen == new_layer1_clen)
-		return new_layer1_clen;
-
-	if(len_to_llen(old_layer1_clen) != len_to_llen(new_layer1_clen)) {
-		/* change room for length specifier */
-		fprintf(stderr, "don't know how to change room for length spec.\n");
-		return -1;
-	}
-
-	/* overwrite length of this ASN.1 child */
-	set_len(asn1_len_ptr, new_layer1_clen);
-	return new_layer1_clen;
 }
 
 
 
 /* patch ASN.1 element and return */
-static int asn1hack_do_octet_string_patch(asn1hack_stack *stack_level,
-					  unsigned char *asn1_buf_ptr,
-					  unsigned int asn1_child_len)
+static int asn1hack_do_octet_string_patch(const unsigned char *input,
+					  size_t inlen, unsigned char *output,
+					  size_t *outlen,
+					  const asn1hack_stack *stack_level)
 {
-	(void) stack_level;
-
 	/* at asn1_buf_ptr there should be something like
-	 * 0x80 0x82 0x?? 0x??   --> [0] <LENGTH>
+	 * 0x80 <LENSPEC> 0x?? 0x??   --> [0] <CONTENT>
 	 *
 	 * replace this by
-	 * 0xA0 0x82 0x?? 0x?? 0x04 0x82 0x?? 0x??   -> [0] <LEN> OCTET_STRING <LEN>
+	 * 0xA0 <LENSPEC> 0x04 <LENSPEC> 0x?? 0x?? 
+	 *                             -> [0] OCTET_STRING <CONTENT>
 	 */
-	unsigned char replacement[8], replacement_len = 1;
-	unsigned int oldspec_len = 1 + len_to_llen(asn1_child_len);
 
-	/* prepare replacement ASN.1 structure */
-	replacement[0] = 0xA0;
-	{
-		unsigned int el_length = asn1_child_len + (asn1_child_len < 0x80 ? 2 : 4);
-		set_len(&replacement[1], el_length);
-		replacement_len += len_to_llen(el_length);
-	}
-	replacement[replacement_len ++] = 0x04; /* OCTET_STRING */
-	set_len(&replacement[replacement_len], asn1_child_len);
-	replacement_len += len_to_llen(asn1_child_len);
+	assert(input && output && outlen);
+	assert(*input == 0x80);
 
-	/* make room for extra chars */
-	memmove(&asn1_buf_ptr[oldspec_len] + replacement_len - oldspec_len,
-		&asn1_buf_ptr[oldspec_len], asn1_child_len);
+	size_t content_len =
+		input[1] == 0x80 ? (inlen - 2) : get_len(&input[1]);
 
-	/* overwrite ASN.1 tag with replacement */
-	memmove(asn1_buf_ptr, replacement, replacement_len);
+	/* write outer thingy, i.e. [0] struct ... */
+	output[0] = 0xA0;
+	set_len(&output[1], content_len + len_to_llen(content_len) + 1);
 
-	return asn1_child_len + replacement_len - oldspec_len;
+	output += (*outlen = head_len(output));
+
+	/* write the inner OCTET_STRING thingy ... */
+	output[0] = 0x04;
+	set_len(&output[1], content_len);
+
+	*outlen += head_len(output);
+	output += head_len(output);
+
+	/* finally copy the contents ... */
+	memmove(output, input + head_len(input), content_len);
+	*outlen += content_len;
+
+	return 0;
 }

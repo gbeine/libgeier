@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
+ * Copyright (C) 2005  Stefan Siegl <ssiegl@gmx.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +30,7 @@ struct _geier_context {
 	unsigned char *cert_filename;
 	int clearing_timeout_ms;
 	unsigned char *schema_dir_url;
+	unsigned char *stylesheet_dir_url;
 
 	unsigned char *datenlieferant_xpathexpr;
 	unsigned char *datenteil_xpathexpr;

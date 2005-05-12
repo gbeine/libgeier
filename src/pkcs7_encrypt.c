@@ -98,19 +98,19 @@ int geier_pkcs7_encrypt(geier_context *context,
 	/* output data */
 	{
 		size_t len = i2d_PKCS7(p7, NULL);
+		unsigned char *p7_der_buf = malloc(len);
+		unsigned char *p = p7_der_buf;
 
-		/* allocate 4 more bytes needed for the ASN.1 hack */
-		*output = malloc(len + 4); 
-		if (!*output) {
+		if (! p7_der_buf) {
 			retval = -1;
 			goto exit3;
 		}
 
-		{
-			unsigned char *p = *output;
-			len = i2d_PKCS7(p7, &p);
-		}
-		*outlen = asn1hack_doit(*output);
+		len = i2d_PKCS7(p7, &p);
+		if (geier_asn1hack(p7_der_buf, len, output, outlen))
+			retval = -1;
+
+		free(p7_der_buf);
 	}
  exit3:
 	PKCS7_free(p7);

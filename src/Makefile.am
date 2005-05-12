@@ -20,6 +20,7 @@ libgeier_la_SOURCES = \
 	pkcs7_encrypt.c pkcs7_encrypt.h \
 	pkcs7_decrypt.c pkcs7_decrypt.h \
 	asn1hack.c asn1hack.h \
+	xslt.c \
 	gzip_deflate.c gzip_deflate.h \
 	gzip_inflate.c gzip_inflate.h
 #	send.c \
@@ -28,13 +29,20 @@ libgeier_la_SOURCES = \
 
 # force relink on version change
 # For legal reasons all versions in production use must be tested and archived.
-libgeier_la_LDFLAGS = -release $(PACKAGE_VERSION)
+libgeier_la_LDFLAGS = -release @PACKAGE_VERSION@
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
-	-DDEFAULT_CERT_FILE=\"$(pkgdatadir)/Elster2Cry.b64.cer\" \
+	-DDEFAULT_CERT_FILE=\"$(datadir)/libgeier/Elster2Cry.b64.cer\" \
+	-DDEFAULT_SCHEMA_DIR_URL=\"file://$(datadir)/libgeier/schemas\" \
+	-DDEFAULT_STYLESHEET_DIR_URL=\"file://$(datadir)/libgeier/stylesheets\" \
 	-DDEFAULT_CLEARING_TIMEOUT=30000 \
-	-DDEFAULT_SCHEMA_DIR_URL=\"file://$(pkgdatadir)/schemas\" \
 	-DDEFAULT_HTCHUNK_GROWBY=1024
 
 CLEANFILES = *~
+
+bin_PROGRAMS = geier
+
+geier_SOURCES = geier.c
+geier_LDADD = libgeier.la
+

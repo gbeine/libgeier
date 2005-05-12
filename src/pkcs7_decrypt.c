@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
+ * Copyright (C) 2005  Stefan Siegl <ssiegl@gmx.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,28 +19,21 @@
 #include "config.h"
 #include "context.h"
 
-#include <WWWUtil.h>
-
-/* Mozilla header files */
-#include <nss/nss.h>
-#include <nss/pk11func.h>
-#include <nss/secpkcs7.h>
+#include <stdio.h>
+#include <errno.h>
+#include <assert.h>
 
 #include <geier.h>
-
 #include "pkcs7_decrypt.h"
 
+#include <openssl/err.h>
+#include <openssl/x509.h>
+#include <openssl/pkcs7.h>
+#include <openssl/evp.h>
 
-
-/* Callback from PKCS#7 decoder asking for decryption key */
-static PK11SymKey *get_decryption_key(void *arg, SECAlgorithmID *algid);
-
-/* Callback from PKCS#7 decoder asking whether decryption is allowed */
-static PRBool allow_decryption(SECAlgorithmID *algid, PK11SymKey *bulkkey);
-
-/* Callback from PKCS#7 decoder delivering decrypted data */
-static void accept_data(void *arg, const char *buf, unsigned long len);
-
+#ifdef OPENSSL_NO_DES
+#error "OpenSSL 3DES-cipher not available. GEIER won't work that way!"
+#endif
 
 /* Decrypt PKCS#7 encrypted content using the session key in the context.
  */
@@ -48,78 +41,82 @@ int geier_pkcs7_decrypt(geier_context *context,
 			const unsigned char *input, size_t inlen,
 			unsigned char **output, size_t *outlen)
 {
+	PKCS7 *p7;
+	PKCS7_ENC_CONTENT *enc_data; 
+	EVP_CIPHER_CTX ctx;
+	const EVP_CIPHER *ciph;
+	const unsigned char *iv;
+	size_t len;
+	unsigned char *p = (unsigned char *) input;
 	int retval = 0;
-	SEC_PKCS7ContentInfo *cinfo = NULL;
-	HTChunk *out_chunk = HTChunk_new(DEFAULT_HTCHUNK_GROWBY);
 
-	/* FIXME: Initialize NSS globally in init.c? */
-	NSS_NoDB_Init(".");
-
-	/* FIXME: factor out key handling */
-	CK_MECHANISM_TYPE cm = CKM_DES3_CBC_PAD; /* FIXME: Is this right? */
-	PK11SlotInfo* slot = PK11_GetBestSlot(cm, NULL);
-
-	SECItem key_item;
-	SECItem data_item;
-	PK11SymKey *key = NULL;
-
-	/* FIXME: store PK11SymKey or SECItem in context 
-	 * once we use NSS everywhere */
-	key_item.type = siBuffer;
-	key_item.data = context->session_key;
-	key_item.len = context->session_key_len;
-
-	key = PK11_ImportSymKey(slot, cm,
-				PK11_OriginUnwrap, /* key is unwrapped */
-				CKA_ENCRYPT, /* key for en- and decryption */
-				&key_item, NULL);
-	if (!key) {
+	if (!context || !output || !outlen) {
 		retval = -1;
 		goto exit0;
 	}
-	data_item.type = siCipherDataBuffer;
-	data_item.data = (unsigned char *)input;
-	data_item.len = inlen;
 
-	cinfo = SEC_PKCS7DecodeItem(&data_item,
-				    accept_data, out_chunk,
-				    NULL, NULL,
-				    get_decryption_key, key,
-				    allow_decryption);
-	if (!cinfo) {
+	p7 = d2i_PKCS7(NULL, &p, inlen);
+	if(! p7) {
 		retval = -1;
 		goto exit1;
 	}
-	*outlen = HTChunk_size(out_chunk);
-	*output = HTChunk_toCString(out_chunk); /* frees chunk */
 
-	SEC_PKCS7DestroyContentInfo(cinfo);
+	if(! PKCS7_type_is_encrypted(p7)) {
+		retval = -1;
+		goto exit2;
+	}
+
+	ciph = EVP_des_ede3_cbc();
+	EVP_CIPHER_CTX_init(&ctx);
+
+	enc_data = p7->d.encrypted->enc_data;
+	iv = enc_data->algorithm->parameter->value.asn1_string->data;
+	len = enc_data->enc_data->length + ciph->block_size;
+	*output = p = malloc(len);
+
+	if(! *output) {
+		retval = -ENOMEM;
+		goto exit4;
+	}
+
+	if(! EVP_DecryptInit(&ctx, ciph, context->session_key, iv)) {
+		retval = -1;
+		goto exit5;
+	}
+
+	if(! EVP_DecryptUpdate(&ctx, p, &len, enc_data->enc_data->data,
+			       enc_data->enc_data->length)) {
+		retval = -1;
+		goto exit6;
+	}
+
+	p += len;
+
+	if(! EVP_DecryptFinal(&ctx, p, &len)) {
+		retval = -1;
+		goto exit7;
+	}
+
+	*outlen = (p - *output) + len;
+	*output = realloc(*output, *outlen);
+
+ exit7:
+ exit6:
+ exit5:
+ exit4:
+	if(retval)
+		free(* output);
+/* exit3: */
+	/* EVP_CIPHER_CTX_cleanup(&ctx); */
+ exit2:
  exit1:
-	PK11_FreeSymKey(key);
+	PKCS7_free(p7);
  exit0:
-	if (retval) { HTChunk_delete(out_chunk); }
+	if(retval) {
+		ERR_load_PKCS7_strings();
+		ERR_print_errors_fp(stderr);
+	}
 
 	return retval;
 }
 
-
-/* Callback from PKCS#7 decoder asking for decryption key */
-static PK11SymKey *get_decryption_key(void *arg, SECAlgorithmID *algid)
-{
-	return (PK11SymKey *)arg;
-}
-
-
-/* Callback from PKCS#7 decoder asking whether decryption is allowed */
-static PRBool allow_decryption(SECAlgorithmID *algid, PK11SymKey *bulkkey)
-{
-	/* FIXME: should we be more restrictive? */
-	return PR_TRUE;
-}
-
-
-/* Callback from PKCS#7 decoder delivering decrypted data */
-static void accept_data(void *arg, const char *buf, unsigned long len)
-{
-	HTChunk_putb((HTChunk *)arg, buf, len);
-}

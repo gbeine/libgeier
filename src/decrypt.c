@@ -19,6 +19,7 @@
 #include "config.h"
 
 #include <libxml/tree.h>
+#include <string.h>
 
 #include "context.h"
 #include "find_node.h"

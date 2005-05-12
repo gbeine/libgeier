@@ -9,3 +9,4 @@ libtool
 autoscan.log
 configure.scan
 libgeier.spec
+libgeier-*.tar.gz

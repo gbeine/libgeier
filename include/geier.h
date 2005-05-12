@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
+ * Copyright (C) 2005  Stefan Siegl <ssiegl@gmx.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -104,6 +105,13 @@ typedef enum _geier_format {
  * 0 = OK */
 int geier_validate(geier_context *context,
 		   geier_format f, const xmlDoc *input);
+
+/* unverschlüsselten Elster-Datensatz mittels XSLT in HTML aufbereiten */
+int geier_xsltify_text(geier_context *context,
+		       const unsigned char *input, size_t inlen,
+		       unsigned char **output, size_t *outlen);
+int geier_xsltify(geier_context *context,
+		  const xmlDoc *input, xmlDoc **output);
 
 GEIER_END_PROTOS
 

@@ -21,7 +21,7 @@ check_PROGRAMS = $(TESTS) \
 
 TESTDATADIR = $(top_srcdir)/tests/data
 
-dist_check_DATA = \
+EXTRA_DIST = \
 	$(TESTDATADIR)/pkcs7/certificate \
 	$(TESTDATADIR)/pkcs7/teststring \
 	$(TESTDATADIR)/pkcs7/teststring.gzip \

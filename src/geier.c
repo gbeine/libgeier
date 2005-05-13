@@ -171,7 +171,6 @@ static error_t parse_geier_opts(int key, char *arg, struct argp_state *state)
 
 static void geier_cli_exec(const char *filename, FILE *handle)
 {
-	xmlDoc *doc = NULL;
 	size_t buf_len = 0;
 	size_t buf_alloc = 4096;
 	unsigned char *buf = malloc(buf_alloc);
@@ -218,16 +217,9 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 		goto out;
 	}
 
-	if(geier_text_to_xml(context, buf, buf_len, &doc)) {
-		fprintf(stderr, "%s: unable to parse xml\n", filename);
-		exitcode = 1;
-
-		goto out;
-	}
-
-
 	if(config_validate) {
-		if(geier_validate(context, geier_format_unencrypted, doc)) {
+		if(geier_validate_text(context, geier_format_unencrypted,
+				       buf, buf_len)) {
 			fprintf(stderr, "%s: does not validate against "
 				"schema file\n", filename);
 			exitcode = 1;
@@ -239,8 +231,10 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 
 	if(config_encrypt_only) {
 		/** user requests to do nothing but encrypt and return */
-		xmlDoc *outdoc;
-		if(geier_encrypt(context, doc, &outdoc)) {
+		unsigned char *obuf;
+		size_t olen;
+
+		if(geier_encrypt_text(context, buf, buf_len, &obuf, &olen)) {
 			fprintf(stderr, "%s: cannot encrypt document.\n",
 				filename);
 			exitcode = 1;
@@ -248,13 +242,17 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 			goto out;
 		}
 
-		xmlFreeDoc(doc);
-		doc = outdoc;
+		free(buf);
+
+		buf = obuf;
+		buf_len = olen;
 	}
 
 	if(! config_dry_run) {
-		xmlDoc *outdoc;
-		if(geier_send(context, doc, &outdoc)) {
+		unsigned char *obuf;
+		size_t olen;
+
+		if(geier_send_text(context, buf, buf_len, &obuf, &olen)) {
 			fprintf(stderr, "%s: cannot send document to IRO.\n",
 				filename);
 			exitcode = 1;
@@ -262,17 +260,15 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 			goto out;
 		}
 
-		xmlFreeDoc(doc);
+		free(buf);
 
-		doc = outdoc; /* continue with returned document ... */
+		buf = obuf;
+		buf_len = olen;
 	}
 
 
 	if(config_dump) {
 		/* debug dump the received data */
-		unsigned char *out;
-		size_t out_len;
-
 		int fd = open(config_dump, O_WRONLY | O_CREAT |
 			      O_TRUNC, S_IRUSR);
 		if(! fd) {
@@ -283,20 +279,19 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 			goto out;
 		}
 
-		geier_xml_to_text(context, doc, &out, &out_len);
-			
-		if(write(fd, out, out_len) != out_len)
+		if(write(fd, buf, buf_len) != buf_len)
 			perror(config_dump);
 
 		close(fd);
-		free(out);
 	}
 
 
 	if(config_xsltify) {
 		/* finally mangle output through xslt thingy ... */
-		xmlDoc *outdoc;
-		if(geier_xsltify(context, doc, &outdoc)) {
+		unsigned char *obuf;
+		size_t olen;
+
+		if(geier_xsltify_text(context, buf, buf_len, &obuf, &olen)) {
 			fprintf(stderr, "%s: unable to xsltify document.\n",
 				filename);
 			exitcode = 1;
@@ -304,24 +299,17 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 			goto out;
 		}
 
-		xmlFreeDoc(doc);
-		doc = outdoc; /* continue with xsltified document ... */
+		free(buf);
+
+		buf = obuf;
+		buf_len = olen;
 	}
 
 
-	/* output the result to stdout for the moment */
-	unsigned char *out;
-	size_t out_len;
-
-	geier_xml_to_text(context, doc, &out, &out_len);
-	if(write(1, out, out_len) != out_len)
+	if(write(1, buf, buf_len) != buf_len)
 		perror(config_dump);
 
-	free(out);
-	
  out:
-	if(doc) xmlFreeDoc(doc);
 	if(context) geier_context_free(context);
 	free(buf);
-	
 }

@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
+ *               2005  Stefan Siegl <ssiegl@gmx.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +27,26 @@
 
 #include <geier.h>
 
-
 static int validate(char *schema_url, const xmlDoc *doc);
+
+int geier_validate_text(geier_context *context, geier_format f,
+                        const unsigned char *input, size_t inlen)
+{
+	int retval;
+	xmlDoc *indoc;
+
+	if((retval = geier_text_to_xml(context, input, inlen, &indoc)))
+		goto out0;
+
+	retval = geier_validate(context, f, indoc);
+	xmlFreeDoc(indoc);
+
+ out0:
+	return retval;
+
+}
+
+
 
 int geier_validate(geier_context *context,
 		   geier_format f, const xmlDoc *input)

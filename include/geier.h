@@ -79,6 +79,9 @@ int geier_send_encrypted_text(geier_context *context,
 /* In komplettem zu sendendem Datensatz die nötigen Teile verschlüsseln */
 int geier_encrypt(geier_context *context,
 		  const xmlDoc *input, xmlDoc **output);
+int geier_encrypt_text(geier_context *context,
+		       const unsigned char *input, size_t inlen,
+		       unsigned char **output, size_t *outlen);
 
 /* In komplettem empfangenen Datensatz die nötigen Teile entschlüsseln */
 int geier_decrypt(geier_context *context,
@@ -105,6 +108,8 @@ typedef enum _geier_format {
  * 0 = OK */
 int geier_validate(geier_context *context,
 		   geier_format f, const xmlDoc *input);
+int geier_validate_text(geier_context *context, geier_format f,
+			const unsigned char *input, size_t inlen);
 
 /* unverschlüsselten Elster-Datensatz mittels XSLT in HTML aufbereiten */
 int geier_xsltify_text(geier_context *context,

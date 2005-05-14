@@ -36,21 +36,20 @@ static unsigned char *elster_clearing_uri_list[] = {
 };
 
 /* XPath expression for the nodes whose content shall be encrypted
- * and/or decrypted.
+ * and/or decrypted. 
  * Note that only the content is encrypted, the enclosing element
  * must be preserved.
- * FIXME: use Elster namespace instead of local-name hack?  How?
  */
 static unsigned char *elster_datenlieferant_xpathexpr =
-"/*[local-name()='Elster']/*[local-name()='TransferHeader']/*[local-name()='DatenLieferant']";
+"/elster:Elster/elster:TransferHeader/elster:DatenLieferant";
 static unsigned char *elster_datenteil_xpathexpr =
-"/*[local-name()='Elster']/*[local-name()='DatenTeil']";
+"/elster:Elster/elster:DatenTeil";
 static unsigned char *elster_transportschluessel_xpathexpr =
-"/*[local-name()='Elster']/*[local-name()='TransferHeader']/*[local-name()='Datei']/*[local-name()='TransportSchluessel']";
+"/elster:Elster/elster:TransferHeader/elster:Datei/elster:TransportSchluessel";
 
 /* XPath expression for length of encrypted data part */
 static unsigned char *elster_datengroesse_xpathexpr =
-"/*[local-name()='Elster']/*[local-name()='TransferHeader']/*[local-name()='Datei']/*[local-name()='DatenGroesse']";
+"/elster:Elster/elster:TransferHeader/elster:Datei/elster:DatenGroesse";
 
 geier_context *geier_context_new(void)
 {
@@ -73,7 +72,8 @@ geier_context *geier_context_new(void)
 	context->datenlieferant_xpathexpr = elster_datenlieferant_xpathexpr;
 	context->datenteil_xpathexpr = elster_datenteil_xpathexpr;
 	context->datengroesse_xpathexpr = elster_datengroesse_xpathexpr;
-	context->transportschluessel_xpathexpr = elster_transportschluessel_xpathexpr;
+	context->transportschluessel_xpathexpr = 
+		elster_transportschluessel_xpathexpr;
 
 	context->session_key = NULL;
 	context->session_key_len = 0;

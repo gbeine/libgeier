@@ -20,6 +20,7 @@
 
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
+#include <libxml/xpathInternals.h>
 
 #include <geier.h>
 
@@ -39,6 +40,27 @@ int find_node(xmlDoc *doc,
 		retval = -1;
 		goto exit0;
 	}
+
+
+	/* register elster-namespace with default URI,
+	 * to make XPath accept files, that don't define xmlns:elster */
+	xmlXPathRegisterNs(xpath_ctxt, "elster",
+			   "http://www.elster.de/2002/XMLSchema");
+
+	/* copy namespace declarations from 'doc' to the xpath_ctxt */
+	xmlNode *root = doc->children;
+	if (!root) {
+		retval = -1;
+		goto exit1;
+	}
+
+	xmlNs *ns = root->nsDef;
+	if(ns) do
+		xmlXPathRegisterNs(xpath_ctxt, ns->prefix, ns->href);
+	while((ns = ns->next));
+
+
+	/* finally evaluate the xpath expression ... */
 	xpath_obj = xmlXPathEvalExpression(xpathexpr, xpath_ctxt);
 	if (!xpath_obj) {
 		retval = -1;

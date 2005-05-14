@@ -19,15 +19,25 @@
 
 #include "config.h"
 
+#include <stdio.h>
+#include <string.h>
+
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 #include <libxml/xmlschemas.h>
 
 #include "context.h"
+#include "xpath.h"
 
 #include <geier.h>
 
 static int validate(char *schema_url, const xmlDoc *doc);
+
+/* return the file:// URI of the XML Schema file, needed to validate
+ * the provided document doc, NULL on error */
+static char *get_xsd_path(geier_context *context, xmlDoc *doc);
+
+
 
 int geier_validate_text(geier_context *context, geier_format f,
                         const unsigned char *input, size_t inlen)
@@ -52,15 +62,11 @@ int geier_validate(geier_context *context,
 		   geier_format f, const xmlDoc *input)
 {
 	int retval = 0;
-	xmlBuffer *buf = xmlBufferCreate();
 	unsigned char *schema_url = NULL;
 
 	switch (f) {
 	case geier_format_unencrypted:
-		xmlBufferCCat(buf, context->schema_dir_url);
-		/* FIXME: schema depends on type of declaration, year */
-		xmlBufferCCat(buf, "/elster_UStA_200501_extern.xsd");
-		schema_url = (unsigned char *)xmlBufferContent(buf);
+		schema_url = get_xsd_path(context, (xmlDoc *) input);
 		break;
 	default:
 		retval = GEIER_ERROR_FORMAT;
@@ -72,7 +78,6 @@ int geier_validate(geier_context *context,
 
  exit1:
  exit0:
-	xmlBufferFree(buf);
 	return retval;
 }
 
@@ -118,5 +123,74 @@ static int validate(char *schema_url, const xmlDoc *doc)
  exit1:
 	xmlSchemaFreeParserCtxt(parser_context);
  exit0:
+	return retval;
+}
+
+
+static const char *val_verfahren_xpathexpr =
+"/elster:Elster/elster:TransferHeader/elster:Verfahren";
+static const char *val_datenart_xpathexpr =
+"/elster:Elster/elster:TransferHeader/elster:DatenArt";
+static const char *val_version_xpathexpr = 
+"/elster:Elster/elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten"
+"/elster:Anmeldungssteuern";
+
+
+
+
+
+
+
+/* return the file:// URI of the XML Schema file, needed to validate
+ * the provided document doc, NULL on error */
+static char *get_xsd_path(geier_context *context, xmlDoc *doc) {
+	unsigned char *retval = NULL;
+
+	/* check whether TransferHeader->Verfahren is okay ***/
+	char *val_verfahren = 
+		elster_xpath_get_content(doc, val_verfahren_xpathexpr);
+	if(! val_verfahren) goto out;
+	if(strcmp(val_verfahren, "ElsterAnmeldung")) {
+		fprintf(stderr, "libgeier: unable to validate doctype %s\n",
+			val_verfahren);
+		goto out0;
+	}
+
+	/* check whether TransferHeader->DatenArt is okay ***/
+	char *val_datenart = 
+		elster_xpath_get_content(doc, val_datenart_xpathexpr);
+	if(! val_datenart) goto out0;
+	if(strcmp(val_datenart, "UStVA") && strcmp(val_datenart, "LStA")) {
+		fprintf(stderr, "libgeier: unable to validate doctype %s\n",
+			val_datenart);
+		goto out1;
+	}
+
+	const char *val_vers = 
+		elster_xpath_get_attr(doc, val_version_xpathexpr, "version");
+	if(! val_vers) goto out1;
+
+	xmlBuffer *buf = xmlBufferCreate();
+     	if(! buf) goto out2;
+
+	xmlBufferCCat(buf, context->schema_dir_url);
+	xmlBufferCCat(buf, "/elster_");
+
+	if(! strcmp(val_datenart, "UStVA"))
+		xmlBufferCCat(buf, "UStA");
+	else
+		xmlBufferCCat(buf, val_datenart);
+
+	xmlBufferCCat(buf, "_");
+	xmlBufferCCat(buf, val_vers);
+	xmlBufferCCat(buf, "_extern.xsd");
+	retval = (unsigned char *) xmlBufferContent(buf);
+
+ out2:
+ out1:
+	free(val_datenart);
+ out0:
+	free(val_verfahren);
+ out:
 	return retval;
 }

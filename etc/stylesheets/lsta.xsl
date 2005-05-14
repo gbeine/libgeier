@@ -57,7 +57,18 @@
 			</td>
 		</tr>
 		<tr>
+			<td align="center" colspan="2">
+				<xsl:if test="elster:TransferHeader[starts-with(elster:Testmerker,'7')]">
+					<big>
+						<br/>
+						<big>*** TESTFALL ***</big>
+					</big>
+				</xsl:if>
+			</td>
+		</tr>
+		<tr>
 			<td>
+				<br/>
 				<xsl:call-template name="Kz09Mandant"/>
 				<br/>
 			</td>
@@ -258,7 +269,7 @@
 						<xsl:if test="elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:Steuerfall/elster:Lohnsteueranmeldung/elster:Kz67">
 							<td colspan="1" align="left">
 								<br/>
-								<small>Kirchensteuer der Freireligiöse Landesgemeinde Baden
+								<small>Kirchensteuer der Freireligiösen Landesgemeinde Baden
 								</small>
 							</td>
 							<td colspan="1" align="center" valign="bottom">67</td>
@@ -315,7 +326,7 @@
 						<xsl:if test="elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:Steuerfall/elster:Lohnsteueranmeldung/elster:Kz73">
 							<td colspan="1" align="left">
 								<br/>
-								<small>Kirchensteuer der Israelischen Religionsgemeinschaft Württembergs
+								<small>Kirchensteuer der Israelitischen Religionsgemeinschaft Württembergs
 								</small>
 							</td>
 							<td colspan="1" align="center" valign="bottom">73</td>
@@ -389,6 +400,42 @@
 							<td colspan="1" align="center" valign="bottom">83</td>
 							<td colspan="1" align="right" valign="bottom">
 								<xsl:value-of select="elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:Steuerfall/elster:Lohnsteueranmeldung/elster:Kz83"/>
+							</td>
+						</xsl:if>
+					</tr>
+					<tr>
+						<xsl:if test="elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:Steuerfall/elster:Lohnsteueranmeldung/elster:Kz29										   |elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:Steuerfall/elster:Lohnsteueranmeldung/elster:Kz26">
+							<td colspan="5" align="left">
+								<br/>
+								<big>
+									<b>
+										<u>Sonstige Angaben</u>
+									</b>
+								</big>
+							</td>
+						</xsl:if>
+					</tr>
+					<tr>
+						<xsl:if test="elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:Steuerfall/elster:Lohnsteueranmeldung/elster:Kz29">
+							<td colspan="1" align="left">
+								<br/>
+								<small>Verrechnung des Erstattungsbetrages erwünscht</small>
+							</td>
+							<td colspan="1" align="center" valign="bottom">29</td>
+							<td colspan="1" align="left" valign="bottom">
+								<xsl:value-of select="elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:Steuerfall/elster:Lohnsteueranmeldung/elster:Kz29"/>
+							</td>
+						</xsl:if>
+					</tr>
+					<tr>
+						<xsl:if test="elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:Steuerfall/elster:Lohnsteueranmeldung/elster:Kz26">
+							<td colspan="1" align="left">
+								<br/>
+								<small>Die Einzugsermächtigung wird ausnahmsweise (z.B. wegen Verrrechungswünschen) für diesen Voranmeldungszeitraum widerrufen</small>
+							</td>
+							<td colspan="1" align="center" valign="bottom">26</td>
+							<td colspan="1" align="left" valign="bottom">
+								<xsl:value-of select="elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:Steuerfall/elster:Lohnsteueranmeldung/elster:Kz26"/>
 							</td>
 						</xsl:if>
 					</tr>
@@ -558,6 +605,19 @@
 		<xsl:text>.</xsl:text>
 		<xsl:value-of select="substring(.,1,4)"/>
 	</xsl:template>
+	<xsl:template match="elster:TransferHeader/elster:EingangsDatum">
+		<xsl:value-of select="substring(.,7,2)"/>
+		<xsl:text>.</xsl:text>
+		<xsl:value-of select="substring(.,5,2)"/>
+		<xsl:text>.</xsl:text>
+		<xsl:value-of select="substring(.,1,4)"/>
+		<xsl:text>,</xsl:text>
+		<xsl:value-of select="substring(.,9,2)"/>
+		<xsl:text>:</xsl:text>
+		<xsl:value-of select="substring(.,11,2)"/>
+		<xsl:text>:</xsl:text>
+		<xsl:value-of select="substring(.,13,2)"/>
+	</xsl:template>
 	<xsl:template name="Kz09Mandant">
 		<!-- Name Mandant -->
 		<xsl:text>Unternehmer:</xsl:text>
@@ -615,7 +675,7 @@
 			<td colspan="1" align="left">
 				<br/>
 				<small>
-				Israelitische Kirchensteuer
+				Israelitische Bekenntnissteuer
 				<td colspan="1" align="center" valign="bottom">64</td>
 					<td colspan="1" align="right" valign="bottom">
 						<xsl:value-of select="elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:Steuerfall/elster:Lohnsteueranmeldung/elster:Kz64"/>
@@ -648,7 +708,8 @@
 				</small>
 			</td>
 		</xsl:if>
-		<xsl:if test="elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:Steuerfall/elster:Lohnsteueranmeldung/elster:Steuernummer[starts-with(.,'27')]">
+		<xsl:if test="elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:Steuerfall/elster:Lohnsteueranmeldung/elster:Steuernummer[starts-with(.,'27')]|
+					   elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:Steuerfall/elster:Lohnsteueranmeldung/elster:Steuernummer[starts-with(.,'5')]">
 			<td colspan="1" align="left">
 				<br/>
 				<small>
@@ -666,7 +727,7 @@
 			<td colspan="1" align="left">
 				<br/>
 				<small>
-					Arbeitnehmerkammerbeiträge
+					Beiträge zur Arbeitnehmerkammer
 					<td colspan="1" align="center" valign="bottom">68</td>
 					<td colspan="1" align="right" valign="bottom">
 						<xsl:value-of select="elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:Steuerfall/elster:Lohnsteueranmeldung/elster:Kz68"/>

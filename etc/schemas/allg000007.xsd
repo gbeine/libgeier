@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- edited with XML Spy v4.3 U (http://www.xmlspy.com) by Michael Wilz (Rechenzentrum der Finanzverwaltung NRW) -->
-<!-- Version 7.04 -->
+<!-- Version 7.03 -->
 <xs:schema targetNamespace="http://www.elster.de/2002/XMLSchema" xmlns:elster="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<!-- Definierung globaler simple Types________________________________________________________-->
 	<xs:element name="Allg">
@@ -208,7 +208,6 @@
 			<xs:pattern value="SAU.*"/>
 			<xs:pattern value="S  .*"/>
 			<xs:pattern value="CH .*"/>
-            <xs:pattern value="SCG.*"/>
 			<xs:pattern value="SN .*"/>
 			<xs:pattern value="SY .*"/>
 			<xs:pattern value="WAL.*"/>

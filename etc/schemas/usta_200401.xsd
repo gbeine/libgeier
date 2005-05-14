@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Version_BY 200501.6.2 -->
+<xs:schema xmlns:elster="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.elster.de/2002/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:complexType name="usta_AnmeldungssteuernCType">
+		<xs:sequence>
+			<xs:element name="DatenLieferant" type="elster:usta_DatenlieferantType"/>
+			<xs:element name="Erstellungsdatum" type="elster:usta_MyDateSType"/>
+			<xs:element name="Steuerfall" type="elster:usta_SteuerfallCType"/>
+		</xs:sequence>
+		<xs:attribute name="version" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="200401"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="art" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="UStVA"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="usta_DatenlieferantType">
+		<xs:sequence>
+			<xs:element name="Name">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+						<xs:maxLength value="45"/>
+						<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Strasse">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+						<xs:maxLength value="30"/>
+						<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="PLZ">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="12"/>
+						<xs:minLength value="1"/>
+						<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Ort">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="30"/>
+						<xs:minLength value="1"/>
+						<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<!--- simple Elements & Types ____________________________________________________________ -->
+	<xs:simpleType name="usta_DefaultKZSType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="12"/>
+			<xs:minLength value="1"/>
+			<xs:pattern value="[\-]{0,1}\d{1,11}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="usta_DefaultKZSTypewithCent">
+		<xs:annotation>
+			<xs:documentation xml:lang="DE">Vorzeichen: es ist nur das "-" als Vorzeichen zulässig "+" nicht !!!</xs:documentation>
+			<xs:documentation xml:lang="DE">9 Stellen (Ziffern) vor dem Dezimaltrennzeichen</xs:documentation>
+			<xs:documentation xml:lang="DE">Dezimaltrennzeichen ist das ","</xs:documentation>
+			<xs:documentation xml:lang="DE">2 Stellen nach dem Dezimaltrennzeichen</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="13"/>
+			<xs:minLength value="1"/>
+			<xs:pattern value="[\-]{0,1}\d{1,9}[.]\d{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="usta_PositiveKZSTypewithCent">
+		<xs:annotation>
+			<xs:documentation xml:lang="DE">9 Stellen (Ziffern) vor dem Dezimaltrennzeichen</xs:documentation>
+			<xs:documentation xml:lang="DE">Dezimaltrennzeichen ist das ","</xs:documentation>
+			<xs:documentation xml:lang="DE">2 Stellen nach dem Dezimaltrennzeichen</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="12"/>
+			<xs:minLength value="1"/>
+			<xs:pattern value="\d{1,9}[.]\d{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="usta_DefaultKZPositiveSType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="11"/>
+			<xs:minLength value="1"/>
+			<xs:pattern value="\d{1,11}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="usta_MyDateSType">
+		<xs:annotation>
+			<xs:documentation xml:lang="DE">JJJJMMDD</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="\d{4}((0[1-9])|(1[0-2]))((3[0-1])|(2[0-9])|(1[0-9])|(0[1-9]))"/>
+=

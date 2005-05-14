@@ -22,7 +22,8 @@ libgeier_la_SOURCES = \
 	asn1hack.c asn1hack.h \
 	xslt.c \
 	gzip_deflate.c gzip_deflate.h \
-	gzip_inflate.c gzip_inflate.h
+	gzip_inflate.c gzip_inflate.h \
+	xpath.c xpath.h
 #	send.c \
 #	send_text.c \
 #	decrypt.c

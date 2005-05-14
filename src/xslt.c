@@ -20,8 +20,10 @@
 #include <config.h>
 #endif
 
+#include <string.h>
 #include <geier.h>
 #include "context.h"
+#include "xpath.h"
 
 #include <libxml/tree.h>
 
@@ -29,25 +31,22 @@
 #include <libxslt/transform.h>
 #include <libxslt/xsltutils.h>
 
+
+/* return the file:// URI of the XSLT Stylesheet file or NULL on error */
+static char *get_xslt_path(geier_context *context, xmlDoc *doc);
+
+
 int geier_xsltify(geier_context *context,
 		  const xmlDoc *input, xmlDoc **output)
 {
 	int retval = 0;
 	/* xmlDoc *copy; */
-	xmlBuffer *buf = xmlBufferCreate();
 	xsltStylesheet *stylesheet;
 
-	/* FIXME, the path of the stylesheet actually depends on the
-	 * type of the xml document's declaration, however let's use
-	 * UStVA 2005 as a default for now ... */
-	xmlBufferCCat(buf, context->stylesheet_dir_url);
-	xmlBufferCCat(buf, "/");
-	xmlBufferCCat(buf, "ustva.xsl");
+        char *stylesheet_fname = get_xslt_path(context, (xmlDoc *) input);
+	stylesheet = xsltParseStylesheetFile(stylesheet_fname);
+	free(stylesheet_fname);
 
-	xmlSubstituteEntitiesDefault(2);
-        xmlLoadExtDtdDefaultValue = 1;
-        
-	stylesheet = xsltParseStylesheetFile(xmlBufferContent(buf));
 	if(! stylesheet) {
 		retval = -1;
 		goto out;
@@ -73,7 +72,6 @@ int geier_xsltify(geier_context *context,
 	/* xmlFreeDoc(copy); */
 
  out:
-	xmlBufferFree(buf);
 	return retval;
 }
 
@@ -101,5 +99,60 @@ int geier_xsltify_text(geier_context *context,
  out1:
 	xmlFreeDoc(indoc);
  out0:
+	return retval;
+}
+
+
+static const char *val_verfahren_xpathexpr =
+"/elster:Elster/elster:TransferHeader/elster:Verfahren";
+static const char *val_datenart_xpathexpr =
+"/elster:Elster/elster:TransferHeader/elster:DatenArt";
+
+/* return the file:// URI of the XSLT Stylesheet file or NULL on error */
+static char *get_xslt_path(geier_context *context, xmlDoc *doc)
+{
+	unsigned char *retval = NULL;
+
+	/* check whether TransferHeader->Verfahren is okay ***/
+	char *val_verfahren = 
+		elster_xpath_get_content(doc, val_verfahren_xpathexpr);
+	if(! val_verfahren) goto out;
+	if(strcmp(val_verfahren, "ElsterAnmeldung")) {
+		fprintf(stderr, "libgeier: unable to xsltify doctype %s\n",
+			val_verfahren);
+		goto out0;
+	}
+
+	/* check whether TransferHeader->DatenArt is okay ***/
+	char *val_datenart = 
+		elster_xpath_get_content(doc, val_datenart_xpathexpr);
+	if(! val_datenart) goto out0;
+	if(strcmp(val_datenart, "UStVA") && strcmp(val_datenart, "LStA")) {
+		fprintf(stderr, "libgeier: unable to xsltify doctype %s\n",
+			val_datenart);
+		goto out1;
+	}
+
+	xmlBuffer *buf = xmlBufferCreate();
+     	if(! buf) goto out2;
+
+	xmlBufferCCat(buf, context->stylesheet_dir_url);
+	xmlBufferCCat(buf, "/");
+
+	if(! strcmp(val_datenart, "UStVA"))
+		xmlBufferCCat(buf, "ustva");
+	else
+		xmlBufferCCat(buf, "lsta");
+
+	xmlBufferCCat(buf, ".xsl");
+	retval = strdup(xmlBufferContent(buf));
+
+	xmlBufferFree(buf);
+ out2:
+ out1:
+	free(val_datenart);
+ out0:
+	free(val_verfahren);
+ out:
 	return retval;
 }

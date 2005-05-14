@@ -33,7 +33,6 @@ static unsigned char *elster_clearing_uri_list[] = {
 	"http://80.146.179.3:80/Elster2/EMS",
 	"http://193.109.238.58:80/Elster2/EMS",
 	"http://193.109.238.59:80/Elster2/EMS",
-	NULL
 };
 
 /* XPath expression for the nodes whose content shall be encrypted
@@ -56,15 +55,16 @@ static unsigned char *elster_datengroesse_xpathexpr =
 geier_context *geier_context_new(void)
 {
 	geier_context *context = malloc(sizeof(struct _geier_context));
+	if(! context) return NULL; /* out of memory */
 
 	context->xml_encoding = elster_xml_encoding;
+
 	context->clearing_uri_list = elster_clearing_uri_list;
-	{
-		int i;
-		for (i=0; context->clearing_uri_list[i]; i++) {
-		}
-		context->clearing_uri_list_length = i;
-	}
+	context->clearing_uri_list_length = sizeof(elster_clearing_uri_list) /
+		sizeof(*elster_clearing_uri_list);
+	context->clearing_uri_index =
+		rand() % context->clearing_uri_list_length;
+
 	context->cert_filename = DEFAULT_CERT_FILE;
 	context->clearing_timeout_ms = DEFAULT_CLEARING_TIMEOUT;
 	context->schema_dir_url = DEFAULT_SCHEMA_DIR_URL;
@@ -75,7 +75,6 @@ geier_context *geier_context_new(void)
 	context->datengroesse_xpathexpr = elster_datengroesse_xpathexpr;
 	context->transportschluessel_xpathexpr = elster_transportschluessel_xpathexpr;
 
-	context->clearing_uri_index = rand() % context->clearing_uri_list_length;
 	context->session_key = NULL;
 	context->session_key_len = 0;
 	context->iv = NULL;

@@ -7,3 +7,4 @@ libgeier.la
 config.h
 config.h.in
 stamp*
+geier

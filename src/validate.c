@@ -78,6 +78,7 @@ int geier_validate(geier_context *context,
 
  exit1:
  exit0:
+	free(schema_url);
 	return retval;
 }
 
@@ -184,7 +185,9 @@ static char *get_xsd_path(geier_context *context, xmlDoc *doc) {
 	xmlBufferCCat(buf, "_");
 	xmlBufferCCat(buf, val_vers);
 	xmlBufferCCat(buf, "_extern.xsd");
-	retval = (unsigned char *) xmlBufferContent(buf);
+	retval = strdup(xmlBufferContent(buf));
+
+	xmlBufferFree(buf);
 
  out2:
  out1:

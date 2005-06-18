@@ -151,9 +151,17 @@ static int decrypt_content(geier_context *context,
 
 	/* parse and build new node */
 	new = xmlNewNode(node->ns, node->name);
-	if (strlen(inflated) > 0) {
-		/* FIXME: Make sure inflated is zero-terminated
-		 *        (it is, but only by coincidence). */
+	if(inflated_len > 0) {
+		inflated = realloc(inflated, inflated_len + 1);
+		if(! inflated) {
+			perror(PACKAGE_NAME);
+			retval = -1;
+			goto exit4;
+		}
+
+		inflated[inflated_len] = 0; /* zero trminate string for
+					     * xmlParseBalancedChunkMemory */
+
 		result = xmlParseBalancedChunkMemory(doc, NULL, NULL, 0,
 						     inflated, &node_list);
 		if (result) {

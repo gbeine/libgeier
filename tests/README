@@ -1,0 +1,11 @@
+	-*- auto-fill -*-
+
+Die Test-Suite der libgeier ist gegenwärtig nicht funktionsfähig,
+nachdem die Abhängigkeit von libwww fallen gelassen wurde, selbige
+aber nach wie vor HT*-Funktionen referenziert.  Der Quellcode der
+libgeier wurde dementsprechend angepasst, zum Anpassen der Test-Suite
+fehlt mir leider im Moment aber die Zeit. 
+
+Sorry ;-)
+
+$Id: README,v 1.1 2005-06-18 15:19:10 stesie Exp $

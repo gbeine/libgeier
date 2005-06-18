@@ -29,13 +29,10 @@ Geier = Gnu Elster ImplementiERung
 Installation der CVS-Version:
 -----------------------------
 
-$ sh reconf.sh
+$ sh autogen.sh
 $ ./configure [...Optionen...]
 $ make
 $ make install
-
-Um die Tests in tests/ auszuführen
-$ make check
 
 Benutzte Software-Versionen
 (andere können funktionieren oder auch nicht, bei Problemen bitte melden):
@@ -67,3 +64,5 @@ melden.
 
 libtool 1.5.10 bzw. 1.5a brauchen andere Deklarationen in configure.ac
 (LT_INIT statt AC_PROG_LIBTOOL) und funktionieren derzeit nicht.
+
+$Id: README,v 1.6 2005-06-18 15:09:53 stesie Exp $

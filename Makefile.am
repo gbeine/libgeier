@@ -1,5 +1,5 @@
-SUBDIRS = src include etc tests config
+SUBDIRS = src include etc config
 
-EXTRA_DIST = srcdir_marker libwww.m4
+EXTRA_DIST = srcdir_marker
 
 CLEANFILES = *~

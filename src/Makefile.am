@@ -15,7 +15,6 @@ libgeier_la_SOURCES = \
 	globals.c globals.h \
 	find_node.c find_node.h \
 	node_contents_to_text.c node_contents_to_text.h \
-	chunk_from_file.c chunk_from_file.h \
 	base64.c base64.h bsd-base64.c bsd-base64.h \
 	pkcs7_encrypt.c pkcs7_encrypt.h \
 	pkcs7_decrypt.c pkcs7_decrypt.h \
@@ -23,6 +22,7 @@ libgeier_la_SOURCES = \
 	xslt.c \
 	gzip_deflate.c gzip_deflate.h \
 	gzip_inflate.c gzip_inflate.h \
+	tcpip.c tcpip.h \
 	xpath.c xpath.h
 #	send.c \
 #	send_text.c \

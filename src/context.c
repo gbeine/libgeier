@@ -30,9 +30,9 @@ static unsigned char *elster_xml_encoding = "ISO-8859-1";
 
 static unsigned char *elster_clearing_uri_list[] = {
 	"http://80.146.179.2:80/Elster2/EMS",
-	"http://80.146.179.3:80/Elster2/EMS",
-	"http://193.109.238.58:80/Elster2/EMS",
-	"http://193.109.238.59:80/Elster2/EMS",
+  	"http://80.146.179.3:80/Elster2/EMS",
+  	"http://193.109.238.58:80/Elster2/EMS",
+  	"http://193.109.238.59:80/Elster2/EMS",
 };
 
 /* XPath expression for the nodes whose content shall be encrypted

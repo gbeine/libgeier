@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
+ * Copyright (C) 2005  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,92 +19,182 @@
 
 #include "config.h"
 
-#include <WWWLib.h>
-#include <WWWInit.h>
-
 #include "context.h"
+#include "tcpip.h"
 
 #include <geier.h>
-
-
-static int printer(const char *fmt, va_list args)
-{
-	return vfprintf(stderr, fmt, args);
-}
-
-static int tracer(const char *fmt, va_list args)
-{
-	return vfprintf(stderr, fmt, args);
-}
-
-static int terminate_handler(HTRequest *request,
-			     HTResponse *response,
-			     void *param,
-			     int status) 
-{
-        /* stop event loop to signal termination */
-        HTEventList_stopLoop();
-
-	return YES;
-}
+#include <string.h>
+#include <limits.h>
+#include <stdio.h>
 
 int geier_send_encrypted_text(geier_context *context,
 			      const unsigned char *input, size_t inlen,
 			      unsigned char **output, size_t *outlen)
 {
-	int retval = 0;
+	unsigned long int port = 80; /* default to port 80, which is http */
 	char *dest_uri = NULL;
-	HTRequest *request = NULL;
-	HTParentAnchor *src = NULL;
-	HTChunk *chunk = NULL;
-	HTStream *target = NULL;
+	char *port_ptr, *path;
+	char buf[128]; /* buffer for parsing the http response */
+	unsigned int lineno = 0;
+	size_t alloc = 0, bytes_read;
+	FILE *handle;
 
-	/* set timeout */
-	HTHost_setEventTimeout(context->clearing_timeout_ms);
-
-	/* global setup */
-	HTProfile_newNoCacheClient("geier", "0.1");
-	HTPrint_setCallback(printer);
-	HTTrace_setCallback(tracer);
-	HTNet_addAfter(terminate_handler, NULL, NULL, HT_ALL, HT_FILTER_LAST);
+	/* FIXME
+	 * Treat context->clearing_timeout_ms correctly, i.e. care for it
+	 * at all. For the time being, we just rely on the operating system
+	 * to stop the connect() call with ETIMEDOUT
+	 */
 
 	/* FIXME: balance load between URIs */
 	dest_uri = context->clearing_uri_list[context->clearing_uri_index];
-	HTPrint("Posting to %s\n", dest_uri);
 
-	/* setup source anchor */
-	src = HTTmpAnchor(NULL);
-	HTAnchor_setDocument(src, (unsigned char *)input);
-	HTAnchor_setLength(src, inlen);
-	HTAnchor_setFormat(src, HTAtom_for("application/xml"));
-	
-	/* setup request */
-	request = HTRequest_new();
-	/* send output to chunk (allocated here) */
-        target = HTStreamToChunk(request, &chunk, 0);
-        HTRequest_setOutputStream(request, target);
-	/* FIXME: raw output including headers only for testing */
-	HTRequest_setOutputFormat(request, WWW_SOURCE);
-
-	/* close connection immediately */
-	HTRequest_addConnection(request, "close", "");
-	
-	/* send it off and get the result as a chunk */
-	if (!HTPostAbsolute(src, dest_uri, request)) {
-		HTPrint("Post failed\n");
-		retval = -1;
-		goto exit0;
+	if(! dest_uri || strncmp(dest_uri, "http://", 7)) {
+		fprintf(stderr, PACKAGE_NAME ": invalid clearing-uri: %s\n",
+			dest_uri);
+		return -1;
 	}
-	/* call event loop to process request */
-	/* stopped by terminate_handler when request done */
-	HTEventList_loop(request);
-	
-	*outlen = HTChunk_size(chunk);
-	*output = HTChunk_toCString(chunk); /* frees chunk */
 
- exit0:
-	HTRequest_delete(request);
-	HTProfile_delete();
+	dest_uri = strdup(dest_uri + 7); /* skip http:// protocol specifier */
+	if(! dest_uri) {
+		perror(PACKAGE_NAME);
+		return -1;
+	}
 
-	return retval;
+	path = strchr(dest_uri, '/');
+	if(! path) {
+		fprintf(stderr, PACKAGE_NAME ": clearing-uri doesn't have a "
+			"path part: %s\n", dest_uri);
+		free(dest_uri);
+		return -1;
+	}
+
+	*(path ++) = 0; /* split url into hostname:port and path */
+
+	port_ptr = strchr(dest_uri, ':');
+	if(port_ptr) {
+		/* port number given! */
+		*(port_ptr ++) = 0;
+		port = strtoul(port_ptr, NULL, 10);
+
+		if(port == ULONG_MAX /* strtoul failed */
+		   || port > 65535) {
+			fprintf(stderr, PACKAGE_NAME ": port-number specified "
+				"in clearing-uri is not valid: %s\n",
+				port_ptr);
+			free(dest_uri);
+			return -1;
+		}
+	}
+
+	handle = geier_tcpip_connect(dest_uri, port_ptr ? port_ptr : "http");
+
+	if(! handle) {
+		/* tcpip_connect routine already notified the user, what
+		 * happend, therefore let's just exit */
+		free(dest_uri);
+		return -1; 
+	}
+
+	/* send http header */
+	if(fprintf(handle,
+		   "POST /%s HTTP/1.0\r\n"
+		   "Host: %s:%ld\r\n"
+		   "User-Agent: " PACKAGE_NAME "/" PACKAGE_VERSION "\r\n"
+		   "Content-Length: %d\r\n"
+		   "Content-Type: text/xml\r\n"
+		   "\r\n", path, dest_uri, port, inlen) < 0) {
+		/* fprintf failed to send the data to the clearing host */
+		free(dest_uri);
+
+		perror(PACKAGE_NAME);
+		fclose(handle);
+		return -1;
+	}
+
+	free(dest_uri);
+
+	/* send the data */
+	if(fwrite(input, inlen, 1, handle) != 1) {
+		perror(PACKAGE_NAME);
+		fclose(handle);
+		return -1; 
+	}
+
+	/* well we've sent what we have to - now wait for the response */
+
+	/* HTTP/1.1 200 OK
+	 * Date: Sat, 18 Jun 2005 12:05:43 GMT
+	 * Server: Apache/2.0.43 (Unix) DAV/2 mod_jk/1.2.0
+	 * Connection: close
+	 * Content-Type: text/html; charset=ISO-8859-1
+	 */
+
+	for(;;) {
+		if(! fgets(buf, sizeof(buf), handle)) {
+			fprintf(stderr, PACKAGE_NAME ": unexpected end of "
+				"http response\n");
+			fclose(handle);
+			return -1;
+		}
+
+		if(! (lineno ++)) {
+			char *strtok_bit, *ptr;
+
+			/* this is the first line of the response,
+			 * i.e. the result code line! */
+
+			strtok_r(buf, " ", &strtok_bit);
+			if(! (ptr = strtok_r(NULL, " ", &strtok_bit))) {
+				fprintf(stderr, PACKAGE_NAME ": received http "
+					"response is not valid, sorry\n");
+				fclose(handle);
+				return -1;
+			}
+
+			if(strcmp(ptr, "200")) {
+				fprintf(stderr, PACKAGE_NAME ": received http "
+					"error code %s, cannot go on\n", ptr);
+				fclose(handle);
+				return -1;
+			}
+
+			/* received '200', i.e. everything's alright */
+		}
+
+		if(*buf == 13 || *buf == 10) {
+			break; /* this is the empty line delimiting the 
+				* response header from the actual data */
+		}
+	}
+
+	*outlen = 0;
+	*output = NULL;
+
+	for(;;) {
+		if(alloc == *outlen) {
+			alloc = alloc ? (alloc << 1) : 4096;
+			*output = realloc(*output, alloc);
+			if(! *output) {
+				perror(PACKAGE_NAME);
+				fclose(handle);
+				return -1;
+			}
+		}
+
+		if(! (bytes_read = fread(*output + *outlen, 1, alloc - *outlen,
+				       handle)))
+			break; /* error or end-of-file */
+		*outlen += bytes_read;
+	}
+
+	if(ferror(handle)) {
+		fprintf(stderr, PACKAGE_NAME ": cannot read http response\n");
+		fclose(handle);
+		free(*output);
+		return -1;
+	}
+
+	*output = realloc(*output, *outlen); /* must not fail, shrinking */
+	fclose(handle);
+	return 0;
 }

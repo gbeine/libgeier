@@ -29,7 +29,7 @@ AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION, $PACKAGE_BUGREPORT)
 AC_PREREQ(2.59)
 # we need the extra parentheses in order to cope with the comma
 AC_COPYRIGHT([configure.ac Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany])
-AC_REVISION($Revision: 1.12 $)
+AC_REVISION($Revision: 1.13 $)
 
 AC_CONFIG_SRCDIR([srcdir_marker])
 
@@ -51,20 +51,8 @@ PKG_CHECK_MODULES(PACKAGE, [openssl libxml-2.0 libxslt])
 # check for zlib
 AC_CHECK_LIB([z], [deflateBound],,AC_MSG_ERROR([libz library missing.]))
 
-dnl Check for libwww (and md5 thingy), using libwww-config tool
-m4_include([libwww.m4])
-LIBWWW_FLAGS
-
-CFLAGS="$CFLAGS $LIBWWW_CFLAGS $PACKAGE_CFLAGS"
-LDFLAGS="$LDFLAGS $LIBWWW_LDFLAGS $PACKAGE_LIBS"
-
-AC_CHECK_HEADERS([WWWUtil.h],,,
-dnl There is a clash between system and libwww headers for sys_errlist.
-dnl FIXME: Is this ok?
-[[#undef sys_errlist
-]])
-
-
+CFLAGS="$CFLAGS $PACKAGE_CFLAGS"
+LDFLAGS="$LDFLAGS $PACKAGE_LIBS"
 
 # checks for header files
 AC_HEADER_STDC
@@ -110,7 +98,7 @@ AC_CHECK_FUNCS([strchr])
 
 # output
 AC_CONFIG_FILES([Makefile src/Makefile include/Makefile etc/Makefile 
-		 tests/Makefile etc/stylesheets/Makefile 
+		 etc/stylesheets/Makefile 
 		 etc/schemas/Makefile config/Makefile
 		 libgeier.spec])
 AC_OUTPUT

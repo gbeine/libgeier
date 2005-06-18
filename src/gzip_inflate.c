@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
+ * Copyright (C) 2005  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,71 +20,78 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <zlib.h>
-#include <WWWUtil.h>
 
 #include <geier.h>
 
 #include "gzip_inflate.h"
 
-#define BUF_SIZE  DEFAULT_HTCHUNK_GROWBY
-
 int geier_gzip_inflate(const unsigned char *input, size_t inlen,
 		       unsigned char **output, size_t *outlen)
 {
 	int retval = 0;
-	HTChunk *out_chunk = HTChunk_new(DEFAULT_HTCHUNK_GROWBY);
 	z_stream strm;
-	unsigned char *buf;
+	unsigned char *buf = NULL;
+	size_t alloc = 0;
+	size_t len = 0;
 	int err = Z_OK;
-
-	/* Ensure that data is not NULL. */
-	HTChunk_ensure(out_chunk, 1);
 
 	if (!input || !output || !outlen) {
 		retval = -1;
 		goto exit0;
 	}
+
 	strm.next_in = (unsigned char *)input;
 	strm.avail_in = inlen;
 	strm.zalloc = Z_NULL;
 	strm.zfree = Z_NULL;
 	strm.opaque = NULL;
 
-	buf = malloc(BUF_SIZE);
-	if (!buf) {
-		retval = -ENOMEM;
-		goto exit1;
-	}
 	err = inflateInit2(&strm, GEIER_WBITS_GZIP);
 	if (err != Z_OK) {
 		retval = -1;
-		goto exit2;
+		goto exit0;
 	}
+
 	while (err != Z_STREAM_END) {
-		strm.next_out = buf;
-		strm.avail_out = BUF_SIZE;
+		if(len == alloc) {
+			alloc = alloc ? (alloc << 1) : 4096;
+			buf = realloc(buf, alloc);
+
+			if(! buf) {
+				retval = -ENOMEM;
+				goto exit1;
+			}
+		}
+
+		strm.next_out = buf + len;
+		strm.avail_out = alloc - len;
 		err = inflate(&strm, Z_NO_FLUSH);
 		if (err != Z_OK && err != Z_STREAM_END) {
 			retval = -1;
 			goto exit3;
 		}
-		/* Append filled part of buffer to output. */
-		HTChunk_putb(out_chunk, buf, strm.next_out-buf);
+
+		len += strm.next_out - (buf + len);
 	}
 	err = inflateEnd(&strm);
 	if (err != Z_OK) {
 		retval = -1;
 		goto exit4;
 	}
-	*outlen = HTChunk_size(out_chunk);
-	*output = HTChunk_toCString(out_chunk); /* free chunk, keep contents */
+
+	if((*outlen = len))
+		*output = realloc(buf, len); /* must not fail, 
+					      * since we shrink */
+	else {
+		free(*output);
+		*output = NULL;
+	}
 
  exit4:
  exit3:
- exit2:
  exit1:
-	free(buf);
+	if(retval)
+		free(buf);
  exit0:
-	if (retval) { HTChunk_delete(out_chunk); }
 	return retval;
 }

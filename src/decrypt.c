@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
+ * Copyright (C) 2005  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +31,7 @@
 #include <geier.h>
 
 #include "pkcs7_decrypt.h"
+#include "iso_to_utf8.h"
 
 static int decrypt_at_xpathexpr(geier_context *context,
 				const unsigned char *xpathexpr,
@@ -124,6 +126,8 @@ static int decrypt_content(geier_context *context,
 	size_t decrypted_len = 0;
 	unsigned char *inflated = NULL;
 	size_t inflated_len = 0;
+	unsigned char *utf8ified = NULL;
+	size_t utf8ified_len = 0;
 	xmlNode *node_list = NULL;
 	int result = 0;
 	xmlNode *new = NULL;
@@ -149,21 +153,39 @@ static int decrypt_content(geier_context *context,
 				    &inflated, &inflated_len);
 	if (retval) { goto exit3; }
 
+	/* convert it to utf-8 encoding */
+	if(inflated)
+		retval = geier_iso_to_utf8(inflated, inflated_len,
+					   &utf8ified, &utf8ified_len);
+	if (retval) { goto exit3b; }
+
 	/* parse and build new node */
 	new = xmlNewNode(node->ns, node->name);
-	if(inflated_len > 0) {
-		inflated = realloc(inflated, inflated_len + 1);
-		if(! inflated) {
+	if(utf8ified_len > 0) {
+		/* we need to declare another charset, 
+		 * xmlParseBalancedChunkMemory assumes the input to be 
+		 * encoded with UTF-8.  However we cannot just prepend an 
+		 * <?xml ?> charset declarator, since this one is only 
+		 * allowed at the begining of a document and 
+		 * xmlParseBalancedChunkMemory cowardly refuses to accept
+		 * it.
+		 */
+		/* char *prepend = 
+		 *         "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>";
+		 */
+
+		utf8ified = realloc(utf8ified, utf8ified_len + 1);
+		if(! utf8ified) {
 			perror(PACKAGE_NAME);
 			retval = -1;
 			goto exit4;
 		}
 
-		inflated[inflated_len] = 0; /* zero trminate string for
-					     * xmlParseBalancedChunkMemory */
+		utf8ified[utf8ified_len] = 0; /* zero trminate string for
+					       * xmlParseBalancedChunkMemory */
 
 		result = xmlParseBalancedChunkMemory(doc, NULL, NULL, 0,
-						     inflated, &node_list);
+						     utf8ified, &node_list);
 		if (result) {
 			retval = -1;
 			goto exit4;
@@ -176,6 +198,8 @@ static int decrypt_content(geier_context *context,
 
  exit4:
 	if (retval) { xmlFreeNode(new); }
+	free(utf8ified);
+ exit3b:
 	free(inflated);
  exit3:
 	free(decrypted);

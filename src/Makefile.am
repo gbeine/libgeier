@@ -23,6 +23,7 @@ libgeier_la_SOURCES = \
 	gzip_deflate.c gzip_deflate.h \
 	gzip_inflate.c gzip_inflate.h \
 	tcpip.c tcpip.h \
+	iso_to_utf8.c iso_to_utf8.h \
 	xpath.c xpath.h
 #	send.c \
 #	send_text.c \

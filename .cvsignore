@@ -10,3 +10,4 @@ autoscan.log
 configure.scan
 libgeier.spec
 libgeier-*.tar.gz
+config.guess config.sub build-stamp

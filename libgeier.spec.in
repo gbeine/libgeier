@@ -1,5 +1,5 @@
 # libgeier spec file, used to drive rpmbuild.
-# Spec File Version 0.1.3 - 28.02.2005
+# Spec File Version $Id: libgeier.spec.in,v 1.3 2005-06-21 08:07:32 stesie Exp $
 
 #
 # Define vendor and version
@@ -17,14 +17,10 @@
 # Defaults for directories
 #
 %define _prefix			@prefix@
-%define mozilla_libs            /usr/mozilla/lib
 
 #
 # Set SuSE specific directories
 #
-%if %suse_version
-%define mozilla_libs		/opt/mozilla/lib
-%endif
 
 Summary:	@PACKAGE@ - Open Source Implementierung der ELSTER Schnittstelle. 
 Name:           @PACKAGE@
@@ -35,8 +31,8 @@ URL:		http://www.taxbird.de/
 Source0:	%{name}-%{version}.tar.gz
 License:	GPL
 Group:		Applications/Finance
-Vendor:		G-N-U GmbH
-Packager:	Jan Zimmerschied <jan@zimmerschied.de>
+Vendor:		Juergen Stuber <juergen@jstuber.net>, Stefan Siegl <stesie@brokenpipe.de>
+Packager:	Stefan Siegl <stesie@brokenpipe.de>
 BuildRoot:	%{_tmppath}/%{name}-%(id -un)
 
 #
@@ -45,16 +41,19 @@ BuildRoot:	%{_tmppath}/%{name}-%(id -un)
 ##AutoReq: 0
 
 BuildRequires: openssl-devel >= 0.9.6
-BuildRequires: libxml2 mozilla mozilla-devel
-BuildRequires: w3c-libwww w3c-libwww-devel
+BuildRequires: libxml2-devel libxslt-devel
+BuildRequires: zlib-devel
 Requires:      openssl       >= 0.9.6
+Requires:      libxml2 libxslt
+Requires:      zlib
 
 #
 # Description
 #
 %description
-libgeier ist die linuxseitige Implementierung der ELSTER Schnittstelle, die zur
-Datenübermittlung an die deutschen Finanzämter benötigt wird.
+libgeier ist eine in C geschriebene Bibliothek, zur Validierung von
+Elster-Daten, zur Datenübertragung sowie Aufbereitung mittels der von der
+Finanzverwaltung überlassenen XSLT-Stylesheets.
 Diese Software ist zur Zeit im ALPHA Stadium!
 
 #
@@ -63,15 +62,14 @@ Diese Software ist zur Zeit im ALPHA Stadium!
 %prep
 %setup -q
 
+
 #
 # configure & build section
 #
 %build
-# create configure script and in-files
-sh -x autogen.sh
+
 # configure libgeier
-%configure \
-	--with-mozilla-libs=%{mozilla_libs}
+%configure
 
 # compile libgeier
 %__make
@@ -112,10 +110,15 @@ sh -x autogen.sh
 %files
 %defattr(-,root,root)
 %{_libdir}/*
+%{_bindir}/*
 %{_includedir}/*
 %{_datadir}/%{name}/*
 
 %changelog
 
+* Tue Jun 21 2005 Stefan Siegl <stesie@brokenpipe.de> - 0.2
+- Dependency changes for libgeier release 0.2
+- changed wrong vendor entry
+- don't call autogen.sh on rpmbuild
 * Thu Feb 23 2005 Jan Zimmerschied <jan@zimmerschied.de> - 0.1
 - Initial version.

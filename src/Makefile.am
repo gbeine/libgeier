@@ -24,6 +24,7 @@ libgeier_la_SOURCES = \
 	gzip_inflate.c gzip_inflate.h \
 	tcpip.c tcpip.h \
 	iso_to_utf8.c iso_to_utf8.h \
+	get_clearing_error.c \
 	xpath.c xpath.h
 #	send.c \
 #	send_text.c \

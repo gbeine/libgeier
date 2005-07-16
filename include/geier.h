@@ -118,6 +118,11 @@ int geier_xsltify_text(geier_context *context,
 int geier_xsltify(geier_context *context,
 		  const xmlDoc *input, xmlDoc **output);
 
+/* Fehlermeldung der Clearingstelle extrahieren, NULL bei Erfolg */
+char *geier_get_clearing_error(geier_context *context, const xmlDoc *input);
+char *geier_get_clearing_error_text(geier_context *context, 
+				    const unsigned char *input, size_t inlen);
+
 GEIER_END_PROTOS
 
 #endif 

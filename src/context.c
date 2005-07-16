@@ -51,6 +51,20 @@ static unsigned char *elster_transportschluessel_xpathexpr =
 static unsigned char *elster_datengroesse_xpathexpr =
 "/elster:Elster/elster:TransferHeader/elster:Datei/elster:DatenGroesse";
 
+/* XPath expression for extraction of return code */
+static unsigned char *elster_transferheader_rc_code_xpathexpr =
+	"/elster:Elster/elster:TransferHeader/elster:RC/elster:Rueckgabe/"
+	"elster:Code";
+static unsigned char *elster_transferheader_rc_text_xpathexpr =
+	"/elster:Elster/elster:TransferHeader/elster:RC/elster:Rueckgabe/"
+	"elster:Text";
+static unsigned char *elster_datenteil_rc_code_xpathexpr =
+	"/elster:Elster/elster:DatenTeil/elster:Nutzdatenblock/"
+	"elster:NutzdatenHeader/elster:RC/elster:Rueckgabe/elster:Code";
+static unsigned char *elster_datenteil_rc_text_xpathexpr =
+	"/elster:Elster/elster:DatenTeil/elster:Nutzdatenblock/"
+	"elster:NutzdatenHeader/elster:RC/elster:Rueckgabe/elster:Text";
+
 geier_context *geier_context_new(void)
 {
 	geier_context *context = malloc(sizeof(struct _geier_context));
@@ -74,6 +88,15 @@ geier_context *geier_context_new(void)
 	context->datengroesse_xpathexpr = elster_datengroesse_xpathexpr;
 	context->transportschluessel_xpathexpr = 
 		elster_transportschluessel_xpathexpr;
+
+	context->transferheader_rc_code_xpathexpr = 
+		elster_transferheader_rc_code_xpathexpr;
+	context->transferheader_rc_text_xpathexpr =
+		elster_transferheader_rc_text_xpathexpr;
+	context->datenteil_rc_code_xpathexpr =
+		elster_datenteil_rc_code_xpathexpr;
+	context->datenteil_rc_text_xpathexpr =
+		elster_datenteil_rc_text_xpathexpr;
 
 	context->session_key = NULL;
 	context->session_key_len = 0;

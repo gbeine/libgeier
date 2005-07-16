@@ -36,6 +36,11 @@ struct _geier_context {
 	unsigned char *datenteil_xpathexpr;
 	unsigned char *datengroesse_xpathexpr;
 	unsigned char *transportschluessel_xpathexpr;
+
+	unsigned char *transferheader_rc_code_xpathexpr;
+	unsigned char *transferheader_rc_text_xpathexpr;
+	unsigned char *datenteil_rc_code_xpathexpr;
+	unsigned char *datenteil_rc_text_xpathexpr;
 	
 	/* state */
 	int clearing_uri_index;

@@ -1,5 +1,9 @@
 SUBDIRS = src include etc config
 
-EXTRA_DIST = srcdir_marker
+pkgconfigdir = $(prefix)/lib/pkgconfig/
+pkgconfig_DATA = \
+        libgeier.pc
+	
+EXTRA_DIST = srcdir_marker libgeier.pc.in
 
 CLEANFILES = *~

@@ -1,5 +1,5 @@
 # libgeier spec file, used to drive rpmbuild.
-# Spec File Version $Id: libgeier.spec.in,v 1.3 2005-06-21 08:07:32 stesie Exp $
+# Spec File Version $Id: libgeier.spec.in,v 1.4 2005-07-16 17:51:25 stesie Exp $
 
 #
 # Define vendor and version
@@ -110,6 +110,7 @@ Diese Software ist zur Zeit im ALPHA Stadium!
 %files
 %defattr(-,root,root)
 %{_libdir}/*
+%{_libdir}/pkgconfig/libgeier.pc
 %{_bindir}/*
 %{_includedir}/*
 %{_datadir}/%{name}/*

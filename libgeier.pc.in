@@ -1,0 +1,11 @@
+prefix=@prefix@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libgeier
+Description: Elster Client Library (German Tax Declarations)
+Version: @version@
+Requires: 
+Libs: -L${libdir} -lgeier
+Cflags: -I${includedir} 

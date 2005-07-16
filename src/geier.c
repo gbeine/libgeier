@@ -272,7 +272,7 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 		int fd = open(config_dump, O_WRONLY | O_CREAT |
 			      O_TRUNC, S_IRUSR);
 		if(! fd) {
-			fprintf(stderr, "%s: unable to open dump file",
+			fprintf(stderr, "%s: unable to open dump file\n",
 				config_dump);
 			exitcode = 1;
 
@@ -283,6 +283,19 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 			perror(config_dump);
 
 		close(fd);
+	}
+
+
+	/* seek for error messages from the clearing host */
+	char *clearing_err = 
+		geier_get_clearing_error_text(context, buf, buf_len);
+
+	if(clearing_err) {
+		fprintf(stderr, "%s: error from clearing host: %s\n",
+			filename, clearing_err);
+
+		free(clearing_err);
+		exitcode = 1;
 	}
 
 

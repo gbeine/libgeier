@@ -30,6 +30,7 @@
 #include <assert.h>
 
 #include <geier.h>
+#include <string.h>
 
 #include "context.h"
 #include "asn1hack.h"
@@ -136,7 +137,10 @@ static X509 *geier_encrypt_get_cert(const char *filename)
 	handle = fopen(filename, "r");
 
 	if (!handle) {
-		/* perror(PACKAGE_NAME);	 */
+		fprintf(stderr, PACKAGE_NAME ": unable to open X.509 "
+			"certificate: %s: %s\n", filename,
+			strerror(errno));
+		/* perror(PACKAGE_NAME); */
 		return NULL;
 	}
 

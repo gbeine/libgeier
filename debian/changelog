@@ -1,3 +1,10 @@
+libgeier (0.3-1) unstable; urgency=low
+
+  * geier_get_clearing_error symbols added
+  * provide pkg-config configuration file
+
+ -- Stefan Siegl <stesie@brokenpipe.de>  Sat, 23 Jul 2005 13:19:49 +0200
+
 libgeier (0.2-1) unstable; urgency=low
 
   * Initial release

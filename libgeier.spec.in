@@ -1,5 +1,5 @@
 # libgeier spec file, used to drive rpmbuild.
-# Spec File Version $Id: libgeier.spec.in,v 1.5 2005-07-29 16:01:36 stesie Exp $
+# Spec File Version $Id: libgeier.spec.in,v 1.6 2005-07-29 16:02:10 stesie Exp $
 
 #
 # Define vendor and version
@@ -12,15 +12,6 @@
 %define VENDOR_VERS
 %define suse_version 0
 %endif
-
-#
-# Defaults for directories
-#
-#%define _prefix			@prefix@
-
-#
-# Set SuSE specific directories
-#
 
 Summary:	@PACKAGE@ - Open Source Implementierung der ELSTER Schnittstelle. 
 Name:           @PACKAGE@

@@ -1,5 +1,5 @@
 # libgeier spec file, used to drive rpmbuild.
-# Spec File Version $Id: libgeier.spec.in,v 1.4 2005-07-16 17:51:25 stesie Exp $
+# Spec File Version $Id: libgeier.spec.in,v 1.5 2005-07-29 16:01:36 stesie Exp $
 
 #
 # Define vendor and version
@@ -16,7 +16,7 @@
 #
 # Defaults for directories
 #
-%define _prefix			@prefix@
+#%define _prefix			@prefix@
 
 #
 # Set SuSE specific directories

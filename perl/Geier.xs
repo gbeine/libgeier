@@ -27,6 +27,9 @@ typedef geier_context * Geier_context;
 
 MODULE = Geier 		PACKAGE = Geier		
 
+
+
+
 int
 init(debug)
 	int debug
@@ -35,6 +38,8 @@ init(debug)
     OUTPUT:
 	RETVAL
 
+
+	
 int
 exit()
     CODE:
@@ -42,6 +47,8 @@ exit()
     OUTPUT:
 	RETVAL
 
+
+	
 Geier_context
 context_new()
     CODE:
@@ -49,12 +56,16 @@ context_new()
     OUTPUT:
 	RETVAL
 
+
+	
 void
 context_free(context)
 	Geier_context context;
     CODE:
 	geier_context_free(context);
 
+
+	
 SV *
 _encrypt(context, indata)
 	Geier_context context;
@@ -75,7 +86,35 @@ _encrypt(context, indata)
 	}
 
 	RETVAL = newSVpvn((char *) output, outlen);
-	free(output); // FIXME is this correct?
+	free(output);
+	
+    OUTPUT:
+	RETVAL
+
+
+	
+SV *
+_send_encrypted(context, indata)
+	Geier_context context;
+	SV *indata;
+    INIT:
+	const unsigned char *input;
+	unsigned char *output;
+	size_t inlen, outlen;
+	int result;
+	
+    CODE:
+	input = (const unsigned char *) SvPV(indata, inlen);
+	
+	result = geier_send_encrypted_text(context, input, inlen, 
+					   &output, &outlen);
+	if(result) {
+	    // FIXME, return error number somewhere in $! or so ...
+	    XSRETURN_UNDEF;
+	}
+
+	RETVAL = newSVpvn((char *) output, outlen);
+	free(output);
 	
     OUTPUT:
 	RETVAL

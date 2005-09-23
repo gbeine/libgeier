@@ -20,10 +20,13 @@ open HANDLE, "< test_ustva_unencrypted.xml" or die;
 my $indata = ""; while(<HANDLE>) { $indata .= $_; }
 close HANDLE or die;
 
-print "unencrypted data: \n$indata\n";
-my $result = $instance->encrypt($indata);
-if($result) { print "got it: $result\n"; }
-else { print "encrypt failed.\n"; }
+print "unencrypted data: \n$indata\n\n\n";
+my $encrypted = $instance->encrypt($indata);
+if($encrypted) { print "got it: \n$encrypted\n"; }
+else { die "encrypt failed.\n"; }
 
+my $sent = $instance->send_encrypted($encrypted);
+if($sent) { print "sent it: \n$sent\n"; }
+else { die "send_encrypted failed.\n"; }
 
 

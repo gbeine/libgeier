@@ -60,6 +60,13 @@ sub send($$) {
     return _send($self->{context}, $indata);
 }
 
+sub validate($$) {
+    my $self = shift;
+    my $indata = shift;
+    
+    return _validate($self->{context}, $indata);
+}
+
 
 
 ##############################################################################

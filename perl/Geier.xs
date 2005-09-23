@@ -123,7 +123,7 @@ _send_encrypted(context, indata)
 
 SV *
 _send(context, indata)
-	Geier_context context;
+        Geier_context context;
 	SV *indata;
     INIT:
 	const unsigned char *input;
@@ -142,6 +142,28 @@ _send(context, indata)
 
 	RETVAL = newSVpvn((char *) output, outlen);
 	free(output);
+	
+    OUTPUT:
+	RETVAL
+
+
+
+#// FIXME _validate assumes that `indata' is unencrypted, add some kind 
+#//       of flag here, like real geier's function has one ...
+#//
+int
+_validate(context, indata)
+	Geier_context context;
+	SV *indata;
+    INIT:
+	const unsigned char *input;
+	size_t inlen;
+	
+    CODE:
+	input = (const unsigned char *) SvPV(indata, inlen);
+	
+	RETVAL = geier_validate_text(context, geier_format_unencrypted, 
+		                     input, inlen);
 	
     OUTPUT:
 	RETVAL

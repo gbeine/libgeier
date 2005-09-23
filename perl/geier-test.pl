@@ -39,3 +39,6 @@ else { die "all-in-one function failed.\n"; }
 =cut
 
 print "validation result: ", $instance->validate($indata), "\n";
+
+my $xslt = $instance->xsltify($indata);
+print "xsltified results: \n$xslt\n\n";

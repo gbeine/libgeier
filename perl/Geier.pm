@@ -67,6 +67,12 @@ sub validate($$) {
     return _validate($self->{context}, $indata);
 }
 
+sub xsltify($$) {
+    my $self = shift;
+    my $indata = shift;
+
+    return _xsltify($self->{context}, $indata);
+}
 
 
 ##############################################################################

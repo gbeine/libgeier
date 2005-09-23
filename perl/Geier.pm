@@ -20,6 +20,24 @@ package Geier;
 use strict;
 use warnings;
 
+sub new {
+    my $that = shift;
+    my $class = ref($that) || $that;
+
+    my $self = { context => context_new() };
+    
+    bless $self, $class;
+    return $self;
+}
+
+sub DESTROY {
+    my $self = shift;
+    context_free($self->{context});
+}
+
+##############################################################################
+###   E x p o r t e r   A r e a                                            ###
+##############################################################################
 require Exporter;
 our @ISA = qw(Exporter);
 

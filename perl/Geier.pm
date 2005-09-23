@@ -74,6 +74,14 @@ sub xsltify($$) {
     return _xsltify($self->{context}, $indata);
 }
 
+sub get_clearing_error($$) {
+    my $self = shift;
+    my $indata = shift;
+
+    return _get_clearing_error($self->{context}, $indata);
+}
+
+
 
 ##############################################################################
 ###   E x p o r t e r   A r e a                                            ###

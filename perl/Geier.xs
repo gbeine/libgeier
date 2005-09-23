@@ -194,4 +194,27 @@ _xsltify(context, indata)
     OUTPUT:
 	RETVAL
 
+	
+SV *
+_get_clearing_error(context, indata)
+	Geier_context context;
+	SV *indata;
+    INIT:
+	const unsigned char *input;
+	size_t inlen;
+	char *message;
+	
+    CODE:
+	input = (const unsigned char *) SvPV(indata, inlen);
+	
+	message = geier_get_clearing_error_text(context, input, inlen);
+	if(! message)
+	    XSRETURN_UNDEF;
+	    
+	RETVAL = newSVpv(message, 0);
+	free(message);
+	
+    OUTPUT:
+	RETVAL
+
 

@@ -32,13 +32,21 @@ else { die "encrypt failed.\n"; }
 my $sent = $instance->send_encrypted($encrypted);
 if($sent) { print "sent it: \n$sent\n\n"; }
 else { die "send_encrypted failed.\n"; }
+=cut
 
 my $decrypted = $instance->send($indata);
 if($decrypted) { print "all-in-one result: \n$decrypted\n\n"; }
 else { die "all-in-one function failed.\n"; }
-=cut
 
 print "validation result: ", $instance->validate($indata), "\n";
 
+=cut this is how to xsltify ...
 my $xslt = $instance->xsltify($indata);
 print "xsltified results: \n$xslt\n\n";
+=cut
+
+my $error = $instance->get_clearing_error($decrypted);
+if($error) { print "damn, failed: $error\n"; }
+else { print "no error messages from clearing server ...\n"; }
+
+

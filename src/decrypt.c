@@ -86,6 +86,33 @@ int geier_decrypt(geier_context *context,
 	return retval;
 }
 
+
+int geier_decrypt_text(geier_context *context,
+		       const unsigned char *input, size_t inlen,
+		       unsigned char **output, size_t *outlen)
+{
+	int retval;
+	xmlDoc *indoc;
+	xmlDoc *outdoc;
+
+	if((retval = geier_text_to_xml(context, input, inlen, &indoc)))
+		goto out0;
+
+	if((retval = geier_decrypt(context, indoc, &outdoc)))
+		goto out1;
+
+	if((retval = geier_xml_to_text(context, outdoc, output, outlen)))
+		goto out2;
+
+ out2:
+	xmlFreeDoc(outdoc);
+ out1:
+	xmlFreeDoc(indoc);
+ out0:
+	return retval;
+}
+
+
 /* destructively decrypt the content of the element at xpathexpr */
 static int decrypt_at_xpathexpr(geier_context *context,
 				const unsigned char *xpathexpr,

@@ -86,6 +86,9 @@ int geier_encrypt_text(geier_context *context,
 /* In komplettem empfangenen Datensatz die nötigen Teile entschlüsseln */
 int geier_decrypt(geier_context *context,
 		  const xmlDoc *input, xmlDoc **output);
+int geier_decrypt_text(geier_context *context,
+		       const unsigned char *input, size_t inlen,
+		       unsigned char **output, size_t *outlen);
 
 /* Konversionen zwischen XML und Text */
 int geier_xml_to_text(geier_context *context,

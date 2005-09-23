@@ -22,11 +22,15 @@ close HANDLE or die;
 
 print "unencrypted data: \n$indata\n\n\n";
 my $encrypted = $instance->encrypt($indata);
-if($encrypted) { print "got it: \n$encrypted\n"; }
+if($encrypted) { print "got it: \n$encrypted\n\n"; }
 else { die "encrypt failed.\n"; }
 
 my $sent = $instance->send_encrypted($encrypted);
-if($sent) { print "sent it: \n$sent\n"; }
+if($sent) { print "sent it: \n$sent\n\n"; }
 else { die "send_encrypted failed.\n"; }
+
+my $decrypted = $instance->send($indata);
+if($decrypted) { print "all-in-one result: \n$decrypted\n\n"; }
+else { die "all-in-one function failed.\n"; }
 
 

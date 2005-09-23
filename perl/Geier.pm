@@ -81,6 +81,14 @@ sub get_clearing_error($$) {
     return _get_clearing_error($self->{context}, $indata);
 }
 
+sub decrypt($$) {
+    my $self = shift;
+    my $indata = shift;
+
+    return _decrypt($self->{context}, $indata);
+}
+
+
 
 
 ##############################################################################

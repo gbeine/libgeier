@@ -55,4 +55,29 @@ context_free(context)
     CODE:
 	geier_context_free(context);
 
+SV *
+_encrypt(context, indata)
+	Geier_context context;
+	SV *indata;
+    INIT:
+	const unsigned char *input;
+	unsigned char *output;
+	size_t inlen, outlen;
+	int result;
+	
+    CODE:
+	input = (const unsigned char *) SvPV(indata, inlen);
+	
+	result = geier_encrypt_text(context, input, inlen, &output, &outlen);
+	if(result) {
+	    // FIXME, return error number somewhere in $! or so ...
+	    XSRETURN_UNDEF;
+	}
+
+	RETVAL = newSVpvn((char *) output, outlen);
+	free(output); // FIXME is this correct?
+	
+    OUTPUT:
+	RETVAL
+
 

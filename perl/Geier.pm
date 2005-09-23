@@ -35,6 +35,13 @@ sub DESTROY {
     context_free($self->{context});
 }
 
+sub encrypt($$) {
+    my $self = shift;
+    my $indata = shift;
+    
+    return _encrypt($self->{context}, $indata);
+}
+
 ##############################################################################
 ###   E x p o r t e r   A r e a                                            ###
 ##############################################################################

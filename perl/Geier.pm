@@ -98,6 +98,18 @@ require Exporter;
 our @ISA = qw(Exporter);
 
 our %EXPORT_TAGS = ( 'all' => [ qw(
+	encrypt			_encrypt
+	send_encrypted		_send_encrypted
+	send			_send
+	validate		_validate
+	xsltify			_xsltify
+	get_clearing_error	_get_clearing_error
+	decrypt			_decrypt
+
+	init
+	exit
+	context_new
+	context_free
 ) ] );
 
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );

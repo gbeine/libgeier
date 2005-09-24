@@ -197,11 +197,11 @@ Stefan Siegl <stesie@brokenpipe.de>
 The Geier module is subject of the GNU General Public License version 2
 or any later on your option.
 
-Copyright claimed by Stefan Siegl <stesie@brokenpipe.de>.
+Copyright (C) 2005 by Stefan Siegl <stesie@brokenpipe.de>.
+
 
 B<libgeier> is subject of the GNU General Publice License version 2 or
-any later (on your option) as well. Copyright claimed by Juergen
-Stuber <juergen@jstuber.net> and Stefan Siegl <stesie@brokenpipe.de>
+any later (on your option) as well. Copyright by the corresponding authors.
 
 =head1 BUGS
 

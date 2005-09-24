@@ -21,6 +21,7 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile(
     'NAME'	    => 'Geier',
+    'MAN3PODS'	    => { 'Geier.pod' => '$(INST_MAN3DIR)/Geier.3' },
     'VERSION_FROM'  => 'Geier.pm',
     'PREREQ_PM'     => { },
     'LIBS'          => [ "-lgeier" ],

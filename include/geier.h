@@ -126,6 +126,27 @@ char *geier_get_clearing_error(geier_context *context, const xmlDoc *input);
 char *geier_get_clearing_error_text(geier_context *context, 
 				    const unsigned char *input, size_t inlen);
 
+/* Digitale Signatur */
+int geier_dsig_verify_mac(geier_context *context, 
+			  const char *filename, const char *password);
+
+#ifdef GEIER_SIGNATURE_INTERNALS
+#include <openssl/x509.h>
+X509 *geier_dsig_get_signaturecert(geier_context *context,
+				   const char *filename,
+				   const char *password);
+
+#include <openssl/evp.h>
+EVP_PKEY *geier_dsig_get_signaturekey(geier_context *context, 
+				      const char *filename, 
+				      const char *password);
+
+EVP_PKEY *geier_dsig_get_encryptionkey(geier_context *context, 
+				       const char *filename, 
+				       const char *password);
+#endif
+
+
 GEIER_END_PROTOS
 
 #endif 

@@ -144,6 +144,15 @@ EVP_PKEY *geier_dsig_get_signaturekey(geier_context *context,
 EVP_PKEY *geier_dsig_get_encryptionkey(geier_context *context, 
 				       const char *filename, 
 				       const char *password);
+
+X509 *geier_dsig_get_encryptioncert(geier_context *context,
+				    const char *filename,
+				    const char *password);
+
+X509 *geier_dsig_get_signaturecert(geier_context *context,
+				   const char *filename,
+				   const char *password);
+
 #endif
 
 

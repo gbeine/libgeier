@@ -29,7 +29,7 @@ AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION, $PACKAGE_BUGREPORT)
 AC_PREREQ(2.59)
 # we need the extra parentheses in order to cope with the comma
 AC_COPYRIGHT([configure.ac Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany])
-AC_REVISION($Revision: 1.16 $)
+AC_REVISION($Revision: 1.17 $)
 
 AC_CONFIG_SRCDIR([srcdir_marker])
 
@@ -51,6 +51,13 @@ PKG_CHECK_MODULES(PACKAGE, [openssl libxml-2.0 libxslt])
 # check for zlib
 AC_CHECK_LIB([z], [deflateBound],,AC_MSG_ERROR([libz library missing.]))
 
+# check whether we need to link against libiconv if we want to 
+# have libiconv_open. recently it seems to be included in the c library.
+AC_CHECK_LIB([c], [iconv_open],,
+             AC_CHECK_LIB([iconv], [iconv_open], 
+	                  LDFLAGS="$LDFLAGS -liconv",
+			  AC_MSG_ERROR([iconv cruft missing.])))
+	     
 CFLAGS="$CFLAGS $PACKAGE_CFLAGS"
 LDFLAGS="$LDFLAGS $PACKAGE_LIBS"
 

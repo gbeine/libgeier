@@ -163,6 +163,7 @@ static int decrypt_content(geier_context *context,
 	retval = geier_node_contents_to_text(doc, node,
 					     &content, &content_len);
 	if (retval) { goto exit0; }
+	if (content_len == 0) goto exit0; /* success */
 
 	/* convert base64 to gzip */
 	retval = geier_base64_decode(content, content_len,

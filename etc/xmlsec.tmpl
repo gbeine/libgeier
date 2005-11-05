@@ -1,0 +1,32 @@
+<SigUser>
+  <UserInfo>
+    <User id="1">
+      <Vorname />
+      <Name />
+    </User>
+  </UserInfo>
+  <Sig>
+    <dsig:Signature Id="Sign1" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#">
+      <dsig:SignedInfo>
+        <dsig:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" />
+	<dsig:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" />
+	<dsig:Reference URI="">
+	  <dsig:Transforms>
+	    <dsig:Transform Algorithm="http://www.w3.org/TR/1999/REC-xpath-19991116">
+	      <dsig:XPath xmlns:Elster="http://www.elster.de/2002/XMLSchema" >ancestor-or-self::Elster:Nutzdaten</dsig:XPath>
+	    </dsig:Transform>
+	    <dsig:Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" />
+	  </dsig:Transforms>
+	  <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+	  <dsig:DigestValue />
+	</dsig:Reference>
+      </dsig:SignedInfo>
+      <dsig:SignatureValue />
+      <dsig:KeyInfo>
+        <dsig:X509Data>
+          <dsig:X509Certificate />
+	</dsig:X509Data>
+      </dsig:KeyInfo>
+    </dsig:Signature>
+  </Sig>
+</SigUser>

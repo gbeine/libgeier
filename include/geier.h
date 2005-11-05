@@ -128,22 +128,31 @@ char *geier_get_clearing_error_text(geier_context *context,
 
 /* Digitale Signatur */
 int geier_dsig_verify_mac(geier_context *context, 
-			  const char *filename, const char *password);
+			  const char *softpse_filename, const char *password);
+
+int geier_dsig_sign(geier_context *context,
+		    const xmlDoc *input, xmlDoc **output,
+		    const char *softpse_filename, const char *pincode);
+
+int geier_dsig_sign_text(geier_context *context,
+			 const unsigned char *input, size_t inlen,
+			 unsigned char **output, size_t *outlen,
+			 const char *softpse_filename, const char *pincode);
 
 #ifdef GEIER_SIGNATURE_INTERNALS
 #include <openssl/x509.h>
 X509 *geier_dsig_get_signaturecert(geier_context *context,
-				   const char *filename,
-				   const char *password);
+				   const char *softpse_filename,
+				   const char *pincode);
 
 #include <openssl/evp.h>
 EVP_PKEY *geier_dsig_get_signaturekey(geier_context *context, 
-				      const char *filename, 
-				      const char *password);
+				      const char *softpse_filename, 
+				      const char *pincode);
 
 EVP_PKEY *geier_dsig_get_encryptionkey(geier_context *context, 
-				       const char *filename, 
-				       const char *password);
+				       const char *softpse_filename, 
+				       const char *pincode);
 
 X509 *geier_dsig_get_encryptioncert(geier_context *context,
 				    const char *filename,

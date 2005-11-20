@@ -140,11 +140,6 @@ int geier_dsig_sign_text(geier_context *context,
 			 const char *softpse_filename, const char *pincode);
 
 #ifdef GEIER_SIGNATURE_INTERNALS
-#include <openssl/x509.h>
-X509 *geier_dsig_get_signaturecert(geier_context *context,
-				   const char *softpse_filename,
-				   const char *pincode);
-
 #include <openssl/evp.h>
 EVP_PKEY *geier_dsig_get_signaturekey(geier_context *context, 
 				      const char *softpse_filename, 
@@ -154,14 +149,16 @@ EVP_PKEY *geier_dsig_get_encryptionkey(geier_context *context,
 				       const char *softpse_filename, 
 				       const char *pincode);
 
+#include <openssl/x509.h>
 X509 *geier_dsig_get_encryptioncert(geier_context *context,
 				    const char *filename,
-				    const char *password);
+				    const char *password,
+				    char **friendlyName);
 
 X509 *geier_dsig_get_signaturecert(geier_context *context,
 				   const char *filename,
-				   const char *password);
-
+				   const char *password,
+				   char **friendlyName);
 #endif
 
 

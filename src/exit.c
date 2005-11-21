@@ -21,12 +21,38 @@
 
 #include <geier.h>
 
+#include <libxml/tree.h>
+#include <libxml/parser.h>
+
+#ifndef XMLSEC_NO_XSLT
+#include <libxslt/xslt.h>
+#endif
+
+#include <xmlsec/xmlsec.h>
+#include <xmlsec/crypto.h>
+
 int geier_exit(void)
 {
+	/* Shutdown xmlsec-crypto library */
+	xmlSecCryptoShutdown();
+
+	/* Shutdown crypto library */
+	xmlSecCryptoAppShutdown();
+
+	/* Shutdown xmlsec library */
+	xmlSecShutdown();
+
+#ifndef XMLSEC_NO_XSLT
+	/* Shutdown libxslt */
+	xsltCleanupGlobals();
+#endif /* XMLSEC_NO_XSLT */
+
 	/* clean up after libxml2 */
 	xmlCleanupParser();
+
 	if (geier_debug) {
 		xmlMemoryDump();
 	}
+
 	return 0;
 }

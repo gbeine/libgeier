@@ -51,6 +51,10 @@ static unsigned char *elster_transportschluessel_xpathexpr =
 static unsigned char *elster_datengroesse_xpathexpr =
 "/elster:Elster/elster:TransferHeader/elster:Datei/elster:DatenGroesse";
 
+/* XPath expression pointing to the parent node, where to add the signature */
+static unsigned char *elster_add_signature_xpathexpr = 
+"/elster:Elster/elster:DatenTeil/elster:Nutzdatenblock/elster:NutzdatenHeader/elster:Empfaenger";
+
 /* XPath expression for extraction of return code */
 static unsigned char *elster_transferheader_rc_code_xpathexpr =
 	"/elster:Elster/elster:TransferHeader/elster:RC/elster:Rueckgabe/"
@@ -79,6 +83,8 @@ geier_context *geier_context_new(void)
 		rand() % context->clearing_uri_list_length;
 
 	context->cert_filename = DEFAULT_CERT_FILE;
+	context->xmlsec_tpl_filename = DEFAULT_XMLSEC_TEMPLATE;
+
 	context->clearing_timeout_ms = DEFAULT_CLEARING_TIMEOUT;
 	context->schema_dir_url = DEFAULT_SCHEMA_DIR_URL;
 	context->stylesheet_dir_url = DEFAULT_STYLESHEET_DIR_URL;
@@ -86,6 +92,7 @@ geier_context *geier_context_new(void)
 	context->datenlieferant_xpathexpr = elster_datenlieferant_xpathexpr;
 	context->datenteil_xpathexpr = elster_datenteil_xpathexpr;
 	context->datengroesse_xpathexpr = elster_datengroesse_xpathexpr;
+	context->add_signature_xpathexpr = elster_add_signature_xpathexpr;
 	context->transportschluessel_xpathexpr = 
 		elster_transportschluessel_xpathexpr;
 

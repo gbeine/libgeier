@@ -8,3 +8,4 @@ config.h
 config.h.in
 stamp*
 geier
+*.pfx

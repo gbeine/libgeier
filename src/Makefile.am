@@ -25,6 +25,7 @@ libgeier_la_SOURCES = \
 	tcpip.c tcpip.h \
 	iso_to_utf8.c iso_to_utf8.h \
 	get_clearing_error.c \
+	dsig.c \
 	xpath.c xpath.h
 #	send.c \
 #	send_text.c \
@@ -36,11 +37,11 @@ libgeier_la_LDFLAGS = -release @PACKAGE_VERSION@
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
+	-DDEFAULT_XMLSEC_TEMPLATE=\"$(datadir)/libgeier/xmlsec.tmpl\" \
 	-DDEFAULT_CERT_FILE=\"$(datadir)/libgeier/Elster2Cry.b64.cer\" \
 	-DDEFAULT_SCHEMA_DIR_URL=\"file://$(datadir)/libgeier/schemas\" \
 	-DDEFAULT_STYLESHEET_DIR_URL=\"file://$(datadir)/libgeier/stylesheets\" \
-	-DDEFAULT_CLEARING_TIMEOUT=30000 \
-	-DDEFAULT_HTCHUNK_GROWBY=1024
+	-DDEFAULT_CLEARING_TIMEOUT=30000
 
 CLEANFILES = *~
 

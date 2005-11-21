@@ -22,6 +22,7 @@
 
 #include <geier.h>
 #include "context.h"
+#include "find_node.h"
 
 #include <stdio.h>
 #include <argp.h>
@@ -59,6 +60,7 @@ enum
 	OPT_DRY_RUN = 'd',
 	OPT_XSLTIFY = 'x',
 	OPT_ENCRYPT_ONLY = 'e',
+	OPT_SOFTPSE = 's',
 
 	OPT_DUMP = 'D' | 0x7f,
 };
@@ -73,6 +75,8 @@ static const struct argp_option geier_cli_options[] =
 	  "process output with xslt stylesheet, to generate HTML output", 0 },
 	{ "encrypt-only", OPT_ENCRYPT_ONLY, NULL, 0,
 	  "encrypt the provided Coala XML only, nothing more", 0 },
+	{ "softpse", OPT_SOFTPSE, "FILE", 0,
+	  "sign using soft-pse certificate data", 0 },
 	{ "dump", OPT_DUMP, "FILE", 0,
 	  "dump data to a certain file, after sending them to the IRO", 0 },
 
@@ -87,6 +91,8 @@ int config_validate = 0;                /* validate document before sending */
 int config_dry_run = 0;                 /* dry-run, don't send to IRO */
 int config_xsltify = 0;                 /* filter output through xslt */
 int config_encrypt_only = 0;            /* only encrypt the provided xml */
+char *softpse_filename = NULL;          /* name of software cert file */
+char pincode[24];                       /* pincode */
 char *config_dump = NULL;               /* dump received xml doc to a 
 					 * certain file, after sending */
 
@@ -141,6 +147,15 @@ static error_t parse_geier_opts(int key, char *arg, struct argp_state *state)
 		config_dry_run = 1;
 		break;
 
+	case OPT_SOFTPSE:
+		softpse_filename = strdup(arg);
+		if(EVP_read_pw_string(pincode, sizeof pincode, 
+				      "Enter Soft-PSE PIN:", 0)) {
+			fprintf(stderr, "Can't read Password. Sorry.\n");
+			return 1;
+		}
+		break;
+
 	case OPT_DUMP:
 		config_dump = strdup(arg);
 		break;
@@ -171,6 +186,7 @@ static error_t parse_geier_opts(int key, char *arg, struct argp_state *state)
 
 static void geier_cli_exec(const char *filename, FILE *handle)
 {
+	xmlDoc *doc = NULL;
 	size_t buf_len = 0;
 	size_t buf_alloc = 4096;
 	unsigned char *buf = malloc(buf_alloc);
@@ -207,7 +223,9 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 		}
 	}
 
-	/* initialize context */
+	/*
+	 * initialize context 
+	 */
 	geier_context *context = geier_context_new();
 	if(! context) {
 		fprintf(stderr, "%s: unable to initialize geier context\n",
@@ -217,6 +235,39 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 		goto out;
 	}
 
+	/*
+	 * check the namespace of the document 
+	 */
+	if(geier_text_to_xml(context, buf, buf_len, &doc)) {
+		fprintf(stderr, "%s: cannot parse xml document\n", filename);
+		exitcode = 1;
+		goto out;
+	}
+
+	xmlNode *node;
+	if(find_node(doc, "/elster:Elster", &node)) {
+		fprintf(stderr, "%s: cannot find Elster node\n", filename);
+		exitcode = 1;
+		goto out;
+	}
+
+	if(! node->nsDef) {
+		fprintf(stderr, "%s: namespace not declared\n", filename);
+		exitcode = 1;
+		goto out;
+	}
+
+	if(node->nsDef->prefix) {
+		fprintf(stderr, "%s: Elster node has prefix `%s' assigned, "
+			"clearing host does not accept prefixses though\n",
+			filename, node->nsDef->prefix);
+		exitcode = 1;
+		goto out;
+	}
+
+	/*
+	 * validate the document against the schema file
+	 */
 	if(config_validate) {
 		if(geier_validate_text(context, geier_format_unencrypted,
 				       buf, buf_len)) {
@@ -236,6 +287,25 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 
 		if(geier_encrypt_text(context, buf, buf_len, &obuf, &olen)) {
 			fprintf(stderr, "%s: cannot encrypt document.\n",
+				filename);
+			exitcode = 1;
+
+			goto out;
+		}
+
+		free(buf);
+
+		buf = obuf;
+		buf_len = olen;
+	}
+
+	if(softpse_filename) {
+		unsigned char *obuf;
+		size_t olen;
+
+		if(geier_dsig_sign_text(context, buf, buf_len, &obuf, &olen,
+					softpse_filename, pincode)) {
+			fprintf(stderr, "%s: cannot sign document.\n",
 				filename);
 			exitcode = 1;
 
@@ -288,6 +358,7 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 
 	/* seek for error messages from the clearing host */
 	char *clearing_err = 
+		config_dry_run ? NULL : 
 		geier_get_clearing_error_text(context, buf, buf_len);
 
 	if(clearing_err) {
@@ -323,6 +394,7 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 		perror(config_dump);
 
  out:
+	if(doc) xmlFreeDoc(doc);
 	if(context) geier_context_free(context);
 	free(buf);
 }

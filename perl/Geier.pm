@@ -88,6 +88,14 @@ sub decrypt($$) {
     return _decrypt($self->{context}, $indata);
 }
 
+sub sign($$$$) {
+    my $self = shift;
+    my $indata = shift;
+    my $filename = shift;
+    my $pincode = shift;
+   
+    return _sign($self->{context}, $indata, $filename, $pincode);
+}
 
 
 
@@ -105,6 +113,7 @@ our %EXPORT_TAGS = ( 'all' => [ qw(
 	xsltify			_xsltify
 	get_clearing_error	_get_clearing_error
 	decrypt			_decrypt
+	sign			_sign
 
 	init
 	exit

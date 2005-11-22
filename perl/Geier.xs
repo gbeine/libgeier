@@ -161,7 +161,6 @@ _validate(context, indata)
 	
     CODE:
 	input = (const unsigned char *) SvPV(indata, inlen);
-	
 	RETVAL = geier_validate_text(context, geier_format_unencrypted, 
 		                     input, inlen);
 	
@@ -244,4 +243,38 @@ _decrypt(context, indata)
     OUTPUT:
 	RETVAL
 
+
+SV *
+_sign(context, indata, infn, inpin)
+        Geier_context context;
+	SV *indata;
+	SV *infn;
+	SV *inpin;
+
+    INIT:
+	const unsigned char *input;
+	const unsigned char *softpse;
+	const unsigned char *pincode;
+	unsigned char *output;
+	size_t inlen, outlen;
+	int result;
+	
+    CODE:
+	input = (const unsigned char *) SvPV(indata, inlen);
+	softpse = (const unsigned char *) SvPV(infn, PL_na);
+	pincode = (const unsigned char *) SvPV(inpin, PL_na);
+	
+	result = geier_dsig_sign_text(context, input, inlen, &output, &outlen,
+				      softpse, pincode);
+
+	if(result) {
+	    // FIXME, return error number somewhere in $! or so ...
+	    XSRETURN_UNDEF;
+	}
+
+	RETVAL = newSVpvn((char *) output, outlen);
+	free(output);
+	
+    OUTPUT:
+	RETVAL
 

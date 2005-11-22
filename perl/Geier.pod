@@ -188,6 +188,22 @@ If errors have occured I<undef> is returned.
 	my $result = $coala->decrypt($resp);
 	die "failed" unless($result);
 
+=head2 sub sign(document, softpse, pincode) - sign document with softpse
+
+This functions signes the provided Elster-XML document with the software
+certificate, that is automatically extracted from the PKCS#12 file with
+the provided filename, using the supplied pincode. 
+
+If either the pin is wrong, the software certificate holding file couldn't
+be read or the signing process failed for whatever else reason, I<undef>
+is returned. On sucess the resulting (now signed) document is will be 
+returned as a string.
+
+ EXAMPLE:
+
+	my $signed = $coala->sign($xmldoc, "stesie.pfx", "123456");
+	die "failed" unless($result);
+
 =head1 AUTHOR
 
 Stefan Siegl <stesie@brokenpipe.de>

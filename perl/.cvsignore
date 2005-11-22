@@ -8,3 +8,4 @@ Geier.c
 Geier.html
 pod2htmd.tmp pod2htmi.tmp
 test_ustva_unencrypted.xml
+*.pfx

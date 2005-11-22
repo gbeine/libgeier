@@ -1,7 +1,7 @@
 Source: libgeier
 Priority: optional
 Maintainer: Stefan Siegl <stesie@brokenpipe.de>
-Build-Depends: debhelper (>= 4.0.0), autotools-dev, zlib1g-dev, libssl-dev, libxml2-dev, libxslt1-dev, pkg-config
+Build-Depends: debhelper (>= 4.0.0), autotools-dev, zlib1g-dev, libssl-dev, libxml2-dev, libxslt1-dev, pkg-config, libxmlsec1-dev, libxmlsec1-openssl
 Standards-Version: 3.6.1
 Section: libs
 
@@ -9,7 +9,7 @@ Package: libgeier-dev
 Section: libdevel
 Architecture: any
 Recommends: taxbird
-Depends: libgeier (= ${Source-Version}), zlib1g-dev, libssl-dev, libxml2-dev, libxslt1-dev
+Depends: libgeier (= ${Source-Version}), zlib1g-dev, libssl-dev, libxml2-dev, libxslt1-dev, libxmlsec1-dev
 Description: Elster Client Library (German Tax Declarations)
  GEIER is the first free library to send gathered tax declarations data to
  the German inland revenue office.  This package contains the shared library
@@ -20,7 +20,7 @@ Description: Elster Client Library (German Tax Declarations)
 Package: libgeier
 Section: libs
 Architecture: any
-Depends: zlib1g, libssl0.9.7, libxml2, libxslt1.1
+Depends: zlib1g, libssl0.9.7, libxml2, libxslt1.1, libxmlsec1-openssl
 Description:  Elster Client Library (German Tax Declarations)
  GEIER is the first free library to send gathered tax declarations data to
  the German inland revenue office.  This package contains the static library

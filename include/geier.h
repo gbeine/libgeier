@@ -127,9 +127,6 @@ char *geier_get_clearing_error_text(geier_context *context,
 				    const unsigned char *input, size_t inlen);
 
 /* Digitale Signatur */
-int geier_dsig_verify_mac(geier_context *context, 
-			  const char *softpse_filename, const char *password);
-
 int geier_dsig_sign(geier_context *context,
 		    const xmlDoc *input, xmlDoc **output,
 		    const char *softpse_filename, const char *pincode);
@@ -140,21 +137,35 @@ int geier_dsig_sign_text(geier_context *context,
 			 const char *softpse_filename, const char *pincode);
 
 #ifdef GEIER_SIGNATURE_INTERNALS
+/* just verify pkcs#12 file's mac, i.e. check whether pin is okay */
+int geier_dsig_verify_mac(geier_context *context, 
+			  const char *softpse_filename, 
+			  const char *password);
+
+#include <openssl/pkcs12.h>
+/* open and try to read file (filename, using pincode) and return PKCS#12
+ * structure */
+PKCS12 *geier_dsig_open(const char *filename, const char *pincode);
+
 #include <openssl/evp.h>
+/* return the signature key from the softpse file */
 EVP_PKEY *geier_dsig_get_signaturekey(geier_context *context, 
 				      const char *softpse_filename, 
 				      const char *pincode);
 
+/* return the encryption key, contained in the pkcs#12 softpse file */
 EVP_PKEY *geier_dsig_get_encryptionkey(geier_context *context, 
 				       const char *softpse_filename, 
 				       const char *pincode);
 
 #include <openssl/x509.h>
+/* return the encryption certificate, contained in the pkcs#12 file */
 X509 *geier_dsig_get_encryptioncert(geier_context *context,
 				    const char *filename,
 				    const char *password,
 				    char **friendlyName);
 
+/* return the signature certificate, held by the PKCS#12 file */
 X509 *geier_dsig_get_signaturecert(geier_context *context,
 				   const char *filename,
 				   const char *password,

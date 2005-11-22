@@ -1,6 +1,7 @@
 libgeier - C-Bibliothek zur Kommunikation mit Elster 
 
 Copyright (C) 2005  Jürgen Stuber <juergen@jstuber.net>, Germany
+		    Stefan Siegl <stesie@brokenpipe.de>, Germany
                     and others, see AUTHORS for a complete list of authors
 
 This program is free software; you can redistribute it and/or modify
@@ -29,7 +30,7 @@ Geier = Gnu Elster ImplementiERung
 Installation der CVS-Version:
 -----------------------------
 
-$ sh autogen.sh
+$ autoreconf -i
 $ ./configure [...Optionen...]
 $ make
 $ make install
@@ -65,4 +66,4 @@ melden.
 libtool 1.5.10 bzw. 1.5a brauchen andere Deklarationen in configure.ac
 (LT_INIT statt AC_PROG_LIBTOOL) und funktionieren derzeit nicht.
 
-$Id: README,v 1.6 2005-06-18 15:09:53 stesie Exp $
+$Id: README,v 1.7 2005-11-22 21:58:01 stesie Exp $

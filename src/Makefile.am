@@ -26,6 +26,14 @@ libgeier_la_SOURCES = \
 	iso_to_utf8.c iso_to_utf8.h \
 	get_clearing_error.c \
 	dsig.c \
+	dsig-open.c \
+	dsig-rewrite-vorgang.c \
+	dsig-rewrite-datenlieferant.c \
+	dsig-sign.c \
+	dsig-get-attr.c \
+	dsig-get-cert.c \
+	dsig-get-cert-text.c \
+	dsig-get-key.c \
 	xpath.c xpath.h
 #	send.c \
 #	send_text.c \
@@ -34,6 +42,9 @@ libgeier_la_SOURCES = \
 # force relink on version change
 # For legal reasons all versions in production use must be tested and archived.
 libgeier_la_LDFLAGS = -release @PACKAGE_VERSION@
+
+noinst_HEADERS = \
+	dsig.h
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \

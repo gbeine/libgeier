@@ -1,7 +1,6 @@
 <SigUser>
   <UserInfo>
     <User id="1">
-      <Vorname />
       <Name />
     </User>
   </UserInfo>
@@ -13,7 +12,7 @@
 	<dsig:Reference URI="">
 	  <dsig:Transforms>
 	    <dsig:Transform Algorithm="http://www.w3.org/TR/1999/REC-xpath-19991116">
-	      <dsig:XPath xmlns:Elster="http://www.elster.de/2002/XMLSchema" >ancestor-or-self::Elster:Nutzdaten</dsig:XPath>
+	      <dsig:XPath>ancestor-or-self::Nutzdaten</dsig:XPath>
 	    </dsig:Transform>
 	    <dsig:Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" />
 	  </dsig:Transforms>
@@ -24,7 +23,7 @@
       <dsig:SignatureValue />
       <dsig:KeyInfo>
         <dsig:X509Data>
-          <dsig:X509Certificate />
+          <dsig:X509Certificate></dsig:X509Certificate>
 	</dsig:X509Data>
       </dsig:KeyInfo>
     </dsig:Signature>

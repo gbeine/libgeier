@@ -5,7 +5,7 @@ includedir=${prefix}/include
 
 Name: libgeier
 Description: Elster Client Library (German Tax Declarations)
-Version: @version@
+Version: @VERSION@
 Requires: 
 Libs: -L${libdir} -lgeier
 Cflags: -I${includedir} 

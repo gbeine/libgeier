@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- edited with XML Spy v4.3 U (http://www.xmlspy.com) by Michael Wilz (Rechenzentrum der Finanzverwaltung NRW) -->
-<!-- Version 7.03 -->
+<!-- Version 7.06 -->
 <xs:schema targetNamespace="http://www.elster.de/2002/XMLSchema" xmlns:elster="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<!-- Definierung globaler simple Types________________________________________________________-->
 	<xs:element name="Allg">
@@ -257,6 +257,7 @@
 			<xs:pattern value="BY .*"/>
 			<xs:pattern value="RCA.*"/>
 			<xs:pattern value="CY .*"/>
+			<xs:pattern value="SCG.*"/>
 			<xs:pattern value="   .*">
 				<xs:annotation>
 					<xs:documentation xml:lang="DE">Für nicht aufgeführte Länder</xs:documentation>
@@ -293,6 +294,7 @@
 			<xs:documentation xml:lang="DE">BFF = Bundesamt für Finanzen"</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
+			<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
 			<xs:enumeration value="BW"/>
 			<xs:enumeration value="BY"/>
 			<xs:enumeration value="BE"/>
@@ -325,6 +327,7 @@
 			<xs:documentation xml:lang="DE">JJJJMMTThhmmss:Zahl, 14-stellig</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
+			<xs:length value="14"/>
 			<xs:pattern value="\d{14}"/>
 		</xs:restriction>
 	</xs:simpleType>
@@ -334,6 +337,7 @@
 			<xs:documentation xml:lang="DE">JJJJMMTT</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
+			<xs:length value="8"/>
 			<xs:pattern value="\d{4}[0-12][0-9][0-3][0-9]"/>
 		</xs:restriction>
 	</xs:simpleType>
@@ -342,6 +346,7 @@
 			<xs:documentation xml:lang="DE">Jahr 4 stellig JJJJ</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
+			<xs:length value="4"/>
 			<xs:pattern value="\d{4}"/>
 		</xs:restriction>
 	</xs:simpleType>
@@ -351,6 +356,7 @@
 			<xs:documentation xml:lang="DE">die 14stellige eTIN lt. eTIN-Dokumentation</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
+			<xs:length value="14"/>
 			<xs:pattern value="[A-Z]{8}\d{2}[A-L]{1}[0][1-9][A-Z]{1}"/>
 			<xs:pattern value="[A-Z]{8}\d{2}[A-L]{1}[1-2][0-9][A-Z]{1}"/>
 			<xs:pattern value="[A-Z]{8}\d{2}[A-L]{1}[3][0-1][A-Z]{1}"/>
@@ -394,6 +400,9 @@
 			<xs:documentation xml:lang="DE">-- = für Steuerpflichtige mit Wohnsitz im Ausland</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
+			<xs:pattern value="[^\s\p{C}][^\p{C}]"/>
+			<xs:length value="2"/>
+			<xs:enumeration value="vd"/>
 			<xs:enumeration value="ev"/>
 			<xs:enumeration value="lt"/>
 			<xs:enumeration value="rf"/>
@@ -419,7 +428,9 @@
 			<xs:documentation xml:lang="DE">gem. BFA Dokumentation</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:positiveInteger">
-            <xs:pattern value="132"/>
+			<xs:pattern value="132"/>
+			<xs:pattern value="144"/>
+			<xs:pattern value="370"/>
 			<xs:pattern value="423"/>
 			<xs:pattern value="287"/>
 			<xs:pattern value="121"/>
@@ -913,7 +924,7 @@
 			<xs:pattern value="(G|g)(R|r)(F|f)"/>
 			<xs:pattern value="(G|g)(R|r)(F|f)(N|n)"/>
 			<xs:pattern value="(G|g)(R|r)(O|o)(S|s)(S|s)(H|h)(E|e)(R|r)(Z|z)(O|o)(G|g)"/>
-			<xs:pattern value="(G|g)(R|r)(O|o)(S|ß)(S|h)(H|e)(E|r)(R|z)(Z|o)(O|g)"/>
+			<xs:pattern value="(G|g)(R|r)(O|o)(S|ß)(S|h)(H|e)(E|r)(R|z)(Z|o)(G|g)"/>
 			<xs:pattern value="(G|g)(R|r)(O|o)(S|s)(S|s)(H|h)(E|e)(R|r)(Z|z)(O|o)(G|g)(I|i)(N|n)"/>
 			<xs:pattern value="(G|g)(R|r)(O|o)(S|ß)(S|h)(H|e)(E|r)(R|z)(Z|o)(O|g)(G|i)(I|n)"/>
 			<xs:pattern value="(H|h)(E|e)(R|r)(Z|z)(O|o)(G|g)"/>
@@ -951,6 +962,7 @@
 			<xs:documentation xml:lang="DE">20stellig Alphanummerisch</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
+			<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
 			<xs:maxLength value="32"/>
 			<xs:minLength value="1"/>
 		</xs:restriction>
@@ -1066,8 +1078,8 @@
 		<xs:annotation>
 			<xs:documentation xml:lang="DE">4stellige Zahl</xs:documentation>
 		</xs:annotation>
-		<xs:restriction base="xs:positiveInteger">
-			<xs:totalDigits value="4"/>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="\d{4}"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<!-- Definierung globaler complex Types __________________________________________________ -->

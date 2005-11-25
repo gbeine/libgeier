@@ -3,13 +3,17 @@ schema_DATA = \
 	allg000007.xsd \
 	elster_LStA_200401_extern.xsd \
 	elster_LStA_200501_extern.xsd \
+	elster_LStA_200601_extern.xsd \
 	elster_UStA_200401_extern.xsd \
 	elster_UStA_200501_extern.xsd \
+	elster_UStA_200601_extern.xsd \
 	lsta_200401.xsd \
 	lsta_200501.xsd \
+	lsta_200601.xsd \
 	ndh000009.xsd \
 	th000007_extern.xsd \
 	usta_200401.xsd \
-	usta_200501.xsd 
+	usta_200501.xsd \
+	usta_200601.xsd
 
 EXTRA_DIST = $(schema_DATA)

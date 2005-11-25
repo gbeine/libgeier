@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- edited with XML Spy v4.3 U (http://www.xmlspy.com) by Michael Wilz (Rechenzentrum der Finanzverwaltung NRW) -->
-<!-- Version 7.31-->
+<!-- Version 7.34-->
 <xs:schema targetNamespace="http://www.elster.de/2002/XMLSchema" xmlns:elster="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<!-- RootElement = Elster _______________________________________________________________-->
 	<xs:element name="TransferHeader" type="elster:TransferHeaderCType"/>
@@ -57,7 +57,16 @@
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
-		<xs:attribute name="version" type="xs:string" use="required"/>
+		<xs:attribute name="version" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:minLength value="1"/>
+					<xs:pattern value="[^\s\p{C}][^\s\p{C}]*"/>
+					<xs:enumeration value="7"/>
+                    <xs:enumeration value="000007"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
 	</xs:complexType>
 	<!-- Definierung einfacher Elements________________________________________________________-->
 	<!-- A -->
@@ -70,6 +79,7 @@
 			<xs:documentation xml:lang="DE">Verarbeitendes Programm stößt je Datentyp bestimmte Verarbeitung an.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
+			<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
 			<xs:enumeration value="Registrierung"/>
 			<xs:enumeration value="Kontoabfrage"/>
 			<xs:enumeration value="AntraegeUndRechte"/>
@@ -110,13 +120,14 @@
 	</xs:simpleType>
 	<!-- E -->
 	<xs:simpleType name="thEingangsDatumSType">
-		<xs:union memberTypes="elster:th_LeerLISTE elster:ndh_DatumLISTE"/>
-	</xs:simpleType>
-	<xs:simpleType name="th_LeerLISTE">
-		<xs:list itemType="elster:LeerSType"/>
-	</xs:simpleType>
-	<xs:simpleType name="ndh_DatumLISTE">
-		<xs:list itemType="elster:DatumSType"/>
+		<xs:union>
+			<xs:simpleType>
+				<xs:restriction base="elster:LeerSType"/>
+			</xs:simpleType>
+			<xs:simpleType>
+				<xs:restriction base="elster:DatumSType"/>
+			</xs:simpleType>
+		</xs:union>
 	</xs:simpleType>
 	<!-- F -->
 	<!-- G -->
@@ -129,6 +140,7 @@
 			<xs:documentation xml:lang="DE">Mit welcher Kompression wurden die Daten komprimiert.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
+			<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
 			<xs:enumeration value="GZIP"/>
 			<xs:enumeration value="none"/>
 		</xs:restriction>
@@ -163,6 +175,7 @@
 	<!-- T -->
 	<xs:simpleType name="TestmerkerSType">
 		<xs:restriction base="xs:string">
+			<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
 			<xs:enumeration value="0"/>
 			<xs:enumeration value="000000000"/>
 			<xs:enumeration value="700000001"/>
@@ -193,13 +206,22 @@
 					<xs:documentation xml:lang="DE">TEST ELAD ElsterLohn</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+				<xs:enumeration value="500000001">
+				<xs:annotation>
+					<xs:documentation xml:lang="DE">TEST ELAD ElsterLohn</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="thTransferTicketSType">
-		<xs:union memberTypes="elster:th_LeerLISTE elster:thTransferTicketLISTE"/>
-	</xs:simpleType>
-	<xs:simpleType name="thTransferTicketLISTE">
-		<xs:list itemType="elster:TransferTicketSType"/>
+		<xs:union>
+			<xs:simpleType>
+				<xs:restriction base="elster:LeerSType"/>
+			</xs:simpleType>
+			<xs:simpleType>
+				<xs:restriction base="elster:TransferTicketSType"/>
+			</xs:simpleType>
+		</xs:union>
 	</xs:simpleType>
 	<xs:simpleType name="TransportSchluesselSType">
 		<xs:annotation>
@@ -216,6 +238,7 @@
 			<xs:documentation xml:lang="DE">Protokoll der Verschlüsselung. Es kann vorkommen, dass verschieden Verschlüsselungsarten eingesetzt werden, eine Unterscheidung ist hier nötig, um das richtige Entschlüsselungstool anzusteuern, Protokoll der Verschlüsselung</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
+			<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
 			<xs:enumeration value="PKCS#7v1.5"/>
 			<xs:enumeration value="PKCS#7v1.5enveloped"/>
 			<xs:enumeration value="none"/>
@@ -231,6 +254,7 @@
 	</xs:simpleType>
 	<xs:simpleType name="VerfahrenSType">
 		<xs:restriction base="xs:string">
+			<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
 			<xs:enumeration value="ElsterAnmeldung"/>
 			<xs:enumeration value="ElsterKontoabfrage"/>
 			<xs:enumeration value="ElsterLohn"/>
@@ -247,10 +271,12 @@
 			<xs:enumeration value="Alg"/>
 			<xs:enumeration value="StKto"/>
 			<xs:enumeration value="DummyWorker"/>
+            <xs:enumeration value="ElsterPortal"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="VorgangSType">
 		<xs:restriction base="xs:string">
+			<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
 			<xs:enumeration value="get-Sig"/>
 			<xs:enumeration value="vis-NoSig"/>
 			<xs:enumeration value="send-Sig"/>

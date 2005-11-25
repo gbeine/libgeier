@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- edited with XML Spy v4.3 U (http://www.xmlspy.com) by Josef Veits (OFD München IT-Bereich) -->
-<!-- Version_BY 200501.6.2 -->
-<xs:schema xmlns:elster="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.elster.de/2002/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<!-- Version_BY 200501.7.5 -->
+<xs:schema targetNamespace="http://www.elster.de/2002/XMLSchema" xmlns:elster="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:complexType name="AnmeldungssteuernCType">
 		<xs:sequence>
 			<xs:element name="DatenLieferant" type="elster:lstaDatenlieferantType"/>
@@ -51,27 +51,27 @@
 	<xs:simpleType name="lsta_DefaultKZSTypewithCent">
 		<xs:annotation>
 			<xs:documentation xml:lang="DE">Vorzeichen: es ist nur das "-" als Vorzeichen zulässig "+" nicht !!!</xs:documentation>
-			<xs:documentation xml:lang="DE">9 Stellen (Ziffern) vor dem Dezimaltrennzeichen</xs:documentation>
-			<xs:documentation xml:lang="DE">Dezimaltrennzeichen ist das ","</xs:documentation>
+			<xs:documentation xml:lang="DE">11 Stellen (Ziffern) vor dem Dezimaltrennzeichen</xs:documentation>
+			<xs:documentation xml:lang="DE">Dezimaltrennzeichen ist der "."</xs:documentation>
 			<xs:documentation xml:lang="DE">2 Stellen nach dem Dezimaltrennzeichen</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:maxLength value="13"/>
-			<xs:minLength value="1"/>
-			<xs:pattern value="[\-]{0,1}\d{1,9}[.]\d{2}"/>
+			<xs:maxLength value="15"/>
+			<xs:minLength value="4"/>
+			<xs:pattern value="[\-]{0,1}\d{1,11}[.]\d{2}"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="lstaDefaultKZSType">
 		<xs:restriction base="xs:string">
-			<xs:maxLength value="12"/>
+			<xs:maxLength value="14"/>
 			<xs:minLength value="1"/>
-			<xs:pattern value="[\-]{0,1}\d{1,11}"/>
+			<xs:pattern value="[\-]{0,1}\d{1,13}"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="lsta_Kz09SType">
 		<xs:restriction base="xs:string">
 			<xs:maxLength value="95"/>
-			<xs:pattern value="([0-9]{5})(\*([^\p{C}*]{0,85})\*([^\p{C}*]{0,85})\*([0-9]{0,85})\*([^\p{C}*]{0,85})\*([^\p{C}*]{0,85}))?"/>
+			<xs:pattern value="([0-9]{5})(\*([^\p{C}*]{0,85})\*([^\p{C}*]{0,85})\*([^\p{C}*]{0,85})\*([^\p{C}*]{0,85})\*([^\p{C}*]{0,85}))?"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="MyDateSType">
@@ -98,7 +98,7 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="Kz86">
-			<xs:restriction base="xs:string">
+		<xs:restriction base="xs:string">
 			<xs:maxLength value="7"/>
 			<xs:minLength value="1"/>
 			<xs:pattern value="\d{1,7}"/>
@@ -164,7 +164,7 @@
 						<xs:element name="Steuernummer" type="elster:allg_StNrSType"/>
 						<xs:element name="Kz09" type="elster:lsta_Kz09SType">
 							<xs:annotation>
-								<xs:documentation xml:lang="DE">Die Kz 09 ist eine Pflichtkennzahl uns muss übermittelt werden</xs:documentation>
+								<xs:documentation xml:lang="DE">Die Kz 09 ist eine Pflichtkennzahl und muss übermittelt werden.</xs:documentation>
 								<xs:documentation xml:lang="DE">Kz 09 baut sich aus folgenden Informationen zusammen: HerstellerID*Name des Berater*Berufsbezeichnung*TelNr Berater/Vorwahl*TelNr Berater/Anschluss*Name des Mandanten</xs:documentation>
 							</xs:annotation>
 						</xs:element>
@@ -194,7 +194,7 @@
 						<xs:element name="Kz78" type="elster:lsta_DefaultKZSTypewithCent" minOccurs="0"/>
 						<xs:element name="Kz83" type="elster:lsta_DefaultKZSTypewithCent">
 							<xs:annotation>
-								<xs:documentation xml:lang="DE">Die Kz 83 ist eine Pflichtkennzahl uns muss übermittelt werden</xs:documentation>
+								<xs:documentation xml:lang="DE">Die Kz 83 ist eine Pflichtkennzahl und muss übermittelt werden.</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 						<xs:element name="Kz86" type="elster:Kz86"/>

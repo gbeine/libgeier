@@ -1,0 +1,73 @@
+.TH GEIER "1" "November 2005" "Geier Command Line Interface (libgeier)" "User Commands"
+.SH NAME
+geier \- manual page for Geier Command Line Interface (libgeier)
+.SH SYNOPSIS
+.B geier
+[\fIOPTION\fR...] [\fIFILE\fR]...
+.SH DESCRIPTION
+Command line interface to the Geier library (libgeier), allowing to
+validate, apply stylesheets, digitally sign and send Elster XML
+documents.
+.TP
+\fB\-d\fR, \fB\-\-dry\-run\fR
+Don't send the Elster XML document to the inland revenue office for
+further processing.  This is, if you want to just check the document for
+validity (against the schema files), apply the corresponding stylesheet,
+etc. supply this option.
+.TP
+\fB\-\-dump\fR=\fIFILE\fR
+Write the result which we have received from the inland revenue office
+to the file FILE (right after decryption).  This might be useful, if you
+want to keep a copy of the result somewhere and provided the
+\fB\-\-xsltify\fR command line argument.
+.TP
+\fB\-e\fR, \fB\-\-encrypt\-only\fR
+Only encrypt the provided Elster XML document.  Nothing more.  This is
+mainly for testing purposes, as you will not be able to decrypt the
+document (since it is public key encrypted).  If you transfer the result
+manually, you will not be able to decrypt the result either, since it is
+encrypted symetrically and you do not get the needed key back.
+.TP
+\fB\-s\fR, \fB\-\-softpse\fR=\fIFILE\fR
+Digitally sign the document using software certificates. The file with
+the provided name is expected to contain a PKCS#12 certificate container
+from which the private key as well as the certificate needed for signing
+will be extracted.  If you supply this option, you will be asked to
+enter the container's PIN code later on.
+.TP
+\fB\-v\fR, \fB\-\-validate\fR
+Try to validate the document against the schema files, provided by
+Germany's inland revenue office, right after parsing.  In case the
+document cannot be validated, complain and abort before any further
+processing.
+.TP
+\fB\-x\fR, \fB\-\-xsltify\fR
+Apply the stylesheet, suitable for this type of Elster XML document, to
+the document itself in order to generate XHTML output.  In case you have
+chosen to send the document to the inland revenue office, the result we
+got back will be mangled.  If you have provided the \fB\-\-dry\-run\fR
+switch, the stylesheet will be applied against the provided document
+itself.
+.br
+You most probably want to use this option, if you would like to have a
+somewhat printable protocol after transmitting your data.
+.TP
+\-?, \fB\-\-help\fR
+Give this help list.
+.TP
+\fB\-\-usage\fR
+Give a short usage message.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Print program version.
+.PP
+Mandatory or optional arguments to long options are also mandatory or optional
+for any corresponding short options.
+.PP
+Please mind that libgeier is currently very much in alpha alike state,
+therefore please do not expect a tool working perfectly right now.
+.SH COPYRIGHT
+Copyright \(co 2005 Stefan Siegl <ssiegl@gmx.de>, Germany
+.br
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.

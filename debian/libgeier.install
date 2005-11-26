@@ -4,3 +4,4 @@ usr/share/libgeier/*.cer
 usr/share/libgeier/*.tmpl
 usr/bin/geier
 usr/lib/libgeier-*.so
+usr/share/man/man1/*

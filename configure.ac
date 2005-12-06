@@ -29,7 +29,7 @@ AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION, $PACKAGE_BUGREPORT)
 AC_PREREQ(2.59)
 # we need the extra parentheses in order to cope with the comma
 AC_COPYRIGHT([configure.ac Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany])
-AC_REVISION($Revision: 1.20 $)
+AC_REVISION($Revision: 1.21 $)
 
 AC_CONFIG_SRCDIR([srcdir_marker])
 
@@ -62,46 +62,16 @@ CFLAGS="$CFLAGS $PACKAGE_CFLAGS"
 LDFLAGS="$LDFLAGS $PACKAGE_LIBS"
 
 # checks for header files
-AC_HEADER_STDC
-AC_CHECK_HEADERS([stddef.h])
-AC_CHECK_HEADERS([fcntl.h])
-AC_CHECK_HEADERS([string.h])
-AC_CHECK_HEADERS([unistd.h])
-AC_CHECK_HEADERS([arpa/inet.h])
-AC_CHECK_HEADERS([netinet/in.h])
-AC_CHECK_HEADERS([sys/param.h])
-AC_CHECK_HEADERS([sys/socket.h])
-
-
 
 # checks for typedefs
-AC_TYPE_SIZE_T
-
-
 
 # checks for structures
 
-
-
 # checks for compiler characteristics
-AC_C_CONST
-
-
 
 # checks for library functions
-AC_FUNC_MALLOC
-AC_FUNC_REALLOC
-AC_FUNC_MEMCMP
-AC_FUNC_VPRINTF
-AC_CHECK_FUNCS([memmove])
-AC_CHECK_FUNCS([memset])
-AC_CHECK_FUNCS([strchr])
-
-
 
 # checks for system services
-
-
 
 # output
 AC_CONFIG_FILES([Makefile src/Makefile include/Makefile etc/Makefile 

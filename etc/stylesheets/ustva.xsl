@@ -1243,26 +1243,31 @@
 	</xsl:template>
 	<!--****************  Hinweise   **********************-->
 	<xsl:template name="Hinweise">
-	<br/><br/>
-	<big>
+		<tr>
+		    <td>
+	              <br/><br/>
+	              <big>
 			<hr/>               <!-- ***********************************************************-->
 			<br/><br/>
 	
-		<tr>				
 			<u><xsl:text>Hinweis zu Säumniszuschlägen</xsl:text></u>
 			<br/><br/>
+	              </big>
+		    </td>
 		</tr>
-	</big>
 		<tr>
+		    <td>
 			<xsl:text>
 		Wird die angemeldete Steuer durch Hingabe eines Schecks beglichen, fallen Säumniszuschläge an, wenn dieser nicht am Fälligkeitstag bei der Finanzkasse vorliegt (§ 240 Abs.3 Abgabenordnung). 
 		Um Säumniszuschläge zu vermeiden wird empfohlen, am Lastschriftverfahren teilzunehmen. Die Teilnahme am Lastschriftverfahren ist jederzeit widerruflich und völlig risikolos. 
 		Sollte einmal ein Betrag zu Unrecht abgebucht werden, können Sie diese Abbuchung bei der Bank innerhalb von 6 Wochen stornieren lassen. 
 		Zur Teilnahme am Lastschriftverfahren setzen Sie sich bitte mit Ihrem Finanzamt in Verbindung.
 			</xsl:text>
-			<br/><br/><br/><br/>
+			<br/><br/><br/><br/> 
+		    </td>
 		</tr>
 		<tr>
+		    <td>
 			<big>
 				<xsl:text>
 		Dieses Übertragungsprotokoll ist nicht zur Übersendung an das Finanzamt bestimmt. Die Angaben sind auf ihre Richtigkeit hin zu prüfen.
@@ -1271,6 +1276,7 @@
 				<br/><br/>
 			</big>
 			<br/>
+		    </td>
 		</tr>
 	</xsl:template>
 	<!-- ***********************************************************-->

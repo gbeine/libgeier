@@ -1,3 +1,9 @@
+libgeier (0.5-4) unstable; urgency=low
+
+  * re-packaging with a Debian/stable distri
+
+ -- Stefan Siegl <stesie@brokenpipe.de>  Tue, 05 Dec 2005 23:20:23 +0100
+
 libgeier (0.5-3) unstable; urgency=low
 
   * new upstream release (0.5, aka Santa Clause)

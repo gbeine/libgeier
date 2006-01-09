@@ -1,6 +1,14 @@
+libgeier (0.5-5) unstable; urgency=low
+
+  * including older versions of ndh000009.xsd and th000007_extern.xsd to make
+    things work for the old(er) version of libxml2 distributed with Debian
+    Sarge
+
+ -- Stefan Siegl <stesie@brokenpipe.de>  Mon, 09 Jan 2006 22:28:23 +0100
+  
 libgeier (0.5-4) unstable; urgency=low
 
-  * re-packaging with a Debian/stable distri
+  * re-packaging with a Debian/stable distribution
 
  -- Stefan Siegl <stesie@brokenpipe.de>  Tue, 05 Dec 2005 23:20:23 +0100
 

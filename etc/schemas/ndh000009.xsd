@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- edited with XML Spy v4.3 U (http://www.xmlspy.com) by Michael Wilz (Rechenzentrum der Finanzverwaltung NRW) -->
-<!-- Version - beta - keine richtige version -->
+<!-- Version 9.15 -->
 <xs:schema targetNamespace="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:elster="http://www.elster.de/2002/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:element name="NutzdatenHeader" type="elster:NutzdatenHeaderCType"/>
 	<xs:complexType name="NutzdatenHeaderCType">
@@ -38,7 +38,6 @@
 			<xs:documentation xml:lang="DE">String der Lieferanteninformationen enthält ; Ansprechpartner mit Telephon. Email etc. Bei ESt: Steuerpflichtiger oder Steuerberater/Firma  (entfällt hier u.U. auch)Aufbau: Lieferant (Firma); Ansprechpartner; Telefon; E-Mail Addresse; Ort; PLZ; Strasse; Land;</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
 			<xs:maxLength value="256"/>
 			<xs:minLength value="1"/>
 		</xs:restriction>
@@ -48,14 +47,13 @@
 		<xs:annotation>
 			<xs:documentation xml:lang="DE">Bundeslandkürzel oder Finanzamtsnummer</xs:documentation>
 		</xs:annotation>
-		<xs:union>
-			<xs:simpleType>
-				<xs:restriction base="elster:allg_BundeslandSType"/>
-			</xs:simpleType>
-			<xs:simpleType>
-				<xs:restriction base="elster:Zahl4"/>
-			</xs:simpleType>
-		</xs:union>
+		<xs:union memberTypes="elster:ndh_EmpfaengerLISTE elster:ndh_Zahl4LISTE"/>
+	</xs:simpleType>
+	<xs:simpleType name="ndh_EmpfaengerLISTE">
+		<xs:list itemType="elster:BundeslandSType"/>
+	</xs:simpleType>
+	<xs:simpleType name="ndh_Zahl4LISTE">
+		<xs:list itemType="elster:Zahl4"/>
 	</xs:simpleType>
 	<xs:simpleType name="EmpfaengerIDSType">
 		<xs:annotation>
@@ -66,8 +64,7 @@
 						</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:pattern value="[^\p{C}]"/>
-			<xs:length value="1"/>
+			<xs:maxLength value="1"/>
 			<xs:enumeration value="L"/>
 			<xs:enumeration value="F"/>
 		</xs:restriction>
@@ -103,7 +100,7 @@
 	<xs:simpleType name="SigPruefungSType">
 		<xs:restriction base="xs:string">
 			<xs:pattern value="\d{14}"/>
-			<xs:pattern value="[^\p{C}]*"/>
+			<xs:pattern value="a?"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="SigInternSType">
@@ -141,7 +138,6 @@
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
 						<xs:maxLength value="50"/>
-						<xs:pattern value="[^\p{C}]*"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
@@ -149,7 +145,6 @@
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
 						<xs:maxLength value="50"/>
-						<xs:pattern value="[^\p{C}]*"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
@@ -205,20 +200,8 @@
 	</xs:complexType>
 	<xs:complexType name="UserCType">
 		<xs:sequence>
-			<xs:element name="Vorname" minOccurs="0">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:pattern value="[^\p{C}]*"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:element>
-			<xs:element name="Name" minOccurs="0">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:pattern value="[^\p{C}]*"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:element>
+			<xs:element name="Vorname" type="xs:string" minOccurs="0"/>
+			<xs:element name="Name" type="xs:string"/>
 		</xs:sequence>
 		<xs:attribute name="id" type="xs:positiveInteger" use="required"/>
 	</xs:complexType>

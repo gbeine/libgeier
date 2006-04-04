@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005  Stefan Siegl <stesie@brokenpipe.de>, Germany
+ * Copyright (C) 2005,2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ char *geier_get_clearing_error(geier_context *context, const xmlDoc *doc)
 	
 	/* check for set error status in transferheader first */
 	xpathexpr = context->transferheader_rc_code_xpathexpr;
-	code = elster_xpath_get_content(doc, xpathexpr);
+	code = elster_xpath_get_content(context, doc, xpathexpr);
 
 	if(code && atoi(code)) {
 		/* an error concerning the transferheader has occured */
@@ -43,7 +43,7 @@ char *geier_get_clearing_error(geier_context *context, const xmlDoc *doc)
 
 		/* extract and return human readable error message */
 		xpathexpr = context->transferheader_rc_text_xpathexpr;
-		msg = elster_xpath_get_content(doc, xpathexpr);
+		msg = elster_xpath_get_content(context, doc, xpathexpr);
 
 		if(! msg) goto internal_error;
 		return msg;
@@ -53,7 +53,7 @@ char *geier_get_clearing_error(geier_context *context, const xmlDoc *doc)
 
 	/* now check for set error status in data part ... */
 	xpathexpr = context->datenteil_rc_code_xpathexpr;
-	code = elster_xpath_get_content(doc, xpathexpr);
+	code = elster_xpath_get_content(context, doc, xpathexpr);
 
 	if(code && atoi(code)) {
 		/* an error concerning the data part has occured */
@@ -61,7 +61,7 @@ char *geier_get_clearing_error(geier_context *context, const xmlDoc *doc)
 
 		/* extract and return human readable error message */
 		xpathexpr = context->datenteil_rc_text_xpathexpr;
-		msg = elster_xpath_get_content(doc, xpathexpr);
+		msg = elster_xpath_get_content(context, doc, xpathexpr);
 
 		if(! msg) goto internal_error;
 		return msg;

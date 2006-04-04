@@ -19,7 +19,11 @@
 #ifndef NODE_CONTENTS_TO_TEXT_H
 #define NODE_CONTENTS_TO_TEXT_H
 
-int geier_node_contents_to_text(xmlDoc *doc, xmlNode * node,
+#include "context.h"
+#include <geier.h>
+
+int geier_node_contents_to_text(geier_context *context,
+				xmlDoc *doc, xmlNode * node,
 				unsigned char **output, size_t *outlen);
 
 #endif

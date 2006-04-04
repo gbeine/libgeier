@@ -20,6 +20,14 @@
 #include <stdlib.h>
 #include <errno.h>
 
+/*
+ * convert input, which is in ISO-8859-1 encoding, to UTF-8 encoding
+ *
+ * FIXME: input is probably not in ISO-8859-1 encoding but in 
+ *        context->xml_encoding (which for the moment is ISO-8859-1,
+ *        but this will fail as soon as the IRO requires either UTF-8
+ *        or at least ISO-8859-15)
+ */
 int
 geier_iso_to_utf8(const unsigned char *input, const size_t inlen,
 		  unsigned char **output, size_t *outlen)

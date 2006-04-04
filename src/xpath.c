@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005  Stefan Siegl <ssiegl@gmx.de>, Germany
+ * Copyright (C) 2005,2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,13 +32,15 @@
 /* Return the content of the node referenced by the given xpath expression.
  * Mind that a new allocated \0-string will be allocated in case of success
  * and that you're responsible for freeing it */
-char *elster_xpath_get_content(xmlDoc *doc, const char *xpath) {
+char *elster_xpath_get_content(geier_context *context,
+			       xmlDoc *doc, const char *xpath) {
 	xmlNode *node;
 	if(find_node(doc, xpath, &node)) return NULL; /* not found */
 
 	unsigned char *content;
 	size_t content_len;
-	if(geier_node_contents_to_text(doc, node, &content, &content_len))
+	if(geier_node_contents_to_text(context, doc, node,
+				       &content, &content_len))
 		return NULL; /* failed. */
 
 	content = realloc(content, content_len + 1);
@@ -53,7 +55,8 @@ char *elster_xpath_get_content(xmlDoc *doc, const char *xpath) {
 /* Return the text, associated to the attribute 'attrname' of the
  * node, referenced by the supplied xpath expression. 
  */
-const char *elster_xpath_get_attr(xmlDoc *doc, const char *xpath,
+const char *elster_xpath_get_attr(geier_context *context,
+				  xmlDoc *doc, const char *xpath,
 				  const char *attrname)
 {
 	xmlNode *node;

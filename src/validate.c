@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
- *               2005  Stefan Siegl <ssiegl@gmx.de>, Germany
+ *               2005,2006  Stefan Siegl <ssiegl@gmx.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -149,7 +149,8 @@ static char *get_xsd_path(geier_context *context, xmlDoc *doc) {
 
 	/* check whether TransferHeader->Verfahren is okay ***/
 	char *val_verfahren = 
-		elster_xpath_get_content(doc, val_verfahren_xpathexpr);
+		elster_xpath_get_content(context, doc,
+					 val_verfahren_xpathexpr);
 	if(! val_verfahren) goto out;
 	if(strcmp(val_verfahren, "ElsterAnmeldung")) {
 		fprintf(stderr, "libgeier: unable to validate doctype %s\n",
@@ -159,7 +160,7 @@ static char *get_xsd_path(geier_context *context, xmlDoc *doc) {
 
 	/* check whether TransferHeader->DatenArt is okay ***/
 	char *val_datenart = 
-		elster_xpath_get_content(doc, val_datenart_xpathexpr);
+		elster_xpath_get_content(context, doc, val_datenart_xpathexpr);
 	if(! val_datenart) goto out0;
 	if(strcmp(val_datenart, "UStVA") && strcmp(val_datenart, "LStA")) {
 		fprintf(stderr, "libgeier: unable to validate doctype %s\n",
@@ -167,8 +168,9 @@ static char *get_xsd_path(geier_context *context, xmlDoc *doc) {
 		goto out1;
 	}
 
-	const char *val_vers = 
-		elster_xpath_get_attr(doc, val_version_xpathexpr, "version");
+	const char *val_vers =
+		elster_xpath_get_attr(context, doc, val_version_xpathexpr,
+				      "version");
 	if(! val_vers) goto out1;
 
 	xmlBuffer *buf = xmlBufferCreate();

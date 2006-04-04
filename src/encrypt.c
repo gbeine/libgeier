@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
- *               2005  Stefan Siegl <ssiegl@gmx.de>, Germany
+ *               2005,2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -193,7 +193,7 @@ static int encrypt_content(geier_context *context,
 	xmlNode *text_node = NULL;
 
 	/* convert contents of selected node to text */
-	retval = geier_node_contents_to_text(doc, node,
+	retval = geier_node_contents_to_text(context, doc, node,
 					     &content, &content_len);
 	if (retval) { goto exit0; }
 

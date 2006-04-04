@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
+ * Copyright (C) 2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +22,8 @@
 #include "config.h"
 
 #include <string.h>
+#include <assert.h>
+
 #include <libxml/tree.h>
 
 #include "context.h"
@@ -31,7 +34,14 @@
 #define ALLOW_FORMAT 0
 
 
-int geier_node_contents_to_text(xmlDoc *doc, xmlNode *node,
+/*
+ * dump a node's content into an unsigned char array
+ *
+ * The result is guaranteed to be of encoding ISO-8859-1 (or whatever else
+ * is specified as context->xml_encoding).
+ */
+int geier_node_contents_to_text(geier_context *context,
+				xmlDoc *doc, xmlNode *node,
 				unsigned char **output, size_t *outlen)
 {
 	int retval = 0;
@@ -42,21 +52,20 @@ int geier_node_contents_to_text(xmlDoc *doc, xmlNode *node,
 
 	/* convert contents of selected node to text */
 	buf = xmlBufferCreate();
+	xmlCharEncodingHandler *enc =
+		xmlFindCharEncodingHandler(context->xml_encoding);
+	assert(enc);
 
-	/* convert all childs */
+	xmlOutputBuffer *outbuf = xmlOutputBufferCreateBuffer(buf, enc);
+
+	/* convert all children */
 	for (n = node->children; n != NULL; n = n->next) {
-		xmlBuffer *child_buf = xmlBufferCreate();
-		int child_len = xmlNodeDump(child_buf, doc, n,
-					    INDENT_LEVEL, ALLOW_FORMAT);
-
-		if (child_len < 0) {
-			xmlBufferFree(child_buf);
-			retval = -1;
-			goto exit0;
-		}
-		xmlBufferAdd(buf, xmlBufferContent(child_buf), child_len);
-		xmlBufferFree(child_buf);
+		xmlNodeDumpOutput(outbuf, doc, n, INDENT_LEVEL, ALLOW_FORMAT,
+				  context->xml_encoding);
 	}
+
+	xmlOutputBufferClose(outbuf);
+
 	content = (unsigned char *)xmlBufferContent(buf);
 	content_len = xmlBufferLength(buf);
 

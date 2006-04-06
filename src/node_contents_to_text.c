@@ -56,7 +56,25 @@ int geier_node_contents_to_text(geier_context *context,
 		xmlFindCharEncodingHandler(context->xml_encoding);
 	assert(enc);
 
+#ifdef HAVE_XMLOUTPUTBUFFERCREATEBUFFER
 	xmlOutputBuffer *outbuf = xmlOutputBufferCreateBuffer(buf, enc);
+#else
+	/*
+	 * xmlOutputBufferCreateBuffer is not available in libxml 2.6.16,
+	 * which is currently shipped with Debian/Sarge, therefore work 
+	 * around ...
+	 */
+	xmlOutputBuffer *outbuf;
+	outbuf = (xmlOutputBufferPtr) xmlMalloc(sizeof(xmlOutputBuffer));
+	
+	if(! outbuf) {
+		retval = -1;
+		goto exit0;
+	}
+
+	memset(outbuf, 0, (size_t) sizeof(xmlOutputBuffer));
+	outbuf->buffer = buf;
+#endif
 
 	/* convert all children */
 	for (n = node->children; n != NULL; n = n->next) {
@@ -64,20 +82,46 @@ int geier_node_contents_to_text(geier_context *context,
 				  context->xml_encoding);
 	}
 
-	xmlOutputBufferClose(outbuf);
-
 	content = (unsigned char *)xmlBufferContent(buf);
 	content_len = xmlBufferLength(buf);
 
-	*output = malloc(content_len);
-	if (!*output) {
+	*output = malloc(content_len + 1);
+	if (! *output) {
 		retval = -1;
 		goto exit1;
 	}
-	memcpy(*output, content, content_len);
-	*outlen = content_len;
+
+	xmlOutputBufferFlush(outbuf);
+
+#ifdef HAVE_XMLOUTPUTBUFFERCREATEBUFFER
+	/* FIXME: check whether this already frees buf ... */
+	xmlOutputBufferClose(outbuf);
 	
+	memcpy(*output, content, content_len + 1);
+	*outlen = content_len;
+#else
+	/* work around case: we need to convert the buffer's content (which
+	 * is in UTF-8 currently) to Latin1 now ... */
+	int o = content_len, inlen = content_len;
+	*outlen = enc->output(*output, &o, content, &inlen);
+
+	assert(o <= content_len);
+	assert(inlen == content_len);
+
+	if(*outlen < 0) {
+		retval = -1;
+		goto exit1;
+	}
+
+	(*output)[o] = 0;
+#endif
+
  exit1:
+#ifndef HAVE_XMLOUTPUTBUFFERCREATEBUFFER
+	/* work around thingy: get rid of our outbuf hack ... */
+	xmlFree(outbuf);
+#endif
+
  exit0:
 	xmlBufferFree(buf);
 	return retval;

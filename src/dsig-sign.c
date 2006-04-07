@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005  Stefan Siegl <stesie@brokenpipe.de>, Germany
+ * Copyright (C) 2005,2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -246,13 +246,34 @@ geier_dsig_sign_doit(geier_context *context, xmlDoc **output,
 	if(geier_dsig_sign_add_cert(context, ctx, &fn, softpse, pin)) 
 		goto out;
 
-	if(geier_dsig_sign_fill_user(context, *output, fn)) {
+	/* 
+	 * the friendlyName tends to be encoded in ISO-8859-1 format,
+	 * however libxml requires us to provide UTF-8, therefore convert
+	 * once more ...
+	 */
+	int fn_len = strlen(fn), fn_utf8_len = fn_len * 2;
+	char *fn_utf8 = malloc(fn_utf8_len + 1);
+	if(! fn_utf8) {
 		free(fn);
 		goto out;
 	}
 
-	free(fn);
+	isolat1ToUTF8(fn_utf8, &fn_utf8_len, fn, &fn_len);
 
+	assert(fn_utf8_len < fn_len * 2);
+	fn_utf8[fn_utf8_len] = 0;
+
+	/*
+	 * fill in user element ...
+	 */
+	if(geier_dsig_sign_fill_user(context, *output, fn_utf8)) {
+		free(fn);
+		free(fn_utf8);
+		goto out;
+	}
+
+	free(fn);
+	free(fn_utf8);
 
 	/*
 	 * now sign the document

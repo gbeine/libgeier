@@ -26,7 +26,7 @@
 
 #include "context.h"
 
-static unsigned char *elster_xml_encoding = "ISO-8859-1";
+static unsigned char *elster_xml_encoding = "UTF-8";
 
 static unsigned char *elster_clearing_uri_list[] = {
 	"http://80.146.179.2:80/Elster2/EMS",

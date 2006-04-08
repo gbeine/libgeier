@@ -94,6 +94,9 @@ int geier_decrypt_text(geier_context *context,
 int geier_xml_to_text(geier_context *context,
 		      const xmlDoc *doc,
 		      unsigned char **output, size_t *outlen);
+int geier_xml_to_encoded_text(geier_context *context,
+			      const xmlDoc *doc, const char *encoding,
+			      unsigned char **output, size_t *outlen);
 int geier_text_to_xml(geier_context *context,
 		      const unsigned char *input, size_t inlen,
 		      xmlDoc **doc);

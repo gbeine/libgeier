@@ -26,14 +26,21 @@ int geier_xml_to_text(geier_context *context,
 		      const xmlDoc *doc,
 		      unsigned char **output, size_t *outlen)
 {
+	return geier_xml_to_encoded_text(context, doc, context->xml_encoding,
+					 output, outlen);
+}
+
+int geier_xml_to_encoded_text(geier_context *context,
+			      const xmlDoc *doc, const char *encoding,
+			      unsigned char **output, size_t *outlen)
+{
 	int retval = 0;
 
 	if (!doc || !output || !outlen) {
 		retval = -1;
 		goto exit0;
 	}
-	xmlDocDumpFormatMemoryEnc((xmlDoc *)doc, output, outlen,
-				  context->xml_encoding, 1);
+	xmlDocDumpFormatMemoryEnc((xmlDoc *)doc, output, outlen, encoding, 1);
 
  exit0:
 	return retval;

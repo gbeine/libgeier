@@ -107,7 +107,8 @@ int geier_encrypt_text(geier_context *context,
 	if((retval = geier_encrypt(context, indoc, &outdoc)))
 		goto out1;
 
-	if((retval = geier_xml_to_text(context, outdoc, output, outlen)))
+	if((retval = geier_xml_to_encoded_text(context, outdoc, "ISO-8859-1",
+					       output, outlen)))
 		goto out2;
 
  out2:

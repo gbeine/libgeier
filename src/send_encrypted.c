@@ -29,7 +29,8 @@ int geier_send_encrypted(geier_context *context,
 	unsigned char *out_text;
 	size_t out_len;
 
-	retval = geier_xml_to_text(context, input, &in_text, &in_len);
+	retval = geier_xml_to_encoded_text(context, input, "ISO-8859-1",
+					   &in_text, &in_len);
 	if (retval) { goto exit0; }
 
 	retval = geier_send_encrypted_text(context,

@@ -279,14 +279,13 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 		}
 	}
 
-
-	if(config_encrypt_only) {
-		/** user requests to do nothing but encrypt and return */
+	if(softpse_filename) {
 		unsigned char *obuf;
 		size_t olen;
 
-		if(geier_encrypt_text(context, buf, buf_len, &obuf, &olen)) {
-			fprintf(stderr, "%s: cannot encrypt document.\n",
+		if(geier_dsig_sign_text(context, buf, buf_len, &obuf, &olen,
+					softpse_filename, pincode)) {
+			fprintf(stderr, "%s: cannot sign document.\n",
 				filename);
 			exitcode = 1;
 
@@ -299,13 +298,13 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 		buf_len = olen;
 	}
 
-	if(softpse_filename) {
+	if(config_encrypt_only) {
+		/** user requests to do nothing but encrypt and return */
 		unsigned char *obuf;
 		size_t olen;
 
-		if(geier_dsig_sign_text(context, buf, buf_len, &obuf, &olen,
-					softpse_filename, pincode)) {
-			fprintf(stderr, "%s: cannot sign document.\n",
+		if(geier_encrypt_text(context, buf, buf_len, &obuf, &olen)) {
+			fprintf(stderr, "%s: cannot encrypt document.\n",
 				filename);
 			exitcode = 1;
 
@@ -336,7 +335,6 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 		buf_len = olen;
 	}
 
-
 	if(config_dump) {
 		/* debug dump the received data */
 		int fd = open(config_dump, O_WRONLY | O_CREAT |
@@ -355,7 +353,6 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 		close(fd);
 	}
 
-
 	/* seek for error messages from the clearing host */
 	char *clearing_err = 
 		config_dry_run ? NULL : 
@@ -368,7 +365,6 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 		free(clearing_err);
 		exitcode = 1;
 	}
-
 
 	if(config_xsltify) {
 		/* finally mangle output through xslt thingy ... */
@@ -388,7 +384,6 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 		buf = obuf;
 		buf_len = olen;
 	}
-
 
 	if(write(1, buf, buf_len) != buf_len)
 		perror(config_dump);

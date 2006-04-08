@@ -37,8 +37,7 @@
 /*
  * dump a node's content into an unsigned char array
  *
- * The result is guaranteed to be of encoding ISO-8859-1 (or whatever else
- * is specified as context->xml_encoding).
+ * The result is guaranteed to be encoded with ISO-8859-1.
  */
 int geier_node_contents_to_text(geier_context *context,
 				xmlDoc *doc, xmlNode *node,
@@ -52,8 +51,7 @@ int geier_node_contents_to_text(geier_context *context,
 
 	/* convert contents of selected node to text */
 	buf = xmlBufferCreate();
-	xmlCharEncodingHandler *enc =
-		xmlFindCharEncodingHandler(context->xml_encoding);
+	xmlCharEncodingHandler *enc = xmlFindCharEncodingHandler("ISO-8859-1");
 	assert(enc);
 
 #ifdef HAVE_XMLOUTPUTBUFFERCREATEBUFFER

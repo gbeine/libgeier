@@ -28,6 +28,10 @@
 #include <libxml/tree.h>
 
 
+/* 
+ * FIXME: the error message is returned in Latin-1 currently,
+ * maybe make sure context->xml_encoding or something is used instead
+ */ 
 char *geier_get_clearing_error(geier_context *context, const xmlDoc *doc)
 {
 	const char *xpathexpr;

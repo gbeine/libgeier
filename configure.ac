@@ -1,6 +1,6 @@
 # Configure.ac script for libgeier
 # Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
-# Copyright (C) 2005  Stefan Siegl <ssiegl@gmx.de>, Germany
+# Copyright (C) 2005,2006  Stefan Siegl <ssiegl@gmx.de>, Germany
 #
 # This file is part of libgeier.
 # 
@@ -29,7 +29,7 @@ AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION, $PACKAGE_BUGREPORT)
 AC_PREREQ(2.59)
 # we need the extra parentheses in order to cope with the comma
 AC_COPYRIGHT([configure.ac Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany])
-AC_REVISION($Revision: 1.21 $)
+AC_REVISION($Revision: 1.22 $)
 
 AC_CONFIG_SRCDIR([srcdir_marker])
 
@@ -42,6 +42,11 @@ AC_PROG_CC
 AC_PROG_LIBTOOL
 AC_PROG_RANLIB
 
+# compatibility for automake < 1.8
+if test -z "$mkdir_p"; then
+	mkdir_p="../mkinstalldirs"
+	AC_SUBST(mkdir_p)
+fi
 
 # checks for libraries ...
 

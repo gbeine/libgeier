@@ -1,3 +1,10 @@
+libgeier (0.5-6) unstable; urgency=low
+
+  * handle umlauts in softpse's friendlyName correctly
+  * default to UTF-8 encoding when returning data to applications
+
+ -- Stefan Siegl <stesie@brokenpipe.de>  Sat, 08 Apr 2006 15:36:23 +0200
+
 libgeier (0.5-5) unstable; urgency=low
 
   * including older versions of ndh000009.xsd and th000007_extern.xsd to make

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
- * Copyright (C) 2005  Stefan Siegl <stesie@brokenpipe.de>, Germany
+ * Copyright (C) 2005,2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@ int geier_send_encrypted_text(geier_context *context,
 	unsigned int lineno = 0;
 	size_t alloc = 0, bytes_read;
 	FILE *handle;
+	char *proxy = getenv("http_proxy");
 
 	/* FIXME
 	 * Treat context->clearing_timeout_ms correctly, i.e. care for it
@@ -45,11 +46,16 @@ int geier_send_encrypted_text(geier_context *context,
 	 * to stop the connect() call with ETIMEDOUT
 	 */
 
-	/* FIXME: balance load between URIs */
-	dest_uri = context->clearing_uri_list[context->clearing_uri_index];
+	if(proxy)
+		dest_uri = proxy;
+	else {
+		/* FIXME: balance load between URIs */
+		dest_uri = context->clearing_uri_list
+			[context->clearing_uri_index];
+	}
 
 	if(! dest_uri || strncmp(dest_uri, "http://", 7)) {
-		fprintf(stderr, PACKAGE_NAME ": invalid clearing-uri: %s\n",
+		fprintf(stderr, PACKAGE_NAME ": invalid connect-uri: %s\n",
 			dest_uri);
 		return -1;
 	}
@@ -61,14 +67,15 @@ int geier_send_encrypted_text(geier_context *context,
 	}
 
 	path = strchr(dest_uri, '/');
-	if(! path) {
+	if(! proxy && ! path) {
 		fprintf(stderr, PACKAGE_NAME ": clearing-uri doesn't have a "
 			"path part: %s\n", dest_uri);
 		free(dest_uri);
 		return -1;
 	}
 
-	*(path ++) = 0; /* split url into hostname:port and path */
+	if(path)
+		*(path ++) = 0; /* split url into hostname:port and path */
 
 	port_ptr = strchr(dest_uri, ':');
 	if(port_ptr) {
@@ -95,21 +102,27 @@ int geier_send_encrypted_text(geier_context *context,
 		return -1; 
 	}
 
-	/* send http header */
+	/*
+	 * send http header
+	 */
+	if(proxy) {
+		if(fprintf(handle, "POST %s HTTP/1.0\r\n", 
+			   context->clearing_uri_list
+			   [context->clearing_uri_index]) < 0)
+			goto send_failed;
+	}
+	else {
+		if(fprintf(handle, "POST /%s HTTP/1.0\r\n" "Host: %s:%ld\r\n",
+			   path, dest_uri, port) < 0)
+			goto send_failed;
+	}
+
 	if(fprintf(handle,
-		   "POST /%s HTTP/1.0\r\n"
-		   "Host: %s:%ld\r\n"
 		   "User-Agent: " PACKAGE_NAME "/" PACKAGE_VERSION "\r\n"
 		   "Content-Length: %d\r\n"
 		   "Content-Type: text/xml\r\n"
-		   "\r\n", path, dest_uri, port, inlen) < 0) {
-		/* fprintf failed to send the data to the clearing host */
-		free(dest_uri);
-
-		perror(PACKAGE_NAME);
-		fclose(handle);
-		return -1;
-	}
+		   "\r\n", inlen) < 0)
+		goto send_failed;
 
 	free(dest_uri);
 
@@ -197,4 +210,12 @@ int geier_send_encrypted_text(geier_context *context,
 	*output = realloc(*output, *outlen); /* must not fail, shrinking */
 	fclose(handle);
 	return 0;
+
+send_failed:
+	/* fprintf failed to send the data to the clearing host */
+	free(dest_uri);
+
+	perror(PACKAGE_NAME);
+	fclose(handle);
+	return -1;
 }

@@ -35,13 +35,8 @@ libgeier_la_SOURCES = \
 	dsig-get-cert-text.c \
 	dsig-get-key.c \
 	xpath.c xpath.h
-#	send.c \
-#	send_text.c \
-#	decrypt.c
 
-# force relink on version change
-# For legal reasons all versions in production use must be tested and archived.
-libgeier_la_LDFLAGS = -release @PACKAGE_VERSION@
+libgeier_la_LDFLAGS = -version-info 0
 
 noinst_HEADERS = \
 	dsig.h

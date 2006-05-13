@@ -4,6 +4,12 @@ libgeier (0.6-1) unstable; urgency=low
  
  -- Stefan Siegl <stesie@brokenpipe.de>  Sat, 06 May 2006 21:02:23 +0200
 
+libgeier (0.5-7) unstable; urgency=low
+
+  * care for http_proxy environment variable
+
+ -- Stefan Siegl <stesie@brokenpipe.de>  Mon, 01 May 2006 18:57:23 +0200
+
 libgeier (0.5-6) unstable; urgency=low
 
   * handle umlauts in softpse's friendlyName correctly

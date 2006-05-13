@@ -4,3 +4,5 @@ missing
 mkinstalldirs
 Makefile.in
 Makefile
+config.guess
+ltmain.sh config.sub

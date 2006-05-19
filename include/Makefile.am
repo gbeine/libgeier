@@ -1,3 +1,3 @@
-include_HEADERS = geier.h
+include_HEADERS = geier.h geierversion.h
 
 CLEANFILES = *~

@@ -34,6 +34,7 @@ libgeier_la_SOURCES = \
 	dsig-get-cert.c \
 	dsig-get-cert-text.c \
 	dsig-get-key.c \
+	version.c \
 	xpath.c xpath.h
 
 libgeier_la_LDFLAGS = -version-info 0

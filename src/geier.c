@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005  Stefan Siegl <ssiegl@gmx.de>, Germany
+ * Copyright (C) 2005,2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,8 @@
 #endif
 
 #include <geier.h>
+#include <geierversion.h>
+
 #include "context.h"
 #include "find_node.h"
 
@@ -109,6 +111,8 @@ int main(int argc, char **argv)
 		geier_cli_options, parse_geier_opts, 
 		args_doc, doc, NULL, NULL, NULL
 	};
+
+	LIBGEIER_TEST_VERSION;
 
 	if(geier_init(0)) {
 		fprintf(stderr, "%s: unable to initialize libgeier\n", *argv);

@@ -29,7 +29,7 @@ AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION, $PACKAGE_BUGREPORT)
 AC_PREREQ(2.59)
 # we need the extra parentheses in order to cope with the comma
 AC_COPYRIGHT([configure.ac Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany])
-AC_REVISION($Revision: 1.23 $)
+AC_REVISION($Revision: 1.24 $)
 
 AC_CONFIG_SRCDIR([srcdir_marker])
 
@@ -80,7 +80,7 @@ LDFLAGS="$LDFLAGS $PACKAGE_LIBS"
 
 # output
 AC_CONFIG_FILES([Makefile src/Makefile include/Makefile etc/Makefile 
-		 etc/stylesheets/Makefile 
+		 etc/stylesheets/Makefile include/geierversion.h
 		 etc/schemas/Makefile config/Makefile
 		 libgeier.spec libgeier.pc])
 AC_OUTPUT

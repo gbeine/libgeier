@@ -24,6 +24,79 @@ use warnings;
 use XML::Simple;
 #use Data::Dumper;
 
+=pod
+
+=head1 NAME
+
+Geier::Simple - Easy API to Elster/Coala interface
+
+=head1 SYNOPSIS
+
+  use XML::Simple;
+  my $xs = new XML::Simple(KeepRoot => 1, ForceArray => 1);
+  my $subtree = $xs->XMLin(
+    "    <Nutzdatenblock>" .
+    "      <NutzdatenHeader version=\"9\">" .
+    "        [...]" .
+    "      </NutzdatenHeader>" .
+    "    </Nutzdatenblock>");
+
+  use Geier::Simple;
+  my $gs = new Geier::Simple("ElsterAnmeldung", "UStVA", \$subtree);
+
+  my $export = $gs->text();
+
+  use Geier;
+  my $coala = new Geier();
+  print $coala->send($data);
+
+=head1 DESCRIPTION
+
+This Perl Module supplies an easy API to create Elster/Coala XML-trees,
+which can be send to the German inland revenue office afterwards.
+
+GEIER is the first free library to send gathered tax declarations data to
+the German inland revenue office.
+
+GEIER as well as this module is part of the Taxbird project.
+
+=head1 USAGE
+
+This module should be used in a class-based approach, but class-less
+should be possible as well.  Please mind that B<Geier::Simple> is
+thought to be a base class (which cares for the NutzdatenHeader-part
+only) for more specialized classes for all the different types of tax
+declarations.  Have a look at B<Geier::Simple::UStVA> for an example
+(value added tax declarations in this case).  
+
+=head1 FUNCTIONS
+
+=head2 sub new(method, datatype, subtree) - Create a new Class instance
+
+This function creates a new instance of the Geier::Simple class.  You
+need to pass three arguments.  The first argument B<method> is the
+Coala-method of this declaration (for example B<ElsterAnmeldung>)
+which is passed as B<Verfahren> in the TransferHeader.  The B<datatype>
+argument specifies the sub-method, i.e. which type of tax (for example
+B<UStVA>) and is passed as B<DatenArt> in the resulting XML document.
+Last but not least you need to provide a XML::Simple subtree template
+for the B<Nutzdaten>-part of the document.
+
+ EXAMPLE:
+        my $xs = new XML::Simple(KeepRoot => 1, ForceArray => 1);
+        my $subtree = $xs->XMLin(
+          "    <Nutzdatenblock>" .
+          "      <NutzdatenHeader version=\"9\">" .
+          "        [...]" .
+          "      </NutzdatenHeader>" .
+          "    </Nutzdatenblock>");
+
+        use Geier::Simple;
+        my $gs = new Geier::Simple("ElsterAnmeldung", "UStVA", 
+                                   \$subtree);
+
+=cut
+
 sub new($$$$) {
     my $that = shift;
     my $class = ref($that) || $that;
@@ -41,8 +114,8 @@ sub new($$$$) {
 	"    <Verfahren>$verfahren</Verfahren>" .
 	"    <DatenArt>$datenart</DatenArt>" .
 	"    <Vorgang>send-NoSig</Vorgang>" .
-	"    <Testmerker>700000004</Testmerker>" .
-	"    <HerstellerID>74931</HerstellerID>" .
+	#"    <Testmerker>700000004</Testmerker>" .
+	#"    <HerstellerID>74931</HerstellerID>" .
 	#"    <DatenLieferant>Stefan Siegl</DatenLieferant>" .
 	"    <Datei>" .
 	"      <Verschluesselung>PKCS#7v1.5</Verschluesselung>" .
@@ -80,11 +153,64 @@ sub DESTROY {
     # context_free($self->{context});
 }
 
+=pod
+
+=head2 sub set_datenlieferant(address) - set DatenLieferant contents
+
+This function sets the B<DatenLieferant> specified in the
+TransferHeader. 
+
+ EXAMPLE:
+        $xs->set_datenlieferant("Steuer Sklave");
+
+=cut
+
 sub set_datenlieferant($$) {
     my $self = shift;
     my $name = shift;
     $self->{xmltree}->{Elster}->[0]
 	->{TransferHeader}->[0]->{DatenLieferant} = [ $name ];
+}
+
+=pod
+
+=head2 sub set_testmarker(marker) - (re-)set a testmarker
+
+This function sets the content of the B<TestMerker> field specified in
+the TransferHeader.  For a real tax declaration set B<000000000>, in
+case of test data set the corresponding value of the transfer method,
+like B<700000004>.
+
+ EXAMPLE:
+        $xs->set_testmarker("700000004");
+
+=cut
+
+sub set_testmarker($$) {
+    my $self = shift;
+    my $value = shift;
+    $self->{xmltree}->{Elster}->[0]
+	->{TransferHeader}->[0]->{Testmerker} = [ $value ];
+}
+
+=pod
+
+=head2 sub set_vendorid(vendorid) - set your vendor-id
+
+This function sets the content of the B<HerstellerID> field specified
+in the TransferHeader.  For a real tax declaration set your own vendor
+id.  For test cases set B<74931>.
+
+ EXAMPLE:
+        $xs->set_vendorid("74931");
+
+=cut
+
+sub set_vendorid($$) {
+    my $self = shift;
+    my $value = shift;
+    $self->{xmltree}->{Elster}->[0]
+	->{TransferHeader}->[0]->{HerstellerID} = [ $value ];
 }
 
 sub export($$$) {
@@ -241,8 +367,40 @@ sub export_datenteil($) {
     return $out;
 }
 
+=pod
+
+=head2 sub xmltree() - return the XML::Simple XML-tree
+
+This function returns a reference to the internal XML::Simple tree.
+Please mind the you cannot export the XML-tree using B<XMLout> using
+this reference as the tree wouldn't be written in the order as
+required by Germany's fiscal authorities.  Use B<text()> function in
+this case.
+
+ EXAMPLE:
+        my $xml_simple_ref = $xs->xmltree();
+
+=cut
 
 sub xmltree($) {
+    my $self = shift;
+    return $self->{xmltree};
+}
+
+=pod
+
+=head2 sub text() - return the XML-tree as a string
+
+This function writes the XML-tree out and returns it as a string.  Use
+this function in order to export the gathered data and validate, send,
+etc. it using the B<Geier> module.
+
+ EXAMPLE:
+        my $xml = $xs->text();
+
+=cut
+
+sub text($) {
     my $self = shift;
 
     # we can't just call XMLout, since the order of the exported data
@@ -273,8 +431,11 @@ require Exporter;
 our @ISA = qw(Exporter);
 
 our %EXPORT_TAGS = ( 'all' => [ qw(
-        xmltree
-
+        set_datenlieferant
+        set_testmarker
+        set_vendorid
+        xmltee
+        text
 ) ] );
 
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
@@ -283,3 +444,29 @@ our @EXPORT = qw();
 our $VERSION = "0.01";
 
 
+
+=pod
+
+=head1 AUTHOR
+
+Stefan Siegl <stesie@brokenpipe.de>
+
+=head1 COPYRIGHT
+
+The Geier module is subject of the GNU General Public License version 2
+or any later on your option.
+
+Copyright (C) 2006 by Stefan Siegl <stesie@brokenpipe.de>.
+
+
+B<libgeier> is subject of the GNU General Publice License version 2 or
+any later (on your option) as well. Copyright by the corresponding authors.
+
+=head1 BUGS
+
+If you happen to find a bug, in either this module or the libgeier in
+general, please either mail me directly to B<stesie@brokenpipe.de> or to
+the Taxbird mailing list, see the webpages at http://www.taxbird.de/ for
+details.
+
+=cut

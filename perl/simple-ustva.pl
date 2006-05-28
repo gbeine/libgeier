@@ -36,4 +36,7 @@ $ustva->set_zeitraum("02");
 $ustva->set_kz("09", "74931");
 $ustva->set_kz("83", "0.00");
 
-print $ustva->xmltree();
+use Geier::Simple;
+my $simple = $ustva->simple();
+
+print $simple->text();

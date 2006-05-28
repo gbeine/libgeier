@@ -196,7 +196,7 @@ the provided filename, using the supplied pincode.
 
 If either the pin is wrong, the software certificate holding file couldn't
 be read or the signing process failed for whatever else reason, I<undef>
-is returned. On sucess the resulting (now signed) document is will be 
+is returned. On sucess the resulting (now signed) document will be 
 returned as a string.
 
  EXAMPLE:
@@ -213,7 +213,7 @@ Stefan Siegl <stesie@brokenpipe.de>
 The Geier module is subject of the GNU General Public License version 2
 or any later on your option.
 
-Copyright (C) 2005 by Stefan Siegl <stesie@brokenpipe.de>.
+Copyright (C) 2005,2006 by Stefan Siegl <stesie@brokenpipe.de>.
 
 
 B<libgeier> is subject of the GNU General Publice License version 2 or

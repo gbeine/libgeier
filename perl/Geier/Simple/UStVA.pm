@@ -359,7 +359,7 @@ sub simple($) {
 ###   E x p o r t e r   A r e a                                            ###
 ##############################################################################
 require Exporter;
-our @ISA = qw(Exporter);
+our @ISA = qw(Exporter Geier::Simple);
 
 our %EXPORT_TAGS = ( 'all' => [ qw(
         set_datenlieferant

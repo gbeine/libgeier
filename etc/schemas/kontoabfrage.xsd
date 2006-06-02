@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by Schwager (Hessische Zentrale f. Datenverarbeitung) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="kontoabfrage">
+		<xs:annotation>
+			<xs:documentation>Comment describing your root element</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="kontoabfrage-teil" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="kontoabfrage-input">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="kontoabfrage-art">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="O"/>
+													<xs:enumeration value="I"/>
+													<xs:enumeration value="ZS"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="steuernummer">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:length value="13"/>
+													<xs:pattern value="\d{13}"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="steuerart" minOccurs="0">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="alle"/>
+													<xs:enumeration value="ESt"/>
+													<xs:enumeration value="KSt"/>
+													<xs:enumeration value="USt"/>
+													<xs:enumeration value="LSt"/>
+													<xs:enumeration value="ZaSt"/>
+													<xs:enumeration value="KapESt"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:choice minOccurs="0">
+											<xs:element name="zeitraum">
+												<xs:simpleType>
+													<xs:restriction base="xs:string">
+														<xs:length value="4"/>
+														<xs:pattern value="\d{4}"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:element>
+											<xs:element name="wertstellungsdatum">
+												<xs:complexType>
+													<xs:simpleContent>
+														<xs:extension base="xs:string">
+															<xs:attribute name="option" use="optional" default="J">
+																<xs:simpleType>
+																	<xs:restriction base="xs:string">
+																		<xs:enumeration value="J"/>
+																		<xs:enumeration value="V"/>
+																	</xs:restriction>
+																</xs:simpleType>
+															</xs:attribute>
+														</xs:extension>
+													</xs:simpleContent>
+												</xs:complexType>
+											</xs:element>
+										</xs:choice>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="kontoabfrage-output" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="finanzamtdaten" minOccurs="0">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="finanzamt-name" type="xs:string"/>
+													<xs:element name="finanzamt-telefax" type="xs:string" minOccurs="0"/>
+													<xs:element name="finanzamt-telefon" type="xs:string"/>
+													<xs:element name="finanzamt-email" type="xs:string" minOccurs="0"/>
+													<xs:element name="finanzamt-postfach"/>
+													<xs:element name="finanzamt-plz-ort" type="xs:string"/>
+													<xs:element name="finanzamt-bankverbindung" maxOccurs="3">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="finanzamt-kto" type="xs:string"/>
+																<xs:element name="finanzamt-blz" type="xs:string"/>
+																<xs:element name="finanzamt-bankbezeichnung" type="xs:string"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="steuerpflichtiger" minOccurs="0">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="steuerpflichtiger-name" type="xs:string"/>
+													<xs:element name="steuerpflichtiger-vorname" type="xs:string" minOccurs="0"/>
+													<xs:element name="steuerpflichtiger-plz-ort" type="xs:string"/>
+													<xs:choice>
+														<xs:element name="steuerpflichtiger-postfach" type="xs:string"/>
+														<xs:element name="steuerpflichtiger-strasse-hausnummer" type="xs:string"/>
+													</xs:choice>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="abfrage-tagesdatum" type="xs:string"/>
+										<xs:element name="abfrage-steuernummer" type="xs:string"/>
+										<xs:element name="abfrage-steuerart" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence minOccurs="0">
+													<xs:element name="steuerart-klartext" type="xs:string"/>
+													<xs:element name="steuerart-erlaeuterung" type="xs:string" minOccurs="0"/>
+													<xs:element name="steuerart-teilbetrag" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="teilbetrag-zeitraum" type="xs:string"/>
+																<xs:element name="teilbetrag-faelligkeit" type="xs:string"/>
+																<xs:element name="teilbetrag-wert" type="xs:string" minOccurs="0"/>
+																<xs:element name="teilbetrag-erlaeuterung" type="xs:string" minOccurs="0"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="steuerart-gesamtbetrag" type="xs:string" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="abfrage-gesamtsumme" type="xs:string" minOccurs="0"/>
+										<xs:element name="abfrage-erlaeuterung" type="xs:string" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="bearbeitungshinweis" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="return-code" type="xs:string" minOccurs="0"/>
+										<xs:element name="return-text" type="xs:string" minOccurs="0"/>
+										<xs:element name="stack-code" type="xs:string" minOccurs="0"/>
+										<xs:element name="stack-text" type="xs:string" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="version" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:long">
+						<xs:enumeration value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

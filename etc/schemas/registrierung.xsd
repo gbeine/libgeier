@@ -1,0 +1,135 @@
+<?xml version="2.0" encoding="ISO-8859-1"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by itina (Hessische Zentrale f. Datenverarbeitung) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="registrierung">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="registrierung-teil" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="nutzer">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="nutzer-rolle" type="xs:string"/>
+										<xs:element name="nutzer-bevollmaechtigter-rolle" type="xs:string" minOccurs="0"/>
+										<xs:element name="nutzer-anrede" type="xs:string"/>
+										<xs:element name="nutzer-titel-akad-grad" type="xs:string" minOccurs="0"/>
+										<xs:element name="nutzer-name" type="xs:string"/>
+										<xs:element name="nutzer-vorname" type="xs:string"/>
+										<xs:element name="nutzer-geburtsdatum" minOccurs="0">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:length value="8"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="nutzer-kanzleiname" type="xs:string" minOccurs="0"/>
+										<xs:element name="nutzer-plz" type="xs:string"/>
+										<xs:element name="nutzer-ort" type="xs:string"/>
+										<xs:element name="nutzer-strasse" type="xs:string"/>
+										<xs:element name="nutzer-hausnummer" type="xs:string" minOccurs="0"/>
+										<xs:element name="nutzer-hausnummer-zusatz" type="xs:string" minOccurs="0"/>
+										<xs:element name="nutzer-email" type="xs:string" minOccurs="0"/>
+										<xs:element name="nutzer-telefon" type="xs:string" minOccurs="0"/>
+										<xs:element name="nutzer-antrags-datum" type="xs:string" minOccurs="0"/>
+										<xs:element name="nutzer-return-code" type="xs:string" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="steuerpflichtiger">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="steuerpflichtiger-steuernummer">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:length value="13"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="steuerpflichtiger-anrede" type="xs:string" minOccurs="0"/>
+										<xs:element name="steuerpflichtiger-titel-akad-grad" type="xs:string" minOccurs="0"/>
+										<xs:element name="steuerpflichtiger-name" type="xs:string" minOccurs="0"/>
+										<xs:element name="steuerpflichtiger-vorname" type="xs:string" minOccurs="0"/>
+										<xs:element name="steuerpflichtiger-geburtsdatum" minOccurs="0">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:length value="8"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="steuerpflichtiger-ehefrau-anrede" type="xs:string" minOccurs="0"/>
+										<xs:element name="steuerpflichtiger-ehefrau-titel-akad-grad" type="xs:string" minOccurs="0"/>
+										<xs:element name="steuerpflichtiger-ehefrau-name" type="xs:string" minOccurs="0"/>
+										<xs:element name="steuerpflichtiger-ehefrau-vorname" type="xs:string" minOccurs="0"/>
+										<xs:element name="steuerpflichtiger-ehefrau-geburtsdatum" minOccurs="0">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:length value="8"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="steuerpflichtiger-plz" type="xs:string" minOccurs="0"/>
+										<xs:element name="steuerpflichtiger-ort" type="xs:string" minOccurs="0"/>
+										<xs:element name="steuerpflichtiger-strasse" type="xs:string" minOccurs="0"/>
+										<xs:element name="steuerpflichtiger-hausnummer" type="xs:string" minOccurs="0"/>
+										<xs:element name="steuerpflichtiger-hausnummer-zusatz" type="xs:string" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="untervollmacht-teil" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="untervollmachtinhaber" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:choice>
+														<xs:element name="untervollmachtinhaber-fingerprint" type="xs:string"/>
+														<xs:element name="untervollmachtinhaber-certificate" type="xs:string"/>
+													</xs:choice>
+													<xs:element name="untervollmachtinhaber-name">
+														<xs:simpleType>
+															<xs:restriction base="xs:string">
+																<xs:minLength value="1"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element name="untervollmachtinhaber-vorname">
+														<xs:simpleType>
+															<xs:restriction base="xs:string">
+																<xs:minLength value="1"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element name="untervollmachtinhaber-geburtsdatum" type="xs:string" minOccurs="0"/>
+													<xs:element name="untervollmachtinhaber-kanzleiname" type="xs:string" minOccurs="0"/>
+													<xs:element name="untervollmachtinhaber-return-code" type="xs:string" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="bearbeitungshinweis" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="return-code" type="xs:string" minOccurs="0"/>
+										<xs:element name="return-text" type="xs:string" minOccurs="0"/>
+										<xs:element name="stack-code" type="xs:string" minOccurs="0"/>
+										<xs:element name="stack-text" type="xs:string" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="version" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:long">
+						<xs:enumeration value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

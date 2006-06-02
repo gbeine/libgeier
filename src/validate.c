@@ -140,28 +140,15 @@ static const char *val_version_xpathexpr =
 
 
 
-
-
-/* return the file:// URI of the XML Schema file, needed to validate
- * the provided document doc, NULL on error */
-static char *get_xsd_path(geier_context *context, xmlDoc *doc) {
-	unsigned char *retval = NULL;
-
-	/* check whether TransferHeader->Verfahren is okay ***/
-	char *val_verfahren = 
-		elster_xpath_get_content(context, doc,
-					 val_verfahren_xpathexpr);
-	if(! val_verfahren) goto out;
-	if(strcmp(val_verfahren, "ElsterAnmeldung")) {
-		fprintf(stderr, "libgeier: unable to validate doctype %s\n",
-			val_verfahren);
-		goto out0;
-	}
+static char *validate_elsteranmeldung(geier_context *context, xmlDoc *doc)
+{
+	char *retval = NULL;
 
 	/* check whether TransferHeader->DatenArt is okay ***/
 	char *val_datenart = 
 		elster_xpath_get_content(context, doc, val_datenart_xpathexpr);
 	if(! val_datenart) goto out0;
+
 	if(strcmp(val_datenart, "UStVA") && strcmp(val_datenart, "LStA")) {
 		fprintf(stderr, "libgeier: unable to validate doctype %s\n",
 			val_datenart);
@@ -191,9 +178,76 @@ static char *get_xsd_path(geier_context *context, xmlDoc *doc) {
 
 	xmlBufferFree(buf);
 
- out2:
- out1:
+out2:
+out1:
 	free(val_datenart);
+out0:
+	return retval;
+}
+
+
+static char *validate_elsterkontoabfrage(geier_context *context, xmlDoc *doc)
+{
+	char *retval = NULL;
+
+	/* check whether TransferHeader->DatenArt is okay ***/
+	char *val_datenart = 
+		elster_xpath_get_content(context, doc, val_datenart_xpathexpr);
+	if(! val_datenart) goto out0;
+
+	xmlBuffer *buf = xmlBufferCreate();
+     	if(! buf) goto out1;
+
+	xmlBufferCCat(buf, context->schema_dir_url);
+	xmlBufferCCat(buf, "/");
+
+	if(! strcmp(val_datenart, "Registrierung"))
+		xmlBufferCCat(buf, "registrierung");
+	else if(! strcmp(val_datenart, "Kontoabfrage"))
+		xmlBufferCCat(buf, "kontoabfrage");
+	else {
+		fprintf(stderr, "libgeier: unable to validate doctype %s\n",
+			val_datenart);
+		goto out2;
+	}
+
+	xmlBufferCCat(buf, "_rootish.xsd");
+
+	retval = strdup(xmlBufferContent(buf));
+
+out2:
+	xmlBufferFree(buf);
+out1:
+	free(val_datenart);
+out0:
+	return retval;
+}
+
+
+
+/* return the file:// URI of the XML Schema file, needed to validate
+ * the provided document doc, NULL on error */
+static char *get_xsd_path(geier_context *context, xmlDoc *doc) {
+	unsigned char *retval = NULL;
+
+	/* check whether TransferHeader->Verfahren is okay ***/
+	char *val_verfahren = 
+		elster_xpath_get_content(context, doc,
+					 val_verfahren_xpathexpr);
+	if(! val_verfahren) goto out;
+
+	if(! strcmp(val_verfahren, "ElsterAnmeldung")) {
+		retval = validate_elsteranmeldung(context, doc);
+	}
+	else if(! strcmp(val_verfahren, "ElsterKontoabfrage")) {
+		retval = validate_elsterkontoabfrage(context, doc);
+	}
+	else {
+		fprintf(stderr, "libgeier: unable to validate doctype %s\n",
+			val_verfahren);
+		goto out0;
+	}
+
  out0:
 	free(val_verfahren);
  out:

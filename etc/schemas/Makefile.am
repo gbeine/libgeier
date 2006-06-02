@@ -8,11 +8,13 @@ schema_DATA = \
 	elster_UStA_200501_extern.xsd \
 	elster_UStA_200601_extern.xsd \
 	kontoabfrage.xsd \
+	kontoabfrage_rootish.xsd \
 	lsta_200401.xsd \
 	lsta_200501.xsd \
 	lsta_200601.xsd \
 	ndh000009.xsd \
 	registrierung.xsd \
+	registrierung_rootish.xsd \
 	th000007_extern.xsd \
 	usta_200401.xsd \
 	usta_200501.xsd \

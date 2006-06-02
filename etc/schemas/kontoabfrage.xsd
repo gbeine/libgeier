@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by Schwager (Hessische Zentrale f. Datenverarbeitung) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:element name="kontoabfrage">
+<xs:schema targetNamespace="http://www.elster.de/2002/XMLSchema" xmlns:elster="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="kontoabfrage" type="elster:kontoabfrageCType">
 		<xs:annotation>
 			<xs:documentation>Comment describing your root element</xs:documentation>
 		</xs:annotation>
-		<xs:complexType>
+	</xs:element>
+		<xs:complexType name="kontoabfrageCType">
 			<xs:sequence>
 				<xs:element name="kontoabfrage-teil" maxOccurs="unbounded">
 					<xs:complexType>
@@ -157,5 +158,4 @@
 				</xs:simpleType>
 			</xs:attribute>
 		</xs:complexType>
-	</xs:element>
 </xs:schema>

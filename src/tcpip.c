@@ -13,7 +13,7 @@
  *
  *
  * adjustments made to fit libgeier
- * Copyright (C) 2005, by Stefan Siegl <stesie@brokenpipe.de>, Germany
+ * Copyright (C) 2005,2006 by Stefan Siegl <stesie@brokenpipe.de>, Germany
  */
 
 #ifdef HAVE_CONFIG_H
@@ -52,6 +52,7 @@ geier_tcpip_connect(const char *hostname, const char *port)
     return NULL;
   }  
 
+  memset(&addrinfo, 0, sizeof(addrinfo));
   addrinfo.ai_flags = 0;
   addrinfo.ai_family = AF_INET;
   addrinfo.ai_socktype = SOCK_STREAM;

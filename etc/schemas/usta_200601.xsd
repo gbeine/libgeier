@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- edited with XMLSpy v2005 U (http://www.xmlspy.com) by josef veits (Oberfinanzdirektion München) -->
-<!-- Version_BY 200501.1 -->
-<xs:schema targetNamespace="http://www.elster.de/2002/XMLSchema" xmlns:elster="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<!-- Version_BY 200501.2 -->
+<xs:schema targetNamespace="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:elster="http://www.elster.de/2002/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:complexType name="usta_AnmeldungssteuernCType">
 		<xs:sequence>
 			<xs:element name="DatenLieferant" type="elster:usta_DatenlieferantType"/>
@@ -210,7 +210,6 @@
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="Kz10" type="elster:usta_Kz10SType" minOccurs="0"/>
-			<xs:element name="Kz22" type="elster:usta_Kz22SType" minOccurs="0"/>
 			<xs:element name="Kz26" type="elster:usta_Kz26SType" minOccurs="0"/>
 			<xs:element name="Kz29" type="elster:usta_Kz29SType" minOccurs="0"/>
 			<xs:element name="Kz38" type="elster:usta_DefaultKZPositiveSType"/>

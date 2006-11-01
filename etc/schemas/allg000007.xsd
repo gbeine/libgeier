@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- edited with XML Spy v4.3 U (http://www.xmlspy.com) by Michael Wilz (Rechenzentrum der Finanzverwaltung NRW) -->
-<!-- Version 7.06 -->
+<!-- Version 7.13 -->
+<!-- Änderungen:
+	AuslandsPLZ wird nun nur noch aus Länderkürzel überprüft - alles danach ist optional ...
+-->
+<!-- Änderung zu Version 7.10 
+     - Auslandspostleitzahl muss nun neben den ersten 3stellen auch noch ein weiteres Zeichen vom Typ Buchstabe bzw. Ziffer beinhalten !
+	 - Hausnummer 0 ist nun zulässig (bisher mindestens 1)
+	 - Hausnummer ist nun vom Typ xs:integer
+-->
+<!-- 
+	Änderung zu 7.10 :
+	BF als weiteres Kürzel fürs BFF 
+-->
+<!-- 
+	 Änderung zu 7.07 :
+-->
+<!-- 
+	 Änderung zu 7.06 :
+	 neues Konfessionskürzel "na" neuapostolisch, diese wird in Sachen-Anhalt auf den Lohnsteuerkarten bescheinigt.  
+-->
 <xs:schema targetNamespace="http://www.elster.de/2002/XMLSchema" xmlns:elster="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<!-- Definierung globaler simple Types________________________________________________________-->
 	<xs:element name="Allg">
@@ -30,140 +49,140 @@
 		<xs:restriction base="xs:string">
 			<xs:maxLength value="13"/>
 			<xs:pattern value="AFG.*"/>
-			<xs:pattern value="ET .*"/>
-			<xs:pattern value="AL .*"/>
-			<xs:pattern value="DZ .*"/>
-			<xs:pattern value="AJ .*"/>
-			<xs:pattern value="AS .*"/>
+			<xs:pattern value="ET.*"/>
+			<xs:pattern value="AL.*"/>
+			<xs:pattern value="DZ.*"/>
+			<xs:pattern value="AJ.*"/>
+			<xs:pattern value="AS.*"/>
 			<xs:pattern value="AND.*"/>
 			<xs:pattern value="AGO.*"/>
 			<xs:pattern value="ANG.*"/>
-			<xs:pattern value="AT .*"/>
+			<xs:pattern value="AT.*"/>
 			<xs:pattern value="ANT.*"/>
 			<xs:pattern value="AQU.*"/>
-			<xs:pattern value="RA .*"/>
+			<xs:pattern value="RA.*"/>
 			<xs:pattern value="ARM.*"/>
 			<xs:pattern value="ASE.*"/>
 			<xs:pattern value="ETH.*"/>
 			<xs:pattern value="AUS.*"/>
-			<xs:pattern value="BS .*"/>
+			<xs:pattern value="BS.*"/>
 			<xs:pattern value="BRN.*"/>
-			<xs:pattern value="BD .*"/>
+			<xs:pattern value="BD.*"/>
 			<xs:pattern value="BDS.*"/>
-			<xs:pattern value="B  .*"/>
-			<xs:pattern value="BH .*"/>
-			<xs:pattern value="DY .*"/>
+			<xs:pattern value="B.*"/>
+			<xs:pattern value="BH.*"/>
+			<xs:pattern value="DY.*"/>
 			<xs:pattern value="BER.*"/>
 			<xs:pattern value="BHT.*"/>
 			<xs:pattern value="BOL.*"/>
 			<xs:pattern value="BIH.*"/>
-			<xs:pattern value="RB .*"/>
-			<xs:pattern value="BR .*"/>
-			<xs:pattern value="BJ .*"/>
+			<xs:pattern value="RB.*"/>
+			<xs:pattern value="BR.*"/>
+			<xs:pattern value="BJ.*"/>
 			<xs:pattern value="BRU.*"/>
-			<xs:pattern value="BG .*"/>
-			<xs:pattern value="HV .*"/>
-			<xs:pattern value="RU .*"/>
+			<xs:pattern value="BG.*"/>
+			<xs:pattern value="HV.*"/>
+			<xs:pattern value="RU.*"/>
 			<xs:pattern value="CUE.*"/>
 			<xs:pattern value="RCH.*"/>
-			<xs:pattern value="TJ .*"/>
+			<xs:pattern value="TJ.*"/>
 			<xs:pattern value="COI.*"/>
-			<xs:pattern value="CR .*"/>
-			<xs:pattern value="CI .*"/>
-			<xs:pattern value="DK .*"/>
-			<xs:pattern value="WD .*"/>
+			<xs:pattern value="CR.*"/>
+			<xs:pattern value="CI.*"/>
+			<xs:pattern value="DK.*"/>
+			<xs:pattern value="WD.*"/>
 			<xs:pattern value="DOM.*"/>
 			<xs:pattern value="DSC.*"/>
-			<xs:pattern value="EC .*"/>
-			<xs:pattern value="ES .*"/>
+			<xs:pattern value="EC.*"/>
+			<xs:pattern value="ES.*"/>
 			<xs:pattern value="ERI.*"/>
 			<xs:pattern value="EST.*"/>
 			<xs:pattern value="FAL.*"/>
-			<xs:pattern value="FR .*"/>
+			<xs:pattern value="FR.*"/>
 			<xs:pattern value="FJI.*"/>
 			<xs:pattern value="FIN.*"/>
-			<xs:pattern value="F  .*"/>
-			<xs:pattern value="FG .*"/>
-			<xs:pattern value="FP .*"/>
+			<xs:pattern value="F.*"/>
+			<xs:pattern value="FG.*"/>
+			<xs:pattern value="FP.*"/>
 			<xs:pattern value="GAB.*"/>
 			<xs:pattern value="WAG.*"/>
 			<xs:pattern value="GEO.*"/>
-			<xs:pattern value="GH .*"/>
+			<xs:pattern value="GH.*"/>
 			<xs:pattern value="GIB.*"/>
-			<xs:pattern value="WG .*"/>
-			<xs:pattern value="GR .*"/>
+			<xs:pattern value="WG.*"/>
+			<xs:pattern value="GR.*"/>
 			<xs:pattern value="GRO.*"/>
-			<xs:pattern value="GB .*"/>
+			<xs:pattern value="GB.*"/>
 			<xs:pattern value="GUA.*"/>
 			<xs:pattern value="GUM.*"/>
 			<xs:pattern value="GCA.*"/>
-			<xs:pattern value="RG .*"/>
+			<xs:pattern value="RG.*"/>
 			<xs:pattern value="GUB.*"/>
 			<xs:pattern value="GUY.*"/>
-			<xs:pattern value="RH .*"/>
+			<xs:pattern value="RH.*"/>
 			<xs:pattern value="HCA.*"/>
 			<xs:pattern value="HOK.*"/>
 			<xs:pattern value="IND.*"/>
-			<xs:pattern value="RI .*"/>
+			<xs:pattern value="RI.*"/>
 			<xs:pattern value="MAN.*"/>
 			<xs:pattern value="IRQ.*"/>
-			<xs:pattern value="IR .*"/>
+			<xs:pattern value="IR.*"/>
 			<xs:pattern value="IRL.*"/>
-			<xs:pattern value="IS .*"/>
-			<xs:pattern value="IL .*"/>
-			<xs:pattern value="I  .*"/>
-			<xs:pattern value="JA .*"/>
-			<xs:pattern value="J  .*"/>
+			<xs:pattern value="IS.*"/>
+			<xs:pattern value="IL.*"/>
+			<xs:pattern value="I.*"/>
+			<xs:pattern value="JA.*"/>
+			<xs:pattern value="J.*"/>
 			<xs:pattern value="YEM.*"/>
 			<xs:pattern value="JOR.*"/>
-			<xs:pattern value="YU .*"/>
+			<xs:pattern value="YU.*"/>
 			<xs:pattern value="KAI.*"/>
-			<xs:pattern value="K  .*"/>
+			<xs:pattern value="K.*"/>
 			<xs:pattern value="CAM.*"/>
 			<xs:pattern value="CDN.*"/>
 			<xs:pattern value="KAN.*"/>
-			<xs:pattern value="CV .*"/>
+			<xs:pattern value="CV.*"/>
 			<xs:pattern value="KAS.*"/>
 			<xs:pattern value="QAT.*"/>
 			<xs:pattern value="EAK.*"/>
 			<xs:pattern value="KIS.*"/>
 			<xs:pattern value="KIB.*"/>
-			<xs:pattern value="CO .*"/>
+			<xs:pattern value="CO.*"/>
 			<xs:pattern value="KOM.*"/>
 			<xs:pattern value="RCB.*"/>
 			<xs:pattern value="ZRE.*"/>
 			<xs:pattern value="KOR.*"/>
 			<xs:pattern value="ROK.*"/>
-			<xs:pattern value="HR .*"/>
-			<xs:pattern value="C  .*"/>
+			<xs:pattern value="HR.*"/>
+			<xs:pattern value="C.*"/>
 			<xs:pattern value="KWT.*"/>
 			<xs:pattern value="LAO.*"/>
-			<xs:pattern value="LS .*"/>
-			<xs:pattern value="LV .*"/>
-			<xs:pattern value="RL .*"/>
-			<xs:pattern value="LB .*"/>
+			<xs:pattern value="LS.*"/>
+			<xs:pattern value="LV.*"/>
+			<xs:pattern value="RL.*"/>
+			<xs:pattern value="LB.*"/>
 			<xs:pattern value="LAR.*"/>
-			<xs:pattern value="FL .*"/>
-			<xs:pattern value="LT .*"/>
-			<xs:pattern value="L  .*"/>
+			<xs:pattern value="FL.*"/>
+			<xs:pattern value="LT.*"/>
+			<xs:pattern value="L.*"/>
 			<xs:pattern value="MAC.*"/>
-			<xs:pattern value="RM .*"/>
-			<xs:pattern value="MK .*"/>
-			<xs:pattern value="MW .*"/>
+			<xs:pattern value="RM.*"/>
+			<xs:pattern value="MK.*"/>
+			<xs:pattern value="MW.*"/>
 			<xs:pattern value="MAL.*"/>
 			<xs:pattern value="BIO.*"/>
 			<xs:pattern value="RMM.*"/>
-			<xs:pattern value="M  .*"/>
-			<xs:pattern value="MA .*"/>
+			<xs:pattern value="M.*"/>
+			<xs:pattern value="MA.*"/>
 			<xs:pattern value="MAR.*"/>
 			<xs:pattern value="MAT.*"/>
 			<xs:pattern value="RIM.*"/>
-			<xs:pattern value="MS .*"/>
+			<xs:pattern value="MS.*"/>
 			<xs:pattern value="MAY.*"/>
 			<xs:pattern value="MEX.*"/>
 			<xs:pattern value="MIK.*"/>
-			<xs:pattern value="MD .*"/>
-			<xs:pattern value="MC .*"/>
+			<xs:pattern value="MD.*"/>
+			<xs:pattern value="MC.*"/>
 			<xs:pattern value="MON.*"/>
 			<xs:pattern value="MOT.*"/>
 			<xs:pattern value="MOZ.*"/>
@@ -172,94 +191,93 @@
 			<xs:pattern value="NAU.*"/>
 			<xs:pattern value="NEP.*"/>
 			<xs:pattern value="NKA.*"/>
-			<xs:pattern value="NZ .*"/>
+			<xs:pattern value="NZ.*"/>
 			<xs:pattern value="NIC.*"/>
-			<xs:pattern value="NL .*"/>
+			<xs:pattern value="NL.*"/>
 			<xs:pattern value="NLA.*"/>
-			<xs:pattern value="RN .*"/>
+			<xs:pattern value="RN.*"/>
 			<xs:pattern value="WAN.*"/>
 			<xs:pattern value="NIU.*"/>
 			<xs:pattern value="NMA.*"/>
-			<xs:pattern value="N  .*"/>
+			<xs:pattern value="N.*"/>
 			<xs:pattern value="MAO.*"/>
-			<xs:pattern value="A  .*"/>
-			<xs:pattern value="PK .*"/>
+			<xs:pattern value="A.*"/>
+			<xs:pattern value="PK.*"/>
 			<xs:pattern value="PAL.*"/>
-			<xs:pattern value="PA .*"/>
+			<xs:pattern value="PA.*"/>
 			<xs:pattern value="PNG.*"/>
-			<xs:pattern value="PY .*"/>
+			<xs:pattern value="PY.*"/>
 			<xs:pattern value="PIN.*"/>
-			<xs:pattern value="PE .*"/>
-			<xs:pattern value="RP .*"/>
+			<xs:pattern value="PE.*"/>
+			<xs:pattern value="RP.*"/>
 			<xs:pattern value="PIT.*"/>
-			<xs:pattern value="PL .*"/>
-			<xs:pattern value="P  .*"/>
+			<xs:pattern value="PL.*"/>
+			<xs:pattern value="P.*"/>
 			<xs:pattern value="PRI.*"/>
 			<xs:pattern value="REU.*"/>
 			<xs:pattern value="RWA.*"/>
-			<xs:pattern value="RO .*"/>
+			<xs:pattern value="RO.*"/>
 			<xs:pattern value="RUS.*"/>
 			<xs:pattern value="PIE.*"/>
 			<xs:pattern value="SOL.*"/>
-			<xs:pattern value="Z  .*"/>
-			<xs:pattern value="WS .*"/>
+			<xs:pattern value="Z.*"/>
+			<xs:pattern value="WS.*"/>
 			<xs:pattern value="RSM.*"/>
 			<xs:pattern value="STP.*"/>
 			<xs:pattern value="SAU.*"/>
-			<xs:pattern value="S  .*"/>
-			<xs:pattern value="CH .*"/>
-			<xs:pattern value="SN .*"/>
-			<xs:pattern value="SY .*"/>
+			<xs:pattern value="S.*"/>
+			<xs:pattern value="CH.*"/>
+			<xs:pattern value="SN.*"/>
+			<xs:pattern value="SY.*"/>
 			<xs:pattern value="WAL.*"/>
-			<xs:pattern value="ZW .*"/>
+			<xs:pattern value="ZW.*"/>
 			<xs:pattern value="SGP.*"/>
-			<xs:pattern value="SK .*"/>
+			<xs:pattern value="SK.*"/>
 			<xs:pattern value="SLO.*"/>
-			<xs:pattern value="SP .*"/>
-			<xs:pattern value="E  .*"/>
-			<xs:pattern value="CL .*"/>
+			<xs:pattern value="SP.*"/>
+			<xs:pattern value="E.*"/>
+			<xs:pattern value="CL.*"/>
 			<xs:pattern value="HEL.*"/>
 			<xs:pattern value="SCN.*"/>
-			<xs:pattern value="WL .*"/>
-			<xs:pattern value="WV .*"/>
-			<xs:pattern value="ZA .*"/>
+			<xs:pattern value="WL.*"/>
+			<xs:pattern value="WV.*"/>
+			<xs:pattern value="ZA.*"/>
 			<xs:pattern value="SUD.*"/>
 			<xs:pattern value="SME.*"/>
-			<xs:pattern value="SD .*"/>
+			<xs:pattern value="SD.*"/>
 			<xs:pattern value="SYR.*"/>
 			<xs:pattern value="TAD.*"/>
-			<xs:pattern value="RC .*"/>
+			<xs:pattern value="RC.*"/>
 			<xs:pattern value="EAT.*"/>
-			<xs:pattern value="T  .*"/>
+			<xs:pattern value="T.*"/>
 			<xs:pattern value="OTI.*"/>
-			<xs:pattern value="TG .*"/>
+			<xs:pattern value="TG.*"/>
 			<xs:pattern value="TOK.*"/>
 			<xs:pattern value="TON.*"/>
-			<xs:pattern value="TT .*"/>
+			<xs:pattern value="TT.*"/>
 			<xs:pattern value="CHD.*"/>
-			<xs:pattern value="CZ .*"/>
-			<xs:pattern value="TN .*"/>
-			<xs:pattern value="TR .*"/>
+			<xs:pattern value="CZ.*"/>
+			<xs:pattern value="TN.*"/>
+			<xs:pattern value="TR.*"/>
 			<xs:pattern value="TUR.*"/>
 			<xs:pattern value="TUC.*"/>
 			<xs:pattern value="TUV.*"/>
 			<xs:pattern value="EAU.*"/>
-			<xs:pattern value="UA .*"/>
-			<xs:pattern value="H  .*"/>
+			<xs:pattern value="UA.*"/>
+			<xs:pattern value="H.*"/>
 			<xs:pattern value="ROU.*"/>
 			<xs:pattern value="USB.*"/>
 			<xs:pattern value="VAN.*"/>
-			<xs:pattern value="V  .*"/>
-			<xs:pattern value="YV .*"/>
+			<xs:pattern value="V.*"/>
+			<xs:pattern value="YV.*"/>
 			<xs:pattern value="UAE.*"/>
 			<xs:pattern value="USA.*"/>
-			<xs:pattern value="VN .*"/>
-			<xs:pattern value="BY .*"/>
+			<xs:pattern value="VN.*"/>
+			<xs:pattern value="BY.*"/>
 			<xs:pattern value="RCA.*"/>
-			<xs:pattern value="CY .*"/>
+			<xs:pattern value="CY.*"/>
 			<xs:pattern value="SCG.*"/>
-			<xs:pattern value="   .*">
-				<xs:annotation>
+			<xs:pattern value=".*">				<xs:annotation>
 					<xs:documentation xml:lang="DE">Für nicht aufgeführte Länder</xs:documentation>
 				</xs:annotation>
 			</xs:pattern>
@@ -292,6 +310,7 @@
 			<xs:documentation xml:lang="DE">EC = ElsterCountry "Testbundesland"</xs:documentation>
 			<xs:documentation xml:lang="DE">CS = Clearingstelle"</xs:documentation>
 			<xs:documentation xml:lang="DE">BFF = Bundesamt für Finanzen"</xs:documentation>
+			<xs:documentation xml:lang="DE">BF = Bundesamt für Finanzen"</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
@@ -314,6 +333,7 @@
 			<xs:enumeration value="EC"/>
 			<xs:enumeration value="BFF"/>
 			<xs:enumeration value="CS"/>
+			<xs:enumeration value="BF"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<!-- C -->
@@ -347,7 +367,7 @@
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:length value="4"/>
-			<xs:pattern value="\d{4}"/>
+			<xs:pattern value="(19|20)\d{2}"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<!-- E -->
@@ -366,9 +386,9 @@
 	<!-- G -->
 	<!-- H -->
 	<xs:simpleType name="allg_HausnummerSType">
-		<xs:restriction base="xs:positiveInteger">
+		<xs:restriction base="xs:integer">
 			<xs:maxExclusive value="1000000000"/>
-			<xs:minInclusive value="1"/>
+			<xs:minInclusive value="0"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="allg_HerstellerIDSType">
@@ -397,11 +417,12 @@
 			<xs:documentation xml:lang="DE">il = Israelitische Kultussteuer der Kultusberechtigten Gemeinden</xs:documentation>
 			<xs:documentation xml:lang="DE">jd = Jüdische Kultussteuer</xs:documentation>
 			<xs:documentation xml:lang="DE">rk = Römisch-Katholische Kirchensteuer</xs:documentation>
-			<xs:documentation xml:lang="DE">-- = für Steuerpflichtige mit Wohnsitz im Ausland</xs:documentation>
+			<xs:documentation xml:lang="DE">-- = für Steuerpflichtige mit Wohnsitz im Ausland und unbekannte Konfession, bzw. wenn für den Ehegatten des AN keine abweichende Konfession bescheinigt wurde</xs:documentation>
+			<xs:documentation xml:lang="DE">na = neuapostolisch</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:pattern value="[^\s\p{C}][^\p{C}]"/>
 			<xs:length value="2"/>
+			<xs:pattern value="[^\s\p{C}][^\p{C}]"/>
 			<xs:enumeration value="vd"/>
 			<xs:enumeration value="ev"/>
 			<xs:enumeration value="lt"/>
@@ -420,6 +441,7 @@
 			<xs:enumeration value="jd"/>
 			<xs:enumeration value="rk"/>
 			<xs:enumeration value="--"/>
+			<xs:enumeration value="na"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<!-- L -->
@@ -962,9 +984,9 @@
 			<xs:documentation xml:lang="DE">20stellig Alphanummerisch</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
 			<xs:maxLength value="32"/>
 			<xs:minLength value="1"/>
+			<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<!-- O -->

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- edited with XMLSpy v2005 U (http://www.xmlspy.com) by josef veits (Oberfinanzdirektion München) -->
-<!-- Version_BY 200501.7.7 -->
+<!-- Version_BY 200501.7.8 -->
 <xs:schema targetNamespace="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:elster="http://www.elster.de/2002/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:complexType name="usta_AnmeldungssteuernCType">
 		<xs:sequence>
@@ -170,7 +170,7 @@
 			<xs:element name="Steuernummer" type="elster:allg_StNrSType"/>
 			<xs:element name="Kz09" type="elster:usta_Kz09SType">
 				<xs:annotation>
-					<xs:documentation xml:lang="DE">Die Kz 09 ist eine Pflichtkennzahl und muss übermittelt werden</xs:documentation>
+					<xs:documentation xml:lang="DE">Die Kz 09 ist eine Pflichtkennzahl uns muss übermittelt werden</xs:documentation>
 					<xs:documentation xml:lang="DE">Kz 09 baut sich aus folgenden Informationen zusammen: HerstellerID*Name des Berater*Berufsbezeichnung*TelNr Berater/Vorwahl*TelNr Berater/Anschluss*Name des Mandanten</xs:documentation>
 				</xs:annotation>
 			</xs:element>
@@ -182,7 +182,7 @@
 			<xs:element name="Steuernummer" type="elster:allg_StNrSType"/>
 			<xs:element name="Kz09" type="elster:usta_Kz09SType">
 				<xs:annotation>
-					<xs:documentation xml:lang="DE">Die Kz 09 ist eine Pflichtkennzahl und muss übermittelt werden</xs:documentation>
+					<xs:documentation xml:lang="DE">Die Kz 09 ist eine Pflichtkennzahl uns muss übermittelt werden</xs:documentation>
 					<xs:documentation xml:lang="DE">Kz 09 baut sich aus folgenden Informationen zusammen: HerstellerID*Name des Berater*Berufsbezeichnung*TelNr Berater/Vorwahl*TelNr Berater/Anschluss*Name des Mandanten</xs:documentation>
 				</xs:annotation>
 			</xs:element>
@@ -199,7 +199,7 @@
 			<xs:element name="Steuernummer" type="elster:allg_StNrSType"/>
 			<xs:element name="Kz09" type="elster:usta_Kz09SType">
 				<xs:annotation>
-					<xs:documentation xml:lang="DE">Die Kz 09 ist eine Pflichtkennzahl und muss übermittelt werden</xs:documentation>
+					<xs:documentation xml:lang="DE">Die Kz 09 ist eine Pflichtkennzahl uns muss übermittelt werden</xs:documentation>
 					<xs:documentation xml:lang="DE">Kz 09 baut sich aus folgenden Informationen zusammen: HerstellerID*Name des Berater*Berufsbezeichnung*TelNr Berater/Vorwahl*TelNr Berater/Anschluss*Name des Mandanten</xs:documentation>
 				</xs:annotation>
 			</xs:element>

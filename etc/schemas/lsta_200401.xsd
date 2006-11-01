@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- edited with XML Spy v4.3 U (http://www.xmlspy.com) by Josef Veits (OFD München IT-Bereich) -->
 <!-- Version_BY 200501.7.5 -->
-<xs:schema targetNamespace="http://www.elster.de/2002/XMLSchema" xmlns:elster="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema targetNamespace="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:elster="http://www.elster.de/2002/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:complexType name="AnmeldungssteuernCType">
 		<xs:sequence>
 			<xs:element name="DatenLieferant" type="elster:lstaDatenlieferantType"/>
@@ -164,7 +164,7 @@
 						<xs:element name="Steuernummer" type="elster:allg_StNrSType"/>
 						<xs:element name="Kz09" type="elster:lsta_Kz09SType">
 							<xs:annotation>
-								<xs:documentation xml:lang="DE">Die Kz 09 ist eine Pflichtkennzahl und muss übermittelt werden.</xs:documentation>
+								<xs:documentation xml:lang="DE">Die Kz 09 ist eine Pflichtkennzahl uns muss übermittelt werden</xs:documentation>
 								<xs:documentation xml:lang="DE">Kz 09 baut sich aus folgenden Informationen zusammen: HerstellerID*Name des Berater*Berufsbezeichnung*TelNr Berater/Vorwahl*TelNr Berater/Anschluss*Name des Mandanten</xs:documentation>
 							</xs:annotation>
 						</xs:element>
@@ -194,7 +194,7 @@
 						<xs:element name="Kz78" type="elster:lsta_DefaultKZSTypewithCent" minOccurs="0"/>
 						<xs:element name="Kz83" type="elster:lsta_DefaultKZSTypewithCent">
 							<xs:annotation>
-								<xs:documentation xml:lang="DE">Die Kz 83 ist eine Pflichtkennzahl und muss übermittelt werden.</xs:documentation>
+								<xs:documentation xml:lang="DE">Die Kz 83 ist eine Pflichtkennzahl uns muss übermittelt werden</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 						<xs:element name="Kz86" type="elster:Kz86"/>

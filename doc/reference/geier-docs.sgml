@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<book id="index" xmlns:xi="http://www.w3.org/2003/XInclude">
+  <bookinfo>
+    <title>GEIER Reference Manual</title>
+  </bookinfo>
+
+  <chapter>
+    <title>GEIER Overview</title>
+    <xi:include href="xml/geier.xml"/>
+    <xi:include href="xml/geierversion.xml"/>
+    <xi:include href="xml/geier-dsig.xml"/>
+  </chapter>
+</book>

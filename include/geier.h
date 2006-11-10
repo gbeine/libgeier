@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
- * Copyright (C) 2005  Stefan Siegl <ssiegl@gmx.de>, Germany
+ * Copyright (C) 2005,2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,16 +48,42 @@ typedef struct _geier_context geier_context;
 
 GEIER_BEGIN_PROTOS
 
-/* Initialisieren, muß als erstes aufgerufen werden */
-/* Erledigt Initialisierung der verwendeten Bibliotheken, z.B. libxml2 */
-/* debug:  erzeuge Debug-Ausgaben falls > 0 */
+/**
+ * geier_init:
+ * @debug: set the debug level (%0 for no debuging output)
+ *
+ * Initialize GEIER library as well as libxml, libxmlsec, libxslt and
+ * OpenSSL in turn.  This has to be called first.
+ *
+ * Returns: %0 on success, %1 on error.
+ */
 int geier_init(int debug);
-/* Aufräumen, muß als letztes aufgerufen werden */
+
+/**
+ * geier_exit:
+ *
+ * Shut the GEIER library down.  Ask libxml, libxmlsec, libxslt as well
+ * as OpenSSL to shut down as well.  This should be called last.
+ *
+ * Returns: %0 on success, %1 on error.
+ */
 int geier_exit(void);
 
-/* Kontext erzeugen und mit Defaultwerten initialisierten */
-/* Rückgabewert NULL bedeutet Fehler */
+/**
+ * geier_context_new:
+ *
+ * Allocate a new #geier_context.
+ *
+ * Returns: a new #geier_context.
+ */
 geier_context *geier_context_new(void);
+
+/**
+ * geier_context_free:
+ * @context: the #geier_context to free.
+ *
+ * Deallocates a previously allocated #geier_context.
+ */
 void geier_context_free(geier_context *context);
 
 /* Kompletten Elster-Datensatz verschlüsseln, senden, Rückgabe entschlüsseln */
@@ -92,14 +118,14 @@ int geier_decrypt_text(geier_context *context,
 
 /* Konversionen zwischen XML und Text */
 int geier_xml_to_text(geier_context *context,
-		      const xmlDoc *doc,
+		      const xmlDoc *input,
 		      unsigned char **output, size_t *outlen);
 int geier_xml_to_encoded_text(geier_context *context,
-			      const xmlDoc *doc, const char *encoding,
+			      const xmlDoc *input, const char *encoding,
 			      unsigned char **output, size_t *outlen);
 int geier_text_to_xml(geier_context *context,
 		      const unsigned char *input, size_t inlen,
-		      xmlDoc **doc);
+		      xmlDoc **output);
 
 /* Eingabeformate */
 typedef enum _geier_format {
@@ -129,52 +155,54 @@ char *geier_get_clearing_error(geier_context *context, const xmlDoc *input);
 char *geier_get_clearing_error_text(geier_context *context, 
 				    const unsigned char *input, size_t inlen);
 
-/* Digitale Signatur */
+
+
+
+/*
+ * Digital Signature related cruft
+ */
+
+/**
+ * geier_dsig_sign
+ * @context: a #geier_context.
+ * @input: the XML document that should be signed.
+ * @output: pointer to where the signed XML document should be written to.
+ * @softpse_filename: name of the PKCS&num;12 container file.
+ * @pincode: the pincode.
+ *
+ * Sign the provided Elster-XML document (supplied as @input) with the software
+ * certificate, that is automatically extracted from the PKCS&num;12 file with
+ * the provided filename.  The @pincode is used to decrypt the container.
+ *
+ * Returns: %0 on success, %1 on error.  The signed document is written to
+ * @output.
+ */
 int geier_dsig_sign(geier_context *context,
 		    const xmlDoc *input, xmlDoc **output,
 		    const char *softpse_filename, const char *pincode);
 
+/**
+ * geier_dsig_sign_text
+ * @context: a #geier_context.
+ * @input: the XML document that should be signed, supplied as a C string.
+ * @inlen: the length of @input.
+ * @output: pointer to where the resulting XML document should be written to
+ * (as a C string)
+ * @outlen: the length of the buffer @output points to.
+ * @softpse_filename: name of the PKCS&num;12 container file.
+ * @pincode: the pincode.
+ *
+ * Sign the provided Elster-XML document (supplied as @input) with the software
+ * certificate, that is automatically extracted from the PKCS&num;12 file with
+ * the provided filename.  The @pincode is used to decrypt the container.
+ *
+ * Returns: %0 on success, %1 on error.  The signed document is written to
+ * @output, the length of @output is stored to @outlen on success.
+ */
 int geier_dsig_sign_text(geier_context *context,
 			 const unsigned char *input, size_t inlen,
 			 unsigned char **output, size_t *outlen,
 			 const char *softpse_filename, const char *pincode);
-
-#ifdef GEIER_SIGNATURE_INTERNALS
-/* just verify pkcs#12 file's mac, i.e. check whether pin is okay */
-int geier_dsig_verify_mac(geier_context *context, 
-			  const char *softpse_filename, 
-			  const char *password);
-
-#include <openssl/pkcs12.h>
-/* open and try to read file (filename, using pincode) and return PKCS#12
- * structure */
-PKCS12 *geier_dsig_open(const char *filename, const char *pincode);
-
-#include <openssl/evp.h>
-/* return the signature key from the softpse file */
-EVP_PKEY *geier_dsig_get_signaturekey(geier_context *context, 
-				      const char *softpse_filename, 
-				      const char *pincode);
-
-/* return the encryption key, contained in the pkcs#12 softpse file */
-EVP_PKEY *geier_dsig_get_encryptionkey(geier_context *context, 
-				       const char *softpse_filename, 
-				       const char *pincode);
-
-#include <openssl/x509.h>
-/* return the encryption certificate, contained in the pkcs#12 file */
-X509 *geier_dsig_get_encryptioncert(geier_context *context,
-				    const char *filename,
-				    const char *password,
-				    char **friendlyName);
-
-/* return the signature certificate, held by the PKCS#12 file */
-X509 *geier_dsig_get_signaturecert(geier_context *context,
-				   const char *filename,
-				   const char *password,
-				   char **friendlyName);
-#endif
-
 
 GEIER_END_PROTOS
 

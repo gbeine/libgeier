@@ -1,4 +1,4 @@
-SUBDIRS = src include etc config
+SUBDIRS = src include etc config doc
 
 pkgconfigdir = $(prefix)/lib/pkgconfig/
 pkgconfig_DATA = \

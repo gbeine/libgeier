@@ -20,8 +20,8 @@
 #  include <config.h>
 #endif
 
-#define GEIER_SIGNATURE_INTERNALS 1
 #include <geier.h>
+#include <geier-dsig.h>
 #include "context.h"
 
 #include <assert.h>

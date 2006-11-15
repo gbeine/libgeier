@@ -30,6 +30,7 @@ Geier = Gnu Elster ImplementiERung
 Installation der CVS-Version:
 -----------------------------
 
+$ gtkdocize
 $ autoreconf -i
 $ ./configure [...Optionen...]
 $ make
@@ -66,4 +67,4 @@ melden.
 libtool 1.5.10 bzw. 1.5a brauchen andere Deklarationen in configure.ac
 (LT_INIT statt AC_PROG_LIBTOOL) und funktionieren derzeit nicht.
 
-$Id: README,v 1.7 2005-11-22 21:58:01 stesie Exp $
+$Id: README,v 1.8 2006-11-15 15:35:36 hartmut Exp $

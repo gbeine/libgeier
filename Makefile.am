@@ -1,6 +1,10 @@
 SUBDIRS = src include etc config \
 	@PYTHON_SUBDIR@
 
+# always include subdir python into dist
+DIST_SUBDIRS= config debian etc include src python
+# todo: perl tests doc 
+
 pkgconfigdir = $(prefix)/lib/pkgconfig/
 pkgconfig_DATA = \
         libgeier.pc
@@ -13,8 +17,6 @@ EXTRA_DIST = \
 	libgeier.spec \
 	COPYING.OpenSSL_exception \
 	${man_MANS} 
-
-DIST_SUBDIRS=python
 
 CLEANFILES = *~
 

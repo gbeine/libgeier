@@ -1,3 +1,6 @@
 libgeier0 libgeier-dev tmp geier
 files
-geier
+libgeier
+Makefile
+Makefile.in
+

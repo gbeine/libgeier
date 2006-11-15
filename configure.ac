@@ -29,7 +29,7 @@ AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION, $PACKAGE_BUGREPORT)
 AC_PREREQ(2.59)
 # we need the extra parentheses in order to cope with the comma
 AC_COPYRIGHT([configure.ac Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany])
-AC_REVISION($Revision: 1.26 $)
+AC_REVISION($Revision: 1.27 $)
 
 AC_CONFIG_SRCDIR([srcdir_marker])
 
@@ -68,6 +68,38 @@ AC_CHECK_LIB([c], [iconv_open],,
 CFLAGS="$CFLAGS $PACKAGE_CFLAGS"
 LDFLAGS="$LDFLAGS $PACKAGE_LIBS"
 
+#
+# check for python
+#
+AC_ARG_WITH(python, [  --with-python=PATH      Path to specific Python binary],
+     PYTHON="$withval")
+AM_PATH_PYTHON(2.2,[
+    PYTHON_SUBDIR=python
+
+    ### This overwrites pythondir and pyexecdir from AM_PATH_PYTHON
+    ### since those do not honour sys.prefix!
+    AC_SUBST(pythondir)
+    AC_MSG_CHECKING(python libraries are installed into)
+    pythondir=`$PYTHON -c 'import distutils.sysconfig; print distutils.sysconfig.get_python_lib(plat_specific=0, standard_lib=0)'`
+    AC_MSG_RESULT($pythondir)
+
+    AC_MSG_CHECKING(platform-specific python libraries are installed into)
+    pyexecdir=`$PYTHON -c 'import distutils.sysconfig; print distutils.sysconfig.get_python_lib(plat_specific=1, standard_lib=0)'`
+    AC_MSG_RESULT($pyexecdir)
+
+    AC_MSG_CHECKING(checking where for python includes)
+    PYTHON_INCLUDES=`$PYTHON -c 'import distutils.sysconfig; print distutils.sysconfig.get_python_inc(plat_specific=1)'`
+    AC_MSG_RESULT($PYTHON_INCLUDES)
+    ])
+
+if test -z "$PYTHON_INCLUDES" ; then
+    AC_MSG_WARN([Python-includes not found. Not building Python extension.])
+    PYTHON_SUBDIR=
+fi
+AC_SUBST(PYTHON_SUBDIR)
+AC_SUBST(PYTHON_INCLUDES)
+
+
 # checks for header files
 
 # checks for typedefs
@@ -84,6 +116,7 @@ LDFLAGS="$LDFLAGS $PACKAGE_LIBS"
 AC_CONFIG_FILES([Makefile src/Makefile include/Makefile etc/Makefile 
 		 etc/stylesheets/Makefile include/geierversion.h
 		 etc/schemas/Makefile config/Makefile
+		 python/Makefile
 		 doc/Makefile doc/reference/Makefile
 		 libgeier.spec libgeier.pc])
 AC_OUTPUT

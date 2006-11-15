@@ -1,0 +1,10 @@
+Makefile
+Makefile.in
+_geier.la
+.deps
+.libs
+*.lo
+*.o
+libgeier_wrap.*
+libgeier-ignores.i
+geier.py

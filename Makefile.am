@@ -1,4 +1,5 @@
-SUBDIRS = src include etc config doc
+SUBDIRS = src include etc config \
+	@PYTHON_SUBDIR@
 
 pkgconfigdir = $(prefix)/lib/pkgconfig/
 pkgconfig_DATA = \
@@ -12,6 +13,8 @@ EXTRA_DIST = \
 	libgeier.spec \
 	COPYING.OpenSSL_exception \
 	${man_MANS} 
+
+DIST_SUBDIRS=python
 
 CLEANFILES = *~
 

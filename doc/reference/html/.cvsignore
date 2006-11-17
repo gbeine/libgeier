@@ -4,3 +4,7 @@ style.css
 ch01.html
 index.sgml
 *devhelp*
+*.html
+*.png
+*.css
+*.devhelp*

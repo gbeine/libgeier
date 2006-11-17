@@ -86,10 +86,55 @@ geier_context *geier_context_new(void);
  */
 void geier_context_free(geier_context *context);
 
-/* Kompletten Elster-Datensatz verschlüsseln, senden, Rückgabe entschlüsseln */
+
+/*
+ * sender functions
+ */
+
+/**
+ * geier_send_text
+ * @context: a #geier_context.
+ * @input: the XML document that should be sent, supplied as a C string.
+ * @inlen: the length of @input.
+ * @output: pointer to where the returned XML document should be written to
+ * (as a C string).
+ * @outlen: the length of the buffer @output points to.
+ * 
+ * Send the Elster-XML document, which is supplied as @input, like 
+ * #geier_send_encrypted_text, but automatically take care of encryption 
+ * and decryption.  Furthermore compression and Base64 encoding is
+ * handled automatically.
+ *
+ * Beware that this functions returns %0 upon successful transmission, this
+ * is, if the transmitted data is invalid, %0 is returned no matter what.
+ * See #geier_get_clearing_error_text for details.
+ *
+ * Returns: %0 upon successful transmission, %1 on error.  The returned
+ * document is written to @output on success, the length of @output is
+ * stored to @outlen.
+ */
 int geier_send_text(geier_context *context,
 		    const unsigned char *input, size_t inlen,
 		    unsigned char **output, size_t *outlen);
+
+/**
+ * geier_send
+ * @context: a #geier_context.
+ * @input: the XML document that should be sent.
+ * @output: pointer to where the returned XML document should be written to.
+ * 
+ * Send the Elster-XML document, which is supplied as @input, like 
+ * #geier_send_encrypted does, but automatically take care of encryption 
+ * and decryption.  Furthermore compression and Base64 encoding is
+ * handled internally.
+ *
+ * Beware that this functions returns %0 upon successful transmission, this
+ * is, if the transmitted data is invalid, %0 is returned no matter what.
+ * See #geier_get_clearing_error for details.
+ *
+ * Returns: %0 upon successful transmission, %1 on error.  The returned
+ * document is written to @output on success.
+ */
 int geier_send(geier_context *context,
 	       const xmlDoc *input, xmlDoc **output);
 
@@ -100,29 +145,133 @@ int geier_send_encrypted_text(geier_context *context,
 			      const unsigned char *input, size_t inlen,
 			      unsigned char **output, size_t *outlen);
 
-/* Verschlüsselung */
 
-/* In komplettem zu sendendem Datensatz die nötigen Teile verschlüsseln */
+/*
+ * Encryption and Decryption related functions
+ */
+
+/**
+ * geier_encrypt
+ * @context: a #geier_context.
+ * @input: the XML document that should be encrypted.
+ * @output: pointer to where the encrypted XML document should be written to.
+ * 
+ * Encrypt the relevant parts (those the Coala specification requires to be
+ * crypted) of the provided Elster-XML document (supplied as @input). 
+ * Furthermore compression and Base64 encoding is handled automatically.
+ *
+ * Returns: %0 on success, %1 on error.  The encrypted document is written to
+ * @output on success.
+ */
 int geier_encrypt(geier_context *context,
 		  const xmlDoc *input, xmlDoc **output);
+
+/**
+ * geier_encrypt_text
+ * @context: a #geier_context.
+ * @input: the XML document that should be encrypted, supplied as a C string.
+ * @inlen: the length of @input.
+ * @output: pointer to where the encrypted XML document should be written to
+ * (as a C string).
+ * @outlen: the length of the buffer @output points to.
+ * 
+ * Encrypt the relevant parts (those the Coala specification requires to be
+ * crypted) of the provided Elster-XML document (supplied as @input). 
+ * Furthermore compression and Base64 encoding is handled automatically.
+ *
+ * Returns: %0 on success, %1 on error.  The encrypted document is written to
+ * @output on success, the length of @output is stored to @outlen.
+ */
 int geier_encrypt_text(geier_context *context,
 		       const unsigned char *input, size_t inlen,
 		       unsigned char **output, size_t *outlen);
 
-/* In komplettem empfangenen Datensatz die nötigen Teile entschlüsseln */
+/**
+ * geier_decrypt
+ * @context: a #geier_context.
+ * @input: the XML document that should be decrypted.
+ * @output: pointer to where the decrypted XML document should be written to.
+ *
+ * Decrypt the encrypted parts (those that the Coala specification requires
+ * to be sent encrypted) of the Elster-XML document provided as @input.
+ * Furthermore decompression and Base64 decoding is handled internally.
+ *
+ * Returns: %0 on success, %1 on error.  The decrypted document is written to
+ * @output on success.
+ */
 int geier_decrypt(geier_context *context,
 		  const xmlDoc *input, xmlDoc **output);
+
+/**
+ * geier_decrypt_text
+ * @context: a #geier_context.
+ * @input: the XML document that should be decrypted, supplied as a C string.
+ * @inlen: the length of @input.
+ * @output: pointer to where the decrypted XML document should be written to
+ * (as a C string).
+ * @outlen: the length of the buffer @output points to.
+ *
+ * Decrypt the encrypted parts (those that the Coala specification requires
+ * to be sent encrypted) of the Elster-XML document provided as @input.
+ * Furthermore decompression and Base64 decoding is handled internally.
+ *
+ * Returns: %0 on success, %1 on error.  The decrypted document is written to
+ * @output on success, the length of @output is stored to @outlen.
+ */
 int geier_decrypt_text(geier_context *context,
 		       const unsigned char *input, size_t inlen,
 		       unsigned char **output, size_t *outlen);
 
-/* Konversionen zwischen XML und Text */
+
+/*
+ * XML to text conversion and back
+ */
+/**
+ * geier_xml_to_text
+ * @context: a #geier_context.
+ * @input: the XML document that should be converted
+ * @output: pointer to where the document should be written to (as a C string)
+ * @outlen: the length of the buffer @output points to.
+ *
+ * Convert the XML document to a zero-terminated C string.
+ *
+ * Returns: %0 on success, %1 on error.  The not further modified document is
+ * written to @output on success, the length of @output is stored to @outlen.
+ */
 int geier_xml_to_text(geier_context *context,
 		      const xmlDoc *input,
 		      unsigned char **output, size_t *outlen);
+
+/**
+ * geier_xml_to_encoded_text
+ * @context: a #geier_context.
+ * @input: the XML document that should be converted
+ * @output: pointer to where the document should be written to (as a C string)
+ * @outlen: the length of the buffer @output points to.
+ *
+ * Convert the XML document to a zero-terminated C string, like
+ * #geier_xml_to_text does, but furthermore convert to encoding @encoding.
+ *
+ * Returns: %0 on success, %1 on error.  The resulting document is
+ * written to @output on success, the length of @output is stored to @outlen.
+ */
 int geier_xml_to_encoded_text(geier_context *context,
 			      const xmlDoc *input, const char *encoding,
 			      unsigned char **output, size_t *outlen);
+
+/**
+ * geier_text_to_xml
+ * @context: a #geier_context.
+ * @input: the XML document that should be converted, supplied as a C string.
+ * @inlen: the length of @input.
+ * @output: pointer to where the document should be written to
+ *
+ * Convert the XML document, supplied as a C string as @input, to a libxml
+ * XML document.
+ *
+ * Returns: %0 on success, %1 on error.  The not further modified document is
+ * written to @output on success.
+ */
 int geier_text_to_xml(geier_context *context,
 		      const unsigned char *input, size_t inlen,
 		      xmlDoc **output);
@@ -150,11 +299,41 @@ int geier_xsltify_text(geier_context *context,
 int geier_xsltify(geier_context *context,
 		  const xmlDoc *input, xmlDoc **output);
 
-/* Fehlermeldung der Clearingstelle extrahieren, NULL bei Erfolg */
+
+/**
+ * geier_get_clearing_error
+ * @context: a #geier_context.
+ * @input: the XML document that should be checked for errors.
+ * 
+ * Check the provided (unencrypted) Elster-XML document, supplied as @input,
+ * for error codes and return suitable error messages.  @input should be
+ * a XML document supplied by one of the clearing hosts as returned by
+ * #geier_send. 
+ *
+ * Returns: %NULL upon success, a suitable error message otherwise.  The 
+ * error message should be user understandable and is in German language.
+ * Call #free on the returned pointer, if the message is not needed anymore.
+ */
 char *geier_get_clearing_error(geier_context *context, const xmlDoc *input);
+
+/**
+ * geier_get_clearing_error_text
+ * @context: a #geier_context.
+ * @input: the XML document that should be checked for errors,
+ * supplied as a C string.
+ * @inlen: the length of @input.
+ * 
+ * Check the provided (unencrypted) Elster-XML document, supplied as @input,
+ * for error codes and return suitable error messages.  @input should be
+ * a XML document supplied by one of the clearing hosts as returned by
+ * #geier_send_text. 
+ *
+ * Returns: %NULL upon success, a suitable error message otherwise.  The 
+ * error message should be user understandable and is in German language.
+ * Call #free on the returned pointer, if the message is not needed anymore.
+ */
 char *geier_get_clearing_error_text(geier_context *context, 
 				    const unsigned char *input, size_t inlen);
-
 
 
 

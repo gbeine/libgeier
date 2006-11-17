@@ -13,3 +13,4 @@ tmpl-build.stamp
 tmpl.stamp
 geier-undocumented.txt
 geier-unused.txt
+version.xml

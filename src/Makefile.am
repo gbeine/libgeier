@@ -24,6 +24,10 @@ libgeier_la_SOURCES = \
 	tcpip.c tcpip.h \
 	iso_to_utf8.c iso_to_utf8.h \
 	get_clearing_error.c \
+	version.c \
+	xpath.c xpath.h
+
+dsig_sources = \
 	dsig.c \
 	dsig-open.c \
 	dsig-rewrite-vorgang.c \
@@ -32,9 +36,7 @@ libgeier_la_SOURCES = \
 	dsig-get-attr.c \
 	dsig-get-cert.c \
 	dsig-get-cert-text.c \
-	dsig-get-key.c \
-	version.c \
-	xpath.c xpath.h
+	dsig-get-key.c
 
 libgeier_la_LDFLAGS = -version-info 0
 

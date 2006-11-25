@@ -33,8 +33,23 @@
 #include "pkcs7_decrypt.h"
 #include "iso_to_utf8.h"
 
-static int decrypt_at_xpathexpr(geier_context *context,
-				const unsigned char *xpathexpr,
+
+/*
+ * XPath expression for the nodes whose content shall be encrypted
+ * and/or decrypted. 
+ * Note that only the content is encrypted, the enclosing element
+ * must be preserved.
+ */
+static char *datenlieferant_xpathexpr =
+	"/elster:Elster/elster:TransferHeader/elster:DatenLieferant";
+static char *datenteil_xpathexpr =
+	"/elster:Elster/elster:DatenTeil";
+static char *transportschluessel_xpathexpr =
+	"/elster:Elster/elster:TransferHeader/elster:Datei/"
+	"elster:TransportSchluessel";
+
+
+static int decrypt_at_xpathexpr(geier_context *context, const char *xpathexpr,
 				xmlDoc *doc);
 static int decrypt_content(geier_context *context,
 			   xmlDoc *doc, xmlNode *node,
@@ -61,16 +76,11 @@ int geier_decrypt(geier_context *context,
 	}
 
 	/* Decrypt fields */
-	retval = decrypt_at_xpathexpr(context,
-				      context->datenlieferant_xpathexpr,
-				      copy);
+	retval = decrypt_at_xpathexpr(context, datenlieferant_xpathexpr, copy);
 	if (retval) { goto exit2; }
-	retval = decrypt_at_xpathexpr(context,
-				      context->datenteil_xpathexpr,
-				      copy);
+	retval = decrypt_at_xpathexpr(context, datenteil_xpathexpr, copy);
 	if (retval) { goto exit3; }
-	retval = decrypt_at_xpathexpr(context,
-				      context->transportschluessel_xpathexpr,
+	retval = decrypt_at_xpathexpr(context, transportschluessel_xpathexpr,
 				      copy);
 	if (retval) { goto exit4; }
 
@@ -114,8 +124,7 @@ int geier_decrypt_text(geier_context *context,
 
 
 /* destructively decrypt the content of the element at xpathexpr */
-static int decrypt_at_xpathexpr(geier_context *context,
-				const unsigned char *xpathexpr,
+static int decrypt_at_xpathexpr(geier_context *context, const char *xpathexpr,
 				xmlDoc *doc)
 {
 	int retval = 0;

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
+ * Copyright (C) 2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -148,7 +149,7 @@ b64_ntop(unsigned char const *src, size_t srclength,
 	size_t datalength = 0;
 	unsigned char input[3];
 	unsigned char output[4];
-	int i;
+	size_t i;
 
 	while (2 < srclength) {
 		input[0] = *src++;

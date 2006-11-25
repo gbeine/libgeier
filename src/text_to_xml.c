@@ -28,6 +28,8 @@ int geier_text_to_xml(geier_context *context,
 		      const unsigned char *input, size_t inlen,
 		      xmlDoc **doc)
 {
+	(void) context;
+
 	int retval = 0;
 
 	if (!input || !doc ) {
@@ -37,7 +39,7 @@ int geier_text_to_xml(geier_context *context,
 
 	/* read as doc tree */
 	/* FIXME: check for options needed */
-	*doc = xmlReadMemory(input, inlen, "nobase.xml", NULL, 0);
+	*doc = xmlReadMemory((char *) input, inlen, "nobase.xml", NULL, 0);
 	if (! *doc) {
 		retval = -1;
 		goto exit1;

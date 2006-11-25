@@ -47,7 +47,7 @@ int geier_node_contents_to_text(geier_context *context,
 	xmlBuffer *buf = NULL;
 	xmlNode *n = NULL;
 	unsigned char *content = NULL;
-	size_t content_len = 0;
+	int content_len = 0;
 
 	/* convert contents of selected node to text */
 	buf = xmlBufferCreate();
@@ -106,10 +106,11 @@ int geier_node_contents_to_text(geier_context *context,
 	assert(o <= content_len);
 	assert(inlen == content_len);
 
-	if(*outlen < 0) {
-		retval = -1;
-		goto exit1;
-	}
+	/* if(*outlen < 0) {
+	 *	retval = -1;
+	 * 	goto exit1;
+	 * }
+	 */
 
 	(*output)[o] = 0;
 #endif

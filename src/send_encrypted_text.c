@@ -27,10 +27,25 @@
 #include <limits.h>
 #include <stdio.h>
 
+
+static char *clearing_uri_list[] = {
+	"http://80.146.179.2:80/Elster2/EMS",
+  	"http://80.146.179.3:80/Elster2/EMS",
+  	"http://193.109.238.58:80/Elster2/EMS",
+  	"http://193.109.238.59:80/Elster2/EMS",
+};
+
+static const size_t clearing_uri_list_length =
+	sizeof(clearing_uri_list) / sizeof(*clearing_uri_list);
+
+
+
 int geier_send_encrypted_text(geier_context *context,
 			      const unsigned char *input, size_t inlen,
 			      unsigned char **output, size_t *outlen)
 {
+	(void) context;
+
 	unsigned long int port = 80; /* default to port 80, which is http */
 	char *dest_uri = NULL;
 	char *port_ptr, *path;
@@ -39,6 +54,8 @@ int geier_send_encrypted_text(geier_context *context,
 	size_t alloc = 0, bytes_read;
 	FILE *handle;
 	char *proxy = getenv("http_proxy");
+	int clearing_uri_index = rand() % clearing_uri_list_length;
+
 
 	/* FIXME
 	 * Treat context->clearing_timeout_ms correctly, i.e. care for it
@@ -50,8 +67,7 @@ int geier_send_encrypted_text(geier_context *context,
 		dest_uri = proxy;
 	else {
 		/* FIXME: balance load between URIs */
-		dest_uri = context->clearing_uri_list
-			[context->clearing_uri_index];
+		dest_uri = clearing_uri_list[clearing_uri_index];
 	}
 
 	if(! dest_uri || strncmp(dest_uri, "http://", 7)) {
@@ -107,8 +123,7 @@ int geier_send_encrypted_text(geier_context *context,
 	 */
 	if(proxy) {
 		if(fprintf(handle, "POST %s HTTP/1.0\r\n", 
-			   context->clearing_uri_list
-			   [context->clearing_uri_index]) < 0)
+			   clearing_uri_list[clearing_uri_index]) < 0)
 			goto send_failed;
 	}
 	else {

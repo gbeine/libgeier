@@ -31,18 +31,34 @@
 
 #include "pkcs7_encrypt.h"
 
+
+/*
+ * XPath expression for the nodes whose content shall be encrypted
+ * and/or decrypted. 
+ * Note that only the content is encrypted, the enclosing element
+ * must be preserved.
+ */
+static char *datenlieferant_xpathexpr =
+	"/elster:Elster/elster:TransferHeader/elster:DatenLieferant";
+static char *datenteil_xpathexpr =
+	"/elster:Elster/elster:DatenTeil";
+
+/* XPath expression for length of encrypted data part */
+static char *datengroesse_xpathexpr =
+	"/elster:Elster/elster:TransferHeader/elster:Datei/elster:DatenGroesse";
+
+
+
 static int encrypt_at_xpathexpr(geier_context *context,
-				const unsigned char *xpathexpr,
-				xmlDoc *doc,
-				size_t *content_len);
-static int store_length_at_xpathexpr(
-	geier_context *context,
-	const unsigned char *xpathexpr,
-	xmlDoc *doc,
-	size_t content_len);
-static int encrypt_content(geier_context *context,
-			   xmlDoc *doc, xmlNode *node,
+				const char *xpathexpr,
+				xmlDoc *doc, size_t *content_len);
+static int store_length_at_xpathexpr(geier_context *context,
+				     const char *xpathexpr,
+				     xmlDoc *doc, size_t content_len);
+static int encrypt_content(geier_context *context, xmlDoc *doc, xmlNode *node,
 			   xmlNode **new_node, size_t *new_content_len);
+
+
 
 int geier_encrypt(geier_context *context,
 		  const xmlDoc *input, xmlDoc **output)
@@ -62,22 +78,16 @@ int geier_encrypt(geier_context *context,
 	}
 
 	/* Encrypt fields */
-	retval = encrypt_at_xpathexpr(context,
-				      context->datenlieferant_xpathexpr,
-				      copy,
-				      &content_len);
+	retval = encrypt_at_xpathexpr(context, datenlieferant_xpathexpr,
+				      copy, &content_len);
 	if (retval) { goto exit2; }
-	retval = encrypt_at_xpathexpr(context,
-				      context->datenteil_xpathexpr,
-				      copy,
-				      &content_len);
+	retval = encrypt_at_xpathexpr(context, datenteil_xpathexpr,
+				      copy, &content_len);
 	if (retval) { goto exit3; }
 
 	/* Store length */
-	retval = store_length_at_xpathexpr(context,
-					   context->datengroesse_xpathexpr,
-					   copy,
-					   content_len);
+	retval = store_length_at_xpathexpr(context, datengroesse_xpathexpr,
+					   copy, content_len);
 	if (retval) { goto exit4; }
 
 	/* publish the encrypted document */
@@ -122,7 +132,7 @@ int geier_encrypt_text(geier_context *context,
 
 /* destructively encrypt the content of the element at xpathexpr */
 static int encrypt_at_xpathexpr(geier_context *context,
-				const unsigned char *xpathexpr,
+				const char *xpathexpr,
 				xmlDoc *doc,
 				size_t *content_len)
 {
@@ -149,14 +159,16 @@ static int encrypt_at_xpathexpr(geier_context *context,
 
 
 static int store_length_at_xpathexpr(geier_context *context,
-				     const unsigned char *xpathexpr,
+				     const char *xpathexpr,
 				     xmlDoc *doc,
 				     size_t content_len)
 {
+	(void) context;
+
 	int retval = 0;
 	xmlNode *node = NULL;
 	xmlNode *new_node = NULL;
-	unsigned char text[32];
+	char text[32];
 	xmlNode *text_node = NULL;
 
 	sprintf(text, "%d", (int)content_len);
@@ -166,7 +178,7 @@ static int store_length_at_xpathexpr(geier_context *context,
 
 	/* create new node with length as content */
 	new_node = xmlNewNode(node->ns, node->name);
-	text_node = xmlNewText(text);
+	text_node = xmlNewText((unsigned char *) text);
 	xmlAddChild(new_node, text_node);
 
 	/* replace it */

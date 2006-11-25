@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
+ * Copyright (C) 2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +30,7 @@
 int geier_base64_encode(const unsigned char *input, size_t inlen,
 			 unsigned char **output, size_t *outlen)
 {
-	size_t len;
+	int len;
 
 	if (!output || !outlen) {
 		return -1;
@@ -40,7 +41,7 @@ int geier_base64_encode(const unsigned char *input, size_t inlen,
 		return -1;
 	}
 
-	len = b64_ntop(input, inlen, *output, *outlen);
+	len = b64_ntop(input, inlen, (char *) *output, *outlen);
 	if (len < 0) {
 		free(*output);
 		return -1;
@@ -64,7 +65,7 @@ int geier_base64_decode(const unsigned char *input, size_t inlen,
 		return -1;
 	}
 
-	len = b64_pton(input, inlen, *output, *outlen);
+	len = b64_pton((const char *) input, inlen, *output, *outlen);
 	if (len < 0) {
 		free(*output);
 		return -1;

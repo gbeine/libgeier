@@ -283,6 +283,7 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 		}
 	}
 
+#ifdef GEIER_ENABLE_DSIG
 	if(softpse_filename) {
 		unsigned char *obuf;
 		size_t olen;
@@ -301,6 +302,7 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 		buf = obuf;
 		buf_len = olen;
 	}
+#endif
 
 	if(config_encrypt_only) {
 		/** user requests to do nothing but encrypt and return */

@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
+ * Copyright (C) 2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +21,6 @@
 #define GEIER_ENCRYPT_H
 
 /* find a node determined by an XPath expression */
-int find_node(xmlDoc *doc,
-	      const unsigned char *xpathexpr,
-	      xmlNode **node);
+int find_node(xmlDoc *doc, const char *xpathexpr, xmlNode **node);
 
 #endif

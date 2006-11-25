@@ -62,7 +62,7 @@ int geier_validate(geier_context *context,
 		   geier_format f, const xmlDoc *input)
 {
 	int retval = 0;
-	unsigned char *schema_url = NULL;
+	char *schema_url = NULL;
 
 	switch (f) {
 	case geier_format_unencrypted:
@@ -174,7 +174,7 @@ static char *validate_elsteranmeldung(geier_context *context, xmlDoc *doc)
 	xmlBufferCCat(buf, "_");
 	xmlBufferCCat(buf, val_vers);
 	xmlBufferCCat(buf, "_extern.xsd");
-	retval = strdup(xmlBufferContent(buf));
+	retval = strdup((char *) xmlBufferContent(buf));
 
 	xmlBufferFree(buf);
 
@@ -213,7 +213,7 @@ static char *validate_elsterkontoabfrage(geier_context *context, xmlDoc *doc)
 
 	xmlBufferCCat(buf, "_rootish.xsd");
 
-	retval = strdup(xmlBufferContent(buf));
+	retval = strdup((char *) xmlBufferContent(buf));
 
 out2:
 	xmlBufferFree(buf);
@@ -228,7 +228,7 @@ out0:
 /* return the file:// URI of the XML Schema file, needed to validate
  * the provided document doc, NULL on error */
 static char *get_xsd_path(geier_context *context, xmlDoc *doc) {
-	unsigned char *retval = NULL;
+	char *retval = NULL;
 
 	/* check whether TransferHeader->Verfahren is okay ***/
 	char *val_verfahren = 

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
- *               2005  Stefan Siegl <ssiegl@gmx.de>, Germany
+ *               2005,2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,9 +28,7 @@
 #include "find_node.h"
 
 /* find a node determined by an XPath expression */
-int find_node(xmlDoc *doc,
-	      const unsigned char *xpathexpr,
-	      xmlNode **node)
+int find_node(xmlDoc *doc, const char *xpathexpr, xmlNode **node)
 {
 	int retval = 0;
 	xmlXPathContext *xpath_ctxt = NULL;
@@ -45,8 +43,9 @@ int find_node(xmlDoc *doc,
 
 	/* register elster-namespace with default URI,
 	 * to make XPath accept files, that don't define xmlns:elster */
-	xmlXPathRegisterNs(xpath_ctxt, "elster",
-			   "http://www.elster.de/2002/XMLSchema");
+	xmlXPathRegisterNs
+	  (xpath_ctxt, (unsigned char *) "elster",
+	   (unsigned char *) "http://www.elster.de/2002/XMLSchema");
 
 	/* copy namespace declarations from 'doc' to the xpath_ctxt */
 	xmlNode *root = doc->children;
@@ -62,7 +61,8 @@ int find_node(xmlDoc *doc,
 
 
 	/* finally evaluate the xpath expression ... */
-	xpath_obj = xmlXPathEvalExpression(xpathexpr, xpath_ctxt);
+	xpath_obj = xmlXPathEvalExpression((unsigned char *) xpathexpr,
+					   xpath_ctxt);
 	if (!xpath_obj) {
 		retval = -1;
 		goto exit1;

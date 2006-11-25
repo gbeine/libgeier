@@ -34,13 +34,19 @@ int geier_xml_to_encoded_text(geier_context *context,
 			      const xmlDoc *doc, const char *encoding,
 			      unsigned char **output, size_t *outlen)
 {
+	(void) context;
+
 	int retval = 0;
 
 	if (!doc || !output || !outlen) {
 		retval = -1;
 		goto exit0;
 	}
-	xmlDocDumpFormatMemoryEnc((xmlDoc *)doc, output, outlen, encoding, 1);
+
+	int len;
+	xmlDocDumpFormatMemoryEnc((xmlDoc *)doc, output, &len, encoding, 1);
+
+	*outlen = len;
 
  exit0:
 	return retval;

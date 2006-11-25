@@ -98,7 +98,7 @@ int geier_pkcs7_encrypt(geier_context *context,
 	/* output data */
 	{
 		*outlen = i2d_PKCS7(p7, NULL);
-		*output = malloc(len);
+		*output = malloc(*outlen);
 		unsigned char *p = *output;
 
 		if (! *output) {

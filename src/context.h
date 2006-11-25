@@ -23,9 +23,6 @@
 #include <stddef.h>
 
 struct _geier_context {
-	/* configuration */
-	char *xml_encoding; /* the encoding to use for Elster-XML */
-
 	char *cert_filename;
 	char *xmlsec_tpl_filename;
 

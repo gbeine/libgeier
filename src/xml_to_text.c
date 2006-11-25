@@ -26,8 +26,7 @@ int geier_xml_to_text(geier_context *context,
 		      const xmlDoc *doc,
 		      unsigned char **output, size_t *outlen)
 {
-	return geier_xml_to_encoded_text(context, doc, context->xml_encoding,
-					 output, outlen);
+	return geier_xml_to_encoded_text(context, doc, "UTF-8", output, outlen);
 }
 
 int geier_xml_to_encoded_text(geier_context *context,

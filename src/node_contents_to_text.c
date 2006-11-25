@@ -43,6 +43,8 @@ int geier_node_contents_to_text(geier_context *context,
 				xmlDoc *doc, xmlNode *node,
 				unsigned char **output, size_t *outlen)
 {
+	(void) context;
+
 	int retval = 0;
 	xmlBuffer *buf = NULL;
 	xmlNode *n = NULL;
@@ -77,7 +79,7 @@ int geier_node_contents_to_text(geier_context *context,
 	/* convert all children */
 	for (n = node->children; n != NULL; n = n->next) {
 		xmlNodeDumpOutput(outbuf, doc, n, INDENT_LEVEL, ALLOW_FORMAT,
-				  context->xml_encoding);
+				  "UTF-8");
 	}
 
 	content = (unsigned char *)xmlBufferContent(buf);

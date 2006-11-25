@@ -29,7 +29,7 @@ AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION, $PACKAGE_BUGREPORT)
 AC_PREREQ(2.59)
 # we need the extra parentheses in order to cope with the comma
 AC_COPYRIGHT([configure.ac Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany])
-AC_REVISION($Revision: 1.29 $)
+AC_REVISION($Revision: 1.30 $)
 
 AC_CONFIG_SRCDIR([srcdir_marker])
 
@@ -52,8 +52,8 @@ fi
 
 # checks for libraries ...
 
-# check for openssl and libxml2 using pkg-config
-PKG_CHECK_MODULES(PACKAGE, [openssl libxml-2.0 libxslt xmlsec1 xmlsec1-openssl])
+# check for mozilla-nss and libxml2 using pkg-config
+PKG_CHECK_MODULES(PACKAGE, [xulrunner-nss libxml-2.0 libxslt xmlsec1 xmlsec1-nss])
 
 # check for zlib
 AC_CHECK_LIB([z], [deflateBound],,AC_MSG_ERROR([libz library missing.]))

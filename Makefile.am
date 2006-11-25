@@ -15,7 +15,6 @@ EXTRA_DIST = \
 	srcdir_marker \
 	libgeier.pc.in \
 	libgeier.spec \
-	COPYING.OpenSSL_exception \
 	${man_MANS} 
 
 CLEANFILES = *~

@@ -52,8 +52,8 @@ GEIER_BEGIN_PROTOS
  * geier_init:
  * @debug: set the debug level (%0 for no debuging output)
  *
- * Initialize GEIER library as well as libxml, libxmlsec, libxslt and
- * OpenSSL in turn.  This has to be called first.
+ * Initialize GEIER library as well as libxml, libxmlsec, libxslt
+ * in turn.  This has to be called first.
  *
  * Returns: %0 on success, %1 on error.
  */
@@ -62,8 +62,8 @@ int geier_init(int debug);
 /**
  * geier_exit:
  *
- * Shut the GEIER library down.  Ask libxml, libxmlsec, libxslt as well
- * as OpenSSL to shut down as well.  This should be called last.
+ * Shut the GEIER library down.  Ask libxml, libxmlsec, libxslt 
+ * to shut down as well.  This should be called last.
  *
  * Returns: %0 on success, %1 on error.
  */

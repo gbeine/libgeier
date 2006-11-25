@@ -33,7 +33,6 @@
 #include <string.h>
 
 #include "context.h"
-#include "asn1hack.h"
 
 #include "pkcs7_encrypt.h"
 
@@ -98,20 +97,16 @@ int geier_pkcs7_encrypt(geier_context *context,
 
 	/* output data */
 	{
-		size_t len = i2d_PKCS7(p7, NULL);
-		unsigned char *p7_der_buf = malloc(len);
-		unsigned char *p = p7_der_buf;
+		*outlen = i2d_PKCS7(p7, NULL);
+		*output = malloc(len);
+		unsigned char *p = *output;
 
-		if (! p7_der_buf) {
+		if (! *output) {
 			retval = -1;
 			goto exit3;
 		}
 
-		len = i2d_PKCS7(p7, &p);
-		if (geier_asn1hack(p7_der_buf, len, output, outlen))
-			retval = -1;
-
-		free(p7_der_buf);
+		*outlen = i2d_PKCS7(p7, &p);
 	}
  exit3:
 	PKCS7_free(p7);

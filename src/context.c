@@ -26,28 +26,6 @@
 
 #include "context.h"
 
-#if 0
-static unsigned char *elster_xml_encoding = "UTF-8";
-
-/* XPath expression pointing to the parent node, where to add the signature */
-static unsigned char *elster_add_signature_xpathexpr = 
-"/elster:Elster/elster:DatenTeil/elster:Nutzdatenblock/elster:NutzdatenHeader/elster:Empfaenger";
-
-/* XPath expression for extraction of return code */
-static unsigned char *elster_transferheader_rc_code_xpathexpr =
-	"/elster:Elster/elster:TransferHeader/elster:RC/elster:Rueckgabe/"
-	"elster:Code";
-static unsigned char *elster_transferheader_rc_text_xpathexpr =
-	"/elster:Elster/elster:TransferHeader/elster:RC/elster:Rueckgabe/"
-	"elster:Text";
-static unsigned char *elster_datenteil_rc_code_xpathexpr =
-	"/elster:Elster/elster:DatenTeil/elster:Nutzdatenblock/"
-	"elster:NutzdatenHeader/elster:RC/elster:Rueckgabe/elster:Code";
-static unsigned char *elster_datenteil_rc_text_xpathexpr =
-	"/elster:Elster/elster:DatenTeil/elster:Nutzdatenblock/"
-	"elster:NutzdatenHeader/elster:RC/elster:Rueckgabe/elster:Text";
-#endif
-
 geier_context *geier_context_new(void)
 {
 	geier_context *context = malloc(sizeof(struct _geier_context));

@@ -151,6 +151,7 @@ static error_t parse_geier_opts(int key, char *arg, struct argp_state *state)
 		config_dry_run = 1;
 		break;
 
+#ifdef GEIER_ENABLE_DSIG
 	case OPT_SOFTPSE:
 		softpse_filename = strdup(arg);
 		if(EVP_read_pw_string(pincode, sizeof pincode, 
@@ -159,6 +160,7 @@ static error_t parse_geier_opts(int key, char *arg, struct argp_state *state)
 			return 1;
 		}
 		break;
+#endif
 
 	case OPT_DUMP:
 		config_dump = strdup(arg);
@@ -353,7 +355,7 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 			goto out;
 		}
 
-		if(write(fd, buf, buf_len) != buf_len)
+		if(write(fd, buf, buf_len) != (ssize_t) buf_len)
 			perror(config_dump);
 
 		close(fd);
@@ -391,7 +393,7 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 		buf_len = olen;
 	}
 
-	if(write(1, buf, buf_len) != buf_len)
+	if(write(1, buf, buf_len) != (ssize_t) buf_len)
 		perror(config_dump);
 
  out:

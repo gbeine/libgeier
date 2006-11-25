@@ -33,12 +33,19 @@
 #include <xmlsec/xmlsec.h>
 #include <xmlsec/crypto.h>
 
+/* Mozilla header files */
+#include <nss/nss.h>
+
 int geier_init(int debug)
 {
-	/* set debug level */
+	/*
+	 * set debug level
+	 */
 	geier_debug = debug;
 
-	/* initialise libxml. Ugly syntax they use. Add ; for indent. */
+	/*
+	 * initialise libxml. Ugly syntax they use. Add ; for indent.
+	 */
 	xmlInitParser();
 	LIBXML_TEST_VERSION;
 
@@ -81,8 +88,10 @@ int geier_init(int debug)
 		return 1;
 	}
 
-	/* initialize openssl, this is needed for PKCS#12 handling */
-	OpenSSL_add_all_algorithms();
+	/*
+	 * initialize libnss
+	 */
+	NSS_NoDB_Init(".");
 	
 	return 0;
 }

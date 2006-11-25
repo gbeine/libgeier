@@ -47,7 +47,7 @@ char *elster_xpath_get_content(geier_context *context,
 	if(! content) return NULL;
 
 	content[content_len] = 0; /* zero terminate string */
-	return content;
+	return (char *) content;
 }
 
 
@@ -59,16 +59,18 @@ const char *elster_xpath_get_attr(geier_context *context,
 				  xmlDoc *doc, const char *xpath,
 				  const char *attrname)
 {
+        (void) context;
+
 	xmlNode *node;
 	if(find_node(doc, xpath, &node)) return NULL; /* not found */
 
 	xmlAttr *attr = node->properties;
 	if(attr) do
-		if(! strcmp(attr->name, attrname)) {
+		if(! strcmp((char *) attr->name, attrname)) {
 			/* got the attr we'd like to have ... */
 			if(attr->children->type != XML_TEXT_NODE)
 				return NULL; /* not supported */
-			return attr->children->content;
+			return (char *) attr->children->content;
 		}
 	while((attr = attr->next));
 

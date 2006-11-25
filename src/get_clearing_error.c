@@ -28,6 +28,23 @@
 #include <libxml/tree.h>
 
 
+/*
+ * XPath expression for extraction of return code
+ */
+static char *transferheader_rc_code_xpathexpr =
+	"/elster:Elster/elster:TransferHeader/elster:RC/elster:Rueckgabe/"
+	"elster:Code";
+static char *transferheader_rc_text_xpathexpr =
+	"/elster:Elster/elster:TransferHeader/elster:RC/elster:Rueckgabe/"
+	"elster:Text";
+static char *datenteil_rc_code_xpathexpr =
+	"/elster:Elster/elster:DatenTeil/elster:Nutzdatenblock/"
+	"elster:NutzdatenHeader/elster:RC/elster:Rueckgabe/elster:Code";
+static char *datenteil_rc_text_xpathexpr =
+	"/elster:Elster/elster:DatenTeil/elster:Nutzdatenblock/"
+	"elster:NutzdatenHeader/elster:RC/elster:Rueckgabe/elster:Text";
+
+
 /* 
  * FIXME: the error message is returned in Latin-1 currently,
  * maybe make sure context->xml_encoding or something is used instead
@@ -38,16 +55,17 @@ char *geier_get_clearing_error(geier_context *context, const xmlDoc *doc)
 	char *code, *msg;
 	
 	/* check for set error status in transferheader first */
-	xpathexpr = context->transferheader_rc_code_xpathexpr;
-	code = elster_xpath_get_content(context, doc, xpathexpr);
+	xpathexpr = transferheader_rc_code_xpathexpr;
+	code = elster_xpath_get_content(context, (xmlDoc *) doc, xpathexpr);
 
 	if(code && atoi(code)) {
 		/* an error concerning the transferheader has occured */
 		free(code);
 
 		/* extract and return human readable error message */
-		xpathexpr = context->transferheader_rc_text_xpathexpr;
-		msg = elster_xpath_get_content(context, doc, xpathexpr);
+		xpathexpr = transferheader_rc_text_xpathexpr;
+		msg = elster_xpath_get_content(context, (xmlDoc *) doc,
+					       xpathexpr);
 
 		if(! msg) goto internal_error;
 		return msg;
@@ -56,16 +74,17 @@ char *geier_get_clearing_error(geier_context *context, const xmlDoc *doc)
 	free(code);
 
 	/* now check for set error status in data part ... */
-	xpathexpr = context->datenteil_rc_code_xpathexpr;
-	code = elster_xpath_get_content(context, doc, xpathexpr);
+	xpathexpr = datenteil_rc_code_xpathexpr;
+	code = elster_xpath_get_content(context, (xmlDoc *) doc, xpathexpr);
 
 	if(code && atoi(code)) {
 		/* an error concerning the data part has occured */
 		free(code);
 
 		/* extract and return human readable error message */
-		xpathexpr = context->datenteil_rc_text_xpathexpr;
-		msg = elster_xpath_get_content(context, doc, xpathexpr);
+		xpathexpr = datenteil_rc_text_xpathexpr;
+		msg = elster_xpath_get_content(context, (xmlDoc *) doc,
+					       xpathexpr);
 
 		if(! msg) goto internal_error;
 		return msg;
@@ -93,6 +112,6 @@ char *geier_get_clearing_error_text(geier_context *context,
 	retval = geier_get_clearing_error(context, indoc);
 
 	xmlFreeDoc(indoc);
-out0:
+
 	return retval;
 }

@@ -43,9 +43,9 @@ int geier_xsltify(geier_context *context,
 	/* xmlDoc *copy; */
 	xsltStylesheet *stylesheet;
 
-        char *stylesheet_fname = get_xslt_path(context, (xmlDoc *) input);
-	stylesheet = xsltParseStylesheetFile(stylesheet_fname);
-	free(stylesheet_fname);
+        char *stylesheet_fn = get_xslt_path(context, (xmlDoc *) input);
+	stylesheet = xsltParseStylesheetFile((unsigned char *) stylesheet_fn);
+	free(stylesheet_fn);
 
 	if(! stylesheet) {
 		retval = -1;
@@ -111,7 +111,7 @@ static const char *val_datenart_xpathexpr =
 /* return the file:// URI of the XSLT Stylesheet file or NULL on error */
 static char *get_xslt_path(geier_context *context, xmlDoc *doc)
 {
-	unsigned char *retval = NULL;
+	char *retval = NULL;
 
 	/* check whether TransferHeader->Verfahren is okay ***/
 	char *val_verfahren = 
@@ -146,7 +146,7 @@ static char *get_xslt_path(geier_context *context, xmlDoc *doc)
 		xmlBufferCCat(buf, "lsta");
 
 	xmlBufferCCat(buf, ".xsl");
-	retval = strdup(xmlBufferContent(buf));
+	retval = strdup((char *) xmlBufferContent(buf));
 
 	xmlBufferFree(buf);
  out2:

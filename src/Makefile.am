@@ -7,6 +7,7 @@ libgeier_la_SOURCES = \
 	send_encrypted.c \
 	send.c \
 	send_text.c \
+	encoder.c \
 	encrypt.c \
 	decrypt.c \
 	validate.c \

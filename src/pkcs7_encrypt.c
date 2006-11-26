@@ -34,7 +34,8 @@
 
 #include "context.h"
 #include "pkcs7_encrypt.h"
-
+#include "encoder.h"
+#include "globals.h"
 
 /* XXX free cinfo on error, maybe others as well */
 static SEC_PKCS7ContentInfo *
@@ -284,13 +285,24 @@ geier_pkcs7_encryption_key(geier_context *ctx)
 {
 	assert(ctx);
 
-	ctx->session_key_len = 24;
-	ctx->session_key = malloc(ctx->session_key_len);
+	if(! ctx->session_key) {
+		ctx->session_key_len = 24;
+		ctx->session_key = malloc(ctx->session_key_len);
 
-	SECStatus rv;
-	rv = PK11_GenerateRandom(ctx->session_key, ctx->session_key_len);
-	if (rv != SECSuccess) 
-		return NULL;
+		SECStatus rv;
+		rv = PK11_GenerateRandom(ctx->session_key,
+					 ctx->session_key_len);
+		if (rv != SECSuccess) 
+			return NULL;
+
+		if(geier_debug) {
+			fprintf(stderr, PACKAGE_NAME ": new session key: \n");
+			int i;
+			for (i = 0; i < ctx->session_key_len; i ++)
+				fprintf(stderr, "%02x ", ctx->session_key[i]);
+			fprintf(stderr, "\n");
+		}
+	}
 
         CK_MECHANISM_TYPE cm = CKM_DES3_CBC_PAD; /* FIXME: Is this right? */
         PK11SlotInfo* slot = PK11_GetBestSlot(cm, NULL);
@@ -308,30 +320,6 @@ geier_pkcs7_encryption_key(geier_context *ctx)
 	return key;
 }
 
-
-
-void
-geier_encoder(void *arg, const char *buf, unsigned long len)
-{
-	geier_context *ctx = (geier_context *) arg;
-	while (ctx->encoder_buf_len + len > ctx->encoder_buf_alloc) {
-		if (! ctx->encoder_buf_alloc)
-			ctx->encoder_buf_alloc = 4096;
-		else
-			ctx->encoder_buf_alloc <<= 1;
-
-		ctx->encoder_buf_ptr = realloc (ctx->encoder_buf_ptr,
-						ctx->encoder_buf_alloc);
-		if (! ctx->encoder_buf_ptr) {
-			/* FIXME set PORT error ?? */
-			perror(PACKAGE_NAME);
-			return;
-		}
-	}
-
-	memmove (ctx->encoder_buf_ptr + ctx->encoder_buf_len, buf, len);
-	ctx->encoder_buf_len += len;
-}
 
 
 /* Do PKCS#7 public key crypto (encrypting inlen bytes from *input on)
@@ -400,8 +388,6 @@ int geier_pkcs7_encrypt(geier_context *context,
 	*output = (unsigned char *) context->encoder_buf_ptr;
 	*outlen = context->encoder_buf_len;
 	retval = 0;
-
-	fprintf(stderr, "data successfully encrypted.\n");
 
 exit5:
 	/* finish encoder, if ecx still set 

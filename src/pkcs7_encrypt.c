@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2004, 2005  Stefan Siegl <ssiegl@gmx.de>, Germany
- *               2005        JÃ¼rgen Stuber <juergen@jstuber.net>, Germany
+ * Copyright (C) 2004,2005,2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
+ *               2005  Jürgen Stuber <juergen@jstuber.net>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,46 +19,319 @@
 
 #include "config.h"
 
-#include <openssl/pem.h>
-#include <openssl/stack.h>
-#include <openssl/bio.h>
-#include <openssl/err.h>
-#include <openssl/rand.h>
-
 #include <stdio.h>
 #include <unistd.h>
 #include <assert.h>
-
-#include <geier.h>
 #include <string.h>
 
-#include "context.h"
+#include <geier.h>
 
+/* Mozilla header files */
+#include <nss/nss.h>
+#include <nss/cert.h>
+#include <nss/secpkcs7.h>
+#include <nss/pk11func.h>
+
+#include "context.h"
 #include "pkcs7_encrypt.h"
 
-#ifdef OPENSSL_NO_DES
-#error "OpenSSL 3DES-cipher not available. GEIER won't work that way!"
-#endif
 
-static X509 *geier_encrypt_get_cert(const char *filename);
+/* XXX free cinfo on error, maybe others as well */
+static SEC_PKCS7ContentInfo *
+geier_create_content_info(void)
+{
+	/*
+	 * sec_pkcs7_create_content_info is not available externally,
+	 * therefore let's use SEC_PKCS7CreateData and overwrite thing manually
+	 */
+	SEC_PKCS7ContentInfo *cinfo = SEC_PKCS7CreateData ();
 
-static PKCS7 *p7_build(geier_context *context,
-		       const X509 *x509_cert,
-		       const unsigned char *input, size_t inlen);
-static int p7_init_cipher_context(geier_context *context,
-				  const EVP_CIPHER *cipher,
-				  EVP_CIPHER_CTX *cipher_context);
-static int p7_set_cipher(const EVP_CIPHER *cipher, PKCS7 *p7);
-static int p7_set_enc_key(const EVP_CIPHER *cipher,
-			  unsigned char *key,
-			  const X509 *x509_cert,
-			  PKCS7 *p7);
-static int p7_set_iv(EVP_CIPHER_CTX *context, PKCS7 *p7);
-static int p7_set_enc_data(EVP_CIPHER_CTX *context,
-			   const unsigned char *input, size_t inlen,
-			   PKCS7 *p7);
+	if (cinfo == NULL)
+		return NULL;
 
-static unsigned char *rand_malloc(size_t len);
+	/*
+	 * change content type from OID data to enveloped-data
+	 */
+	cinfo->contentTypeTag =
+		SECOID_FindOIDByTag (SEC_OID_PKCS7_ENVELOPED_DATA);
+	PORT_Assert (cinfo->contentTypeTag
+		     && cinfo->contentTypeTag->offset == kind);
+	SECStatus rv = SECITEM_CopyItem (cinfo->poolp, &(cinfo->contentType),
+					 &(cinfo->contentTypeTag->oid));
+	if (rv != SECSuccess)
+		return NULL;
+
+	/*
+	 * how to free the data structure which has been created?
+	 */
+	void *thing = PORT_ArenaZAlloc
+		(cinfo->poolp, sizeof(SEC_PKCS7EnvelopedData));
+
+	/*
+	 * imitate sec_pkcs7_init_content_info
+	 */
+	cinfo->content.envelopedData = (SEC_PKCS7EnvelopedData*)thing;
+	SECItem *versionp = &(cinfo->content.envelopedData->version);
+	int version = SEC_PKCS7_ENVELOPED_DATA_VERSION;
+
+	if (thing == NULL)
+		return NULL;
+
+	if (versionp != NULL) {
+		SECItem *dummy;
+
+		PORT_Assert (version >= 0);
+		dummy = SEC_ASN1EncodeInteger(cinfo->poolp, versionp, version);
+
+		if (dummy == NULL)
+			return NULL;
+
+		PORT_Assert (dummy == versionp);
+	}
+
+	return cinfo;
+}
+
+
+
+static SECStatus
+sec_pkcs7_add_recipient (SEC_PKCS7ContentInfo *cinfo,
+			 CERTCertificate *cert)
+{
+	//recipientinfo, **recipientinfos, ***recipientinfosp;
+	//SECItem *dummy;
+	//int count;
+
+	SECOidTag kind = SEC_PKCS7ContentType (cinfo);
+	assert(kind == SEC_OID_PKCS7_ENVELOPED_DATA);
+	
+	SEC_PKCS7EnvelopedData *edp = cinfo->content.envelopedData;
+	SEC_PKCS7RecipientInfo ***recipientinfosp = &(edp->recipientInfos);
+	
+	void *mark = PORT_ArenaMark(cinfo->poolp);
+
+	SEC_PKCS7RecipientInfo *recipientinfo = (SEC_PKCS7RecipientInfo*)
+		PORT_ArenaZAlloc(cinfo->poolp, sizeof(SEC_PKCS7RecipientInfo));
+
+	if(recipientinfo == NULL) {
+		PORT_ArenaRelease(cinfo->poolp, mark);
+		return SECFailure;
+	}
+
+	SECItem *dummy =
+		SEC_ASN1EncodeInteger(cinfo->poolp, &recipientinfo->version,
+				      SEC_PKCS7_RECIPIENT_INFO_VERSION);
+	if (dummy == NULL) {
+		PORT_ArenaRelease (cinfo->poolp, mark);
+		return SECFailure;
+	}
+
+	PORT_Assert (dummy == &recipientinfo->version);
+
+	recipientinfo->cert = CERT_DupCertificate (cert);
+	if (recipientinfo->cert == NULL) {
+		PORT_ArenaRelease (cinfo->poolp, mark);
+		return SECFailure;
+	}
+
+	recipientinfo->issuerAndSN =
+		CERT_GetCertIssuerAndSN (cinfo->poolp, cert);
+	if (recipientinfo->issuerAndSN == NULL) {
+		PORT_ArenaRelease (cinfo->poolp, mark);
+		return SECFailure;
+	}
+
+
+	/*
+	 * Okay, now recipientinfo is all set.  We just need to put it into
+	 * the main structure.
+	 *
+	 * If this is the first recipient, allocate a new recipientinfos array;
+	 * otherwise, reallocate the array, making room for the new entry.
+	 */
+	SEC_PKCS7RecipientInfo **recipientinfos = *recipientinfosp;
+	int count;
+
+	if (recipientinfos == NULL) {
+		count = 0;
+		recipientinfos = (SEC_PKCS7RecipientInfo **)PORT_ArenaAlloc
+			(cinfo->poolp, 2 * sizeof(SEC_PKCS7RecipientInfo *));
+	} else {
+		for (count = 0; recipientinfos[count] != NULL; count++)
+			;
+		PORT_Assert (count);	/* should be at least one already */
+		recipientinfos = (SEC_PKCS7RecipientInfo **)PORT_ArenaGrow (
+			cinfo->poolp, recipientinfos,
+			(count + 1) * sizeof(SEC_PKCS7RecipientInfo *),
+			(count + 2) * sizeof(SEC_PKCS7RecipientInfo *));
+	}
+
+	if (recipientinfos == NULL) {
+		PORT_ArenaRelease (cinfo->poolp, mark);
+		return SECFailure;
+	}
+
+	recipientinfos[count] = recipientinfo;
+	recipientinfos[count + 1] = NULL;
+	
+	*recipientinfosp = recipientinfos;
+	
+	PORT_ArenaUnmark (cinfo->poolp, mark);
+	return SECSuccess;
+}
+
+
+
+static SECStatus
+geier_pkcs7_init_encrypted_content_info(SEC_PKCS7EncryptedContentInfo *enccinfo,
+					PRArenaPool *poolp, SECOidTag encalg,
+					int keysize)
+{
+	SECStatus rv;
+	
+	PORT_Assert (enccinfo != NULL && poolp != NULL);
+	if (enccinfo == NULL || poolp == NULL)
+		return SECFailure;
+
+	SECOidTag kind = SEC_OID_PKCS7_DATA;
+
+	enccinfo->contentTypeTag = SECOID_FindOIDByTag (kind);
+	PORT_Assert (enccinfo->contentTypeTag
+		     && enccinfo->contentTypeTag->offset == kind);
+
+	rv = SECITEM_CopyItem (poolp, &(enccinfo->contentType),
+			       &(enccinfo->contentTypeTag->oid));
+
+	if (rv != SECSuccess)
+		return rv;
+
+	/* Save keysize and algorithm for later. */
+	enccinfo->keysize = keysize;
+	enccinfo->encalg = encalg;
+	
+	return SECSuccess;
+}
+
+
+
+static SEC_PKCS7ContentInfo *
+geier_create_enveloped_data (CERTCertificate *cert)
+{
+	SEC_PKCS7ContentInfo *cinfo = geier_create_content_info();
+	SECStatus rv = sec_pkcs7_add_recipient(cinfo, cert);
+
+	if (rv != SECSuccess) {
+		SEC_PKCS7DestroyContentInfo (cinfo);
+		return NULL;
+	}
+
+	SEC_PKCS7EnvelopedData *envd = cinfo->content.envelopedData;
+	PORT_Assert (envd != NULL);
+
+	/*
+	 * XXX Might we want to allow content types other than data?
+	 * If so, via what interface?
+	 */
+	rv = geier_pkcs7_init_encrypted_content_info
+		(&(envd->encContentInfo), cinfo->poolp,
+		 SEC_OID_DES_EDE3_CBC, 0);
+
+	if (rv != SECSuccess) {
+		SEC_PKCS7DestroyContentInfo (cinfo);
+		return NULL;
+	}
+
+	/* XXX Anything more to do here? */
+
+	return cinfo;
+}
+
+
+
+static CERTCertificate *geier_encrypt_get_cert(const char *filename)
+{
+	char buf[4096];
+
+	/* open file holding certificate  */
+	FILE *handle = fopen(filename, "r");
+	
+	if (!handle) {
+		/* perror(PACKAGE_NAME);	 */
+		return NULL;
+	}
+
+	int len = fread(buf, 1, sizeof(buf), handle);
+	if(len < 1) {
+		fclose(handle);
+		return NULL;
+	}
+
+	assert(len < (int) sizeof(buf));
+	fclose(handle);
+
+	CERTCertificate *cert = CERT_DecodeCertFromPackage(buf, len);
+	if(! cert) {
+		fprintf(stderr, "unable to load certificate.\n");
+		return NULL;
+	}
+
+	return cert;
+}
+
+
+static PK11SymKey *
+geier_pkcs7_encryption_key(geier_context *ctx)
+{
+	assert(ctx);
+
+	ctx->session_key_len = 24;
+	ctx->session_key = malloc(ctx->session_key_len);
+
+	SECStatus rv;
+	rv = PK11_GenerateRandom(ctx->session_key, ctx->session_key_len);
+	if (rv != SECSuccess) 
+		return NULL;
+
+        CK_MECHANISM_TYPE cm = CKM_DES3_CBC_PAD; /* FIXME: Is this right? */
+        PK11SlotInfo* slot = PK11_GetBestSlot(cm, NULL);
+
+	/* FIXME: store PK11SymKey or SECItem in ctx 
+	 * once we use NSS everywhere */
+	SECItem key_item;
+	key_item.type = siBuffer;
+	key_item.data = ctx->session_key;
+	key_item.len = ctx->session_key_len;
+
+	PK11SymKey *key = PK11_ImportSymKey
+		(slot, cm, PK11_OriginUnwrap, CKA_ENCRYPT, &key_item, NULL);
+
+	return key;
+}
+
+
+
+void
+geier_encoder(void *arg, const char *buf, unsigned long len)
+{
+	geier_context *ctx = (geier_context *) arg;
+	while (ctx->encoder_buf_len + len > ctx->encoder_buf_alloc) {
+		if (! ctx->encoder_buf_alloc)
+			ctx->encoder_buf_alloc = 4096;
+		else
+			ctx->encoder_buf_alloc <<= 1;
+
+		ctx->encoder_buf_ptr = realloc (ctx->encoder_buf_ptr,
+						ctx->encoder_buf_alloc);
+		if (! ctx->encoder_buf_ptr) {
+			/* FIXME set PORT error ?? */
+			perror(PACKAGE_NAME);
+			return;
+		}
+	}
+
+	memmove (ctx->encoder_buf_ptr + ctx->encoder_buf_len, buf, len);
+	ctx->encoder_buf_len += len;
+}
 
 
 /* Do PKCS#7 public key crypto (encrypting inlen bytes from *input on)
@@ -73,277 +346,76 @@ int geier_pkcs7_encrypt(geier_context *context,
 			const unsigned char *input, size_t inlen,
 			unsigned char **output, size_t *outlen)
 {
-	int retval = 0;
-	PKCS7 *p7;
-	X509 *x509_cert;
+	int retval = -1;
 
-	if (!context || !context->cert_filename || !output || !outlen) {
-		retval = -1;
+	if (!context || !context->cert_filename || !output || !outlen) 
 		goto exit0;
-	}
 
-	x509_cert = geier_encrypt_get_cert(context->cert_filename);
-	if (!x509_cert) {
-		retval = -1;
+	CERTCertificate *cert = geier_encrypt_get_cert(context->cert_filename);
+	if (!cert)
 		goto exit1;
-	}
 
-	/* build PKCS#7 structure */
-	p7 = p7_build(context, x509_cert, input, inlen);
-	if (!p7) {
-		retval = -1;
+	SEC_PKCS7ContentInfo *cinfo = geier_create_enveloped_data(cert);
+	if (!cinfo)
 		goto exit2;
-	}
 
-	/* output data */
-	{
-		*outlen = i2d_PKCS7(p7, NULL);
-		*output = malloc(*outlen);
-		unsigned char *p = *output;
+	PK11SymKey *bulkkey = geier_pkcs7_encryption_key(context);
+	if (!bulkkey)
+		goto exit3;
 
-		if (! *output) {
-			retval = -1;
-			goto exit3;
-		}
+	/* SECStatus rv =
+	 *   SEC_PKCS7SetContent(cinfo, (const char *) input, inlen);
+	 * if (rv != SECSuccess)
+	 *   goto exit4;
+	 */
 
-		*outlen = i2d_PKCS7(p7, &p);
-	}
- exit3:
-	PKCS7_free(p7);
- exit2:
-	X509_free(x509_cert);
- exit1:
- exit0:
-	if (retval) {
-		ERR_load_PKCS7_strings();
-		ERR_print_errors_fp(stderr);
-	}
+	context->encoder_buf_ptr = NULL;
+	context->encoder_buf_len = 0;
+	context->encoder_buf_alloc = 0;
+
+	SEC_PKCS7EncoderContext *ecx = SEC_PKCS7EncoderStart
+		(cinfo, geier_encoder, context, bulkkey);
+
+	if (ecx == NULL) 
+		goto exit4;
+
+	/* 
+	 * SECItem *p7item = SEC_PKCS7EncodeItem(NULL, NULL, cinfo, bulkkey,
+	 * NULL, NULL);
+	 * if (!p7item)
+	 *	goto exit4;
+	 */
+
+	SECStatus rv;
+	rv = SEC_PKCS7EncoderUpdate(ecx, (const char *) input, inlen);
+	if (rv != SECSuccess)
+		goto exit5;
+
+	rv = SEC_PKCS7EncoderFinish(ecx, NULL, NULL);
+	if (rv != SECSuccess)
+		goto exit5;
+
+	ecx = NULL;
+
+	*output = (unsigned char *) context->encoder_buf_ptr;
+	*outlen = context->encoder_buf_len;
+	retval = 0;
+
+	fprintf(stderr, "data successfully encrypted.\n");
+
+exit5:
+	/* finish encoder, if ecx still set 
+	 * free ecx, if not NULL */
+exit4:
+	/* free bulkkey */
+exit3:
+	/* free cinfo */
+exit2:
+	/* free cert */
+exit1:
+exit0:
 	return retval;
 }
 
 
 
-static X509 *geier_encrypt_get_cert(const char *filename)
-{
-	FILE *handle;
-	X509 *x509_cert;
-
-	/* open file holding certificate  */
-	handle = fopen(filename, "r");
-
-	if (!handle) {
-		fprintf(stderr, PACKAGE_NAME ": unable to open X.509 "
-			"certificate: %s: %s\n", filename,
-			strerror(errno));
-		/* perror(PACKAGE_NAME); */
-		return NULL;
-	}
-
-	x509_cert = PEM_read_X509(handle, NULL, NULL, NULL);
-	if(! x509_cert) {
-		ERR_load_PKCS7_strings();
-		ERR_print_errors_fp(stderr);
-		return NULL;
-	}
-	fclose(handle);
-	return x509_cert;
-}
-
-
-static PKCS7 *p7_build(geier_context *context,
-		       const X509 *x509_cert,
-		       const unsigned char *input, size_t inlen)
-{
-	PKCS7 *p7 = NULL;
-	const EVP_CIPHER *cipher = EVP_des_ede3_cbc();
-	EVP_CIPHER_CTX cipher_context;
-
-	/* initialize cipher context */
-	
-	if (p7_init_cipher_context(context, cipher, &cipher_context)) {
-		goto exit0;
-	}
-	/* create PKCS7 object now */
-	p7 = PKCS7_new();
-	if (!p7) { goto exit1; }
-	if (!PKCS7_set_type(p7, NID_pkcs7_enveloped)) { goto exit2; }
-	if (!PKCS7_set_cipher(p7, cipher)) { goto exit3; }
-
-	/* add recipient (only in envelope mode) */
-	if (!PKCS7_add_recipient(p7, (X509 *)x509_cert)) { goto exit4; }
-
-	/* we need to initialize PKCS#7 stuff the hard way,
-	 * since we have got to remember (and know!) the 3DES key :-( */
-	if (p7_set_cipher(cipher, p7)) { goto exit5; }
-
-	/* encrypt 3des key with RSA and attach to PKCS#7 struct */
-	if (p7_set_enc_key(cipher, context->session_key,
-			   x509_cert,
-			   p7)) {
-		goto exit6;
-	}
-	/* store IV in PKCS#7 structure
-	 * shalt be done before any encryption!!! */
-	if (p7_set_iv(&cipher_context, p7)) { goto exit7; }
-
-	/* now simply *lol* encrypt the data (3DES) ...
-	 *  -- can somebody serve my a cup of coffee in the meantime ?? */
-	if (p7_set_enc_data(&cipher_context, input, inlen, p7)) { goto exit8; }
-
-	return p7;
-
- exit8:
- exit7:
- exit6:
- exit5:
- exit4:
- exit3:
- exit2:
-	PKCS7_free(p7);
- exit1:
- exit0:
-	return NULL;
-}
-
-
-static int p7_init_cipher_context(geier_context *context,
-				  const EVP_CIPHER *cipher,
-				  EVP_CIPHER_CTX *cipher_context)
-{
-	int retval = 0;
-	unsigned char *key = NULL;
-	unsigned char *iv = NULL;
-	
-	if (context->session_key) {
-		key = context->session_key;
-	}
-	else {
-		key = rand_malloc(EVP_CIPHER_key_length(cipher));
-		if (!key) {
-			retval = -1;
-			goto exit0;
-		}
-		/* save for decryption */
-		context->session_key = key;
-		context->session_key_len = EVP_CIPHER_key_length(cipher);
-	}
-	if (context->iv) {
-		iv = context->iv;
-	}
-	else {
-		iv = rand_malloc(EVP_CIPHER_iv_length(cipher));
-		if (!iv) {
-			retval = -1;
-			goto exit1;
-		}
-	}
-	if (!EVP_EncryptInit(cipher_context, cipher, key, iv)) {
-		retval = -1;
-		goto exit2;
-	}
- exit2:
- exit1:
-	if (!context->iv) { free(iv); }
- exit0:
-	return retval;
-}
-
-static int p7_set_cipher(const EVP_CIPHER *cipher, PKCS7 *p7)
-{
-	p7->d.enveloped->enc_data->algorithm->algorithm =
-		OBJ_nid2obj(EVP_CIPHER_type(cipher));
-	return 0;
-}
-
-static int p7_set_enc_key(const EVP_CIPHER *cipher,
-			  unsigned char *key,
-			  const X509 *x509_cert,
-			  PKCS7 *p7)
-{
-	int retval = 0;
-	char buf[512];
-	EVP_PKEY *elster_pubkey = X509_get_pubkey((X509 *)x509_cert);
-
-	int len = EVP_PKEY_encrypt(buf,
-				   key,
-				   EVP_CIPHER_key_length(cipher),
-				   elster_pubkey);
-	if(len < 0) {
-		retval = -1;
-		goto exit0;
-	}
-
-	/* convert to ASN.1 and store in PKCS#7 structure */
-	ASN1_STRING_set(sk_PKCS7_RECIP_INFO_value(p7->d.enveloped->recipientinfo, 0)
-			->enc_key, buf, len);
- exit0:
-	EVP_PKEY_free(elster_pubkey);
-	return retval;
-}
-
-
-/* store IV in PKCS#7 structure */
-static int p7_set_iv(EVP_CIPHER_CTX *context, PKCS7 *p7)
-{
-	p7->d.enveloped->enc_data->algorithm->parameter = ASN1_TYPE_new();
-	if (EVP_CIPHER_param_to_asn1
-	    (context, p7->d.enveloped->enc_data->algorithm->parameter) < 0) {
-		return -1;
-	}
-	return 0;
-}
-
-
-/* store encrypted data in PKCS#7 structure */
-static int p7_set_enc_data(EVP_CIPHER_CTX *context,
-			   const unsigned char *input, size_t inlen,
-			   PKCS7 *p7)
-{
-	int retval = 0;
-	int outlen;
-	unsigned char *buf;
-	unsigned char *p;
-
-	buf = malloc(inlen + EVP_CIPHER_CTX_block_size(context));
-	if (!buf) {
-		retval = -ENOMEM;
-		goto exit0;
-	}
-	if (!EVP_EncryptUpdate(context, buf, &outlen, input, inlen)) {
-		retval = -1;
-		goto exit1;
-	}
-	p = buf + outlen;
-
-	if (!EVP_EncryptFinal(context, p, &outlen)) {
-		retval = -1;
-		goto exit2;
-	}
-	p += outlen;
-
-	p7->d.enveloped->enc_data->enc_data = M_ASN1_OCTET_STRING_new();
-	ASN1_STRING_set(p7->d.enveloped->enc_data->enc_data, buf, p - buf);
-
- exit2:
- exit1:
-	free(buf);
- exit0:
-	return retval;
-}
-
-
-static unsigned char *rand_malloc(size_t len)
-{
-	unsigned char *result = malloc(len);
-	if (!result) {
-		goto exit0;
-	}
-	if (RAND_bytes(result, len) != 1) {
-		free(result);
-		result = NULL;
-		goto exit1;
-	}
- exit1:
- exit0:
-	return result;
-}

@@ -19,6 +19,7 @@ libgeier_la_SOURCES = \
 	base64.c base64.h bsd-base64.c bsd-base64.h \
 	pkcs7_encrypt.c pkcs7_encrypt.h \
 	pkcs7_decrypt.c pkcs7_decrypt.h \
+	pkcs7_keying.c pkcs7_keying.h \
 	xslt.c \
 	gzip_deflate.c gzip_deflate.h \
 	gzip_inflate.c gzip_inflate.h \

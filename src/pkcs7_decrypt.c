@@ -33,6 +33,7 @@
 #include "pkcs7_decrypt.h"
 #include "encoder.h"
 #include "context.h"
+#include "pkcs7_keying.h"
 
 
 /* Callback from PKCS#7 decoder asking for decryption key */
@@ -62,32 +63,15 @@ int geier_pkcs7_decrypt(geier_context *context,
 	int retval = -1;
 	SEC_PKCS7ContentInfo *cinfo = NULL;
 
-	/* FIXME: factor out key handling */
-	CK_MECHANISM_TYPE cm = CKM_DES3_CBC_PAD; /* FIXME: Is this right? */
-	PK11SlotInfo* slot = PK11_GetBestSlot(cm, NULL);
+	PK11SymKey *key = geier_pkcs7_encryption_key(context);
+	if (!key) goto exit0;
 
-	SECItem key_item;
 	SECItem data_item;
-	PK11SymKey *key = NULL;
-
-	/* FIXME: store PK11SymKey or SECItem in context 
-	 * once we use NSS everywhere */
-	key_item.type = siBuffer;
-	key_item.data = context->session_key;
-	key_item.len = context->session_key_len;
-
-	key = PK11_ImportSymKey(slot, cm,
-				PK11_OriginUnwrap, /* key is unwrapped */
-				CKA_ENCRYPT, /* key for en- and decryption */
-				&key_item, NULL);
-	if (!key)
-		goto exit0;
-
 	data_item.type = siCipherDataBuffer;
 	data_item.data = (unsigned char *)input;
 	data_item.len = inlen;
 
-	context->encoder_buf_ptr = NULL; /* FIXME free on error */
+	context->encoder_buf_ptr = NULL;
 	context->encoder_buf_len = 0;
 	context->encoder_buf_alloc = 0;
 
@@ -103,11 +87,14 @@ int geier_pkcs7_decrypt(geier_context *context,
 
 	*output = (unsigned char *) context->encoder_buf_ptr;
 	*outlen = context->encoder_buf_len;
+
+	context->encoder_buf_ptr = 0;
 	retval = 0;
 
 	SEC_PKCS7DestroyContentInfo(cinfo);
  exit1:
 	PK11_FreeSymKey(key);
+	free(context->encoder_buf_ptr);
  exit0:
 	return retval;
 }

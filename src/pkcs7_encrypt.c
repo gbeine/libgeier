@@ -36,6 +36,7 @@
 #include "pkcs7_encrypt.h"
 #include "encoder.h"
 #include "globals.h"
+#include "pkcs7_keying.h"
 
 /* XXX free cinfo on error, maybe others as well */
 static SEC_PKCS7ContentInfo *
@@ -279,46 +280,6 @@ static CERTCertificate *geier_encrypt_get_cert(const char *filename)
 	return cert;
 }
 
-
-static PK11SymKey *
-geier_pkcs7_encryption_key(geier_context *ctx)
-{
-	assert(ctx);
-
-	if(! ctx->session_key) {
-		ctx->session_key_len = 24;
-		ctx->session_key = malloc(ctx->session_key_len);
-
-		SECStatus rv;
-		rv = PK11_GenerateRandom(ctx->session_key,
-					 ctx->session_key_len);
-		if (rv != SECSuccess) 
-			return NULL;
-
-		if(geier_debug) {
-			fprintf(stderr, PACKAGE_NAME ": new session key: \n");
-			int i;
-			for (i = 0; i < ctx->session_key_len; i ++)
-				fprintf(stderr, "%02x ", ctx->session_key[i]);
-			fprintf(stderr, "\n");
-		}
-	}
-
-        CK_MECHANISM_TYPE cm = CKM_DES3_CBC_PAD; /* FIXME: Is this right? */
-        PK11SlotInfo* slot = PK11_GetBestSlot(cm, NULL);
-
-	/* FIXME: store PK11SymKey or SECItem in ctx 
-	 * once we use NSS everywhere */
-	SECItem key_item;
-	key_item.type = siBuffer;
-	key_item.data = ctx->session_key;
-	key_item.len = ctx->session_key_len;
-
-	PK11SymKey *key = PK11_ImportSymKey
-		(slot, cm, PK11_OriginUnwrap, CKA_ENCRYPT, &key_item, NULL);
-
-	return key;
-}
 
 
 

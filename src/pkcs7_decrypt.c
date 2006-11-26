@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2005  Stefan Siegl <ssiegl@gmx.de>, Germany
+ * Copyright (C) 2005,2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
+ * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,23 +18,40 @@
  */
 
 #include "config.h"
-#include "context.h"
 
 #include <stdio.h>
 #include <errno.h>
 #include <assert.h>
 
 #include <geier.h>
+
+/* Mozilla header files */
+#include <nss/nss.h>
+#include <nss/pk11func.h>
+#include <nss/secpkcs7.h>
+
 #include "pkcs7_decrypt.h"
+#include "encoder.h"
+#include "context.h"
 
-#include <openssl/err.h>
-#include <openssl/x509.h>
-#include <openssl/pkcs7.h>
-#include <openssl/evp.h>
 
-#ifdef OPENSSL_NO_DES
-#error "OpenSSL 3DES-cipher not available. GEIER won't work that way!"
-#endif
+/* Callback from PKCS#7 decoder asking for decryption key */
+static PK11SymKey *
+get_decryption_key(void *arg, SECAlgorithmID *algid)
+{
+	return (PK11SymKey *)arg;
+}
+
+
+
+/* Callback from PKCS#7 decoder asking whether decryption is allowed */
+static PRBool
+allow_decryption(SECAlgorithmID *algid, PK11SymKey *bulkkey)
+{
+	return PR_TRUE;
+}
+
+
 
 /* Decrypt PKCS#7 encrypted content using the session key in the context.
  */
@@ -41,82 +59,57 @@ int geier_pkcs7_decrypt(geier_context *context,
 			const unsigned char *input, size_t inlen,
 			unsigned char **output, size_t *outlen)
 {
-	PKCS7 *p7;
-	PKCS7_ENC_CONTENT *enc_data; 
-	EVP_CIPHER_CTX ctx;
-	const EVP_CIPHER *ciph;
-	const unsigned char *iv;
-	size_t len;
-	unsigned char *p = (unsigned char *) input;
-	int retval = 0;
+	int retval = -1;
+	SEC_PKCS7ContentInfo *cinfo = NULL;
 
-	if (!context || !output || !outlen) {
-		retval = -1;
+	/* FIXME: factor out key handling */
+	CK_MECHANISM_TYPE cm = CKM_DES3_CBC_PAD; /* FIXME: Is this right? */
+	PK11SlotInfo* slot = PK11_GetBestSlot(cm, NULL);
+
+	SECItem key_item;
+	SECItem data_item;
+	PK11SymKey *key = NULL;
+
+	/* FIXME: store PK11SymKey or SECItem in context 
+	 * once we use NSS everywhere */
+	key_item.type = siBuffer;
+	key_item.data = context->session_key;
+	key_item.len = context->session_key_len;
+
+	key = PK11_ImportSymKey(slot, cm,
+				PK11_OriginUnwrap, /* key is unwrapped */
+				CKA_ENCRYPT, /* key for en- and decryption */
+				&key_item, NULL);
+	if (!key)
 		goto exit0;
-	}
 
-	p7 = d2i_PKCS7(NULL, &p, inlen);
-	if(! p7) {
+	data_item.type = siCipherDataBuffer;
+	data_item.data = (unsigned char *)input;
+	data_item.len = inlen;
+
+	context->encoder_buf_ptr = NULL; /* FIXME free on error */
+	context->encoder_buf_len = 0;
+	context->encoder_buf_alloc = 0;
+
+	cinfo = SEC_PKCS7DecodeItem(&data_item,
+				    geier_encoder, context,
+				    NULL, NULL,
+				    get_decryption_key, key,
+				    allow_decryption);
+	if (! cinfo) {
 		retval = -1;
 		goto exit1;
 	}
 
-	if(! PKCS7_type_is_encrypted(p7)) {
-		retval = -1;
-		goto exit2;
-	}
+	*output = (unsigned char *) context->encoder_buf_ptr;
+	*outlen = context->encoder_buf_len;
+	retval = 0;
 
-	ciph = EVP_des_ede3_cbc();
-	EVP_CIPHER_CTX_init(&ctx);
-
-	enc_data = p7->d.encrypted->enc_data;
-	iv = enc_data->algorithm->parameter->value.asn1_string->data;
-	len = enc_data->enc_data->length + ciph->block_size;
-	*output = p = malloc(len);
-
-	if(! *output) {
-		retval = -ENOMEM;
-		goto exit4;
-	}
-
-	if(! EVP_DecryptInit(&ctx, ciph, context->session_key, iv)) {
-		retval = -1;
-		goto exit5;
-	}
-
-	if(! EVP_DecryptUpdate(&ctx, p, &len, enc_data->enc_data->data,
-			       enc_data->enc_data->length)) {
-		retval = -1;
-		goto exit6;
-	}
-
-	p += len;
-
-	if(! EVP_DecryptFinal(&ctx, p, &len)) {
-		retval = -1;
-		goto exit7;
-	}
-
-	*outlen = (p - *output) + len;
-	*output = realloc(*output, *outlen);
-
- exit7:
- exit6:
- exit5:
- exit4:
-	if(retval)
-		free(* output);
-/* exit3: */
-	/* EVP_CIPHER_CTX_cleanup(&ctx); */
- exit2:
+	SEC_PKCS7DestroyContentInfo(cinfo);
  exit1:
-	PKCS7_free(p7);
+	PK11_FreeSymKey(key);
  exit0:
-	if(retval) {
-		ERR_load_PKCS7_strings();
-		ERR_print_errors_fp(stderr);
-	}
-
 	return retval;
 }
+
 

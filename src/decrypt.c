@@ -32,6 +32,7 @@
 
 #include "pkcs7_decrypt.h"
 #include "iso_to_utf8.h"
+#include "globals.h"
 
 
 /*
@@ -173,6 +174,12 @@ static int decrypt_content(geier_context *context,
 					     &content, &content_len);
 	if (retval) { goto exit0; }
 	if (content_len == 0) goto exit0; /* success */
+
+	if (geier_debug) {
+		fprintf(stderr, PACKAGE_NAME ": decrypt_content: ==========\n");
+		write(1, content, content_len);
+		fprintf(stderr, "==========================================\n");
+	}
 
 	/* convert base64 to gzip */
 	retval = geier_base64_decode(content, content_len,

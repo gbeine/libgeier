@@ -63,6 +63,8 @@ generate_session_key(geier_context *ctx)
 	for (i = 0; i < ctx->session_key_len; i ++)
 		fprintf(stderr, "%02x ", ctx->session_key[i]);
 	fprintf(stderr, "\n");
+
+	return 0; /* success */
 }
 
 

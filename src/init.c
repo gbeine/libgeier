@@ -52,6 +52,14 @@ int geier_init(int debug)
 	xmlLoadExtDtdDefaultValue = XML_DETECT_IDS | XML_COMPLETE_ATTRS;
 	xmlSubstituteEntitiesDefault(1);
 
+	/*
+	 * initialize libnss
+	 */
+	NSS_NoDB_Init(".");
+	
+	/* 
+	 * initialize xmlsec
+	 */
 #ifndef XMLSEC_NO_XSLT
 	xmlIndentTreeOutput = 1;
 #endif /* XMLSEC_NO_XSLT */
@@ -88,10 +96,5 @@ int geier_init(int debug)
 		return 1;
 	}
 
-	/*
-	 * initialize libnss
-	 */
-	NSS_NoDB_Init(".");
-	
 	return 0;
 }

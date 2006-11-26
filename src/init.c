@@ -43,6 +43,14 @@ int geier_init(int debug)
 	 */
 	geier_debug = debug;
 
+	const char *env_level_str = getenv("GEIER_DEBUG");
+	if (env_level_str) {
+		int env_level = atoi (env_level_str);
+		if (env_level > geier_debug)
+			geier_debug = env_level;
+	}
+
+
 	/*
 	 * initialise libxml. Ugly syntax they use. Add ; for indent.
 	 */

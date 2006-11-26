@@ -40,7 +40,6 @@ geier_context *geier_context_new(void)
 
 	context->session_key = NULL;
 	context->session_key_len = 0;
-	context->iv = NULL;
 
 	return context;
 };
@@ -52,8 +51,6 @@ void geier_context_free(geier_context *context)
 		memset(context->session_key, 0, context->session_key_len);
 		free(context->session_key);
 	}
-	if (context->iv) {
-		free(context->iv);
-	}
+
 	free(context);
 }

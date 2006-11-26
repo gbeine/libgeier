@@ -36,8 +36,10 @@ struct _geier_context {
 	unsigned char *session_key;
 	size_t session_key_len;
 
-	/* use only for testing */
-	unsigned char *iv;
+	/* used by geier_encoder, for NSS callbacks */
+	char *encoder_buf_ptr;
+	size_t encoder_buf_len;
+	size_t encoder_buf_alloc;
 };
 
 #endif

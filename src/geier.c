@@ -23,7 +23,6 @@
 #include <geier.h>
 #include <geierversion.h>
 
-#include "context.h"
 #include "find_node.h"
 
 #include <stdio.h>

@@ -38,7 +38,7 @@
 #include "globals.h"
 #include "pkcs7_keying.h"
 
-/* XXX free cinfo on error, maybe others as well */
+
 static SEC_PKCS7ContentInfo *
 geier_create_content_info(void)
 {
@@ -50,7 +50,7 @@ geier_create_content_info(void)
 
 	if (cinfo == NULL)
 		return NULL;
-
+	
 	/*
 	 * change content type from OID data to enveloped-data
 	 */
@@ -60,14 +60,18 @@ geier_create_content_info(void)
 		     && cinfo->contentTypeTag->offset == kind);
 	SECStatus rv = SECITEM_CopyItem (cinfo->poolp, &(cinfo->contentType),
 					 &(cinfo->contentTypeTag->oid));
-	if (rv != SECSuccess)
+	if (rv != SECSuccess) {
+		SEC_PKCS7DestroyContentInfo(cinfo);
 		return NULL;
+	}
+
 
 	/*
 	 * how to free the data structure which has been created?
 	 */
 	void *thing = PORT_ArenaZAlloc
 		(cinfo->poolp, sizeof(SEC_PKCS7EnvelopedData));
+
 
 	/*
 	 * imitate sec_pkcs7_init_content_info
@@ -76,8 +80,10 @@ geier_create_content_info(void)
 	SECItem *versionp = &(cinfo->content.envelopedData->version);
 	int version = SEC_PKCS7_ENVELOPED_DATA_VERSION;
 
-	if (thing == NULL)
+	if (thing == NULL) {
+		SEC_PKCS7DestroyContentInfo(cinfo);
 		return NULL;
+	}
 
 	if (versionp != NULL) {
 		SECItem *dummy;
@@ -85,8 +91,10 @@ geier_create_content_info(void)
 		PORT_Assert (version >= 0);
 		dummy = SEC_ASN1EncodeInteger(cinfo->poolp, versionp, version);
 
-		if (dummy == NULL)
+		if (dummy == NULL) {
+			SEC_PKCS7DestroyContentInfo(cinfo);
 			return NULL;
+		}
 
 		PORT_Assert (dummy == versionp);
 	}
@@ -100,10 +108,6 @@ static SECStatus
 sec_pkcs7_add_recipient (SEC_PKCS7ContentInfo *cinfo,
 			 CERTCertificate *cert)
 {
-	//recipientinfo, **recipientinfos, ***recipientinfosp;
-	//SECItem *dummy;
-	//int count;
-
 	SECOidTag kind = SEC_PKCS7ContentType (cinfo);
 	assert(kind == SEC_OID_PKCS7_ENVELOPED_DATA);
 	
@@ -230,10 +234,6 @@ geier_create_enveloped_data (CERTCertificate *cert)
 	SEC_PKCS7EnvelopedData *envd = cinfo->content.envelopedData;
 	PORT_Assert (envd != NULL);
 
-	/*
-	 * XXX Might we want to allow content types other than data?
-	 * If so, via what interface?
-	 */
 	rv = geier_pkcs7_init_encrypted_content_info
 		(&(envd->encContentInfo), cinfo->poolp,
 		 SEC_OID_DES_EDE3_CBC, 0);
@@ -242,8 +242,6 @@ geier_create_enveloped_data (CERTCertificate *cert)
 		SEC_PKCS7DestroyContentInfo (cinfo);
 		return NULL;
 	}
-
-	/* XXX Anything more to do here? */
 
 	return cinfo;
 }
@@ -273,7 +271,7 @@ static CERTCertificate *geier_encrypt_get_cert(const char *filename)
 
 	CERTCertificate *cert = CERT_DecodeCertFromPackage(buf, len);
 	if(! cert) {
-		fprintf(stderr, "unable to load certificate.\n");
+		fprintf(stderr, PACKAGE_NAME ":unable to load certificate.\n");
 		return NULL;
 	}
 
@@ -284,8 +282,8 @@ static CERTCertificate *geier_encrypt_get_cert(const char *filename)
 
 
 /* Do PKCS#7 public key crypto (encrypting inlen bytes from *input on)
- * and apply our ASN.1 patch. Return result in **output, a buffer of length
- * *outlen bytes, allocated with malloc().
+ * Return result in **output, a buffer of length *outlen bytes,
+ * allocated with malloc().
  *
  * Return: 0 on success, **output and *outlen are only valid in case of success
  * 
@@ -312,12 +310,6 @@ int geier_pkcs7_encrypt(geier_context *context,
 	if (!bulkkey)
 		goto exit3;
 
-	/* SECStatus rv =
-	 *   SEC_PKCS7SetContent(cinfo, (const char *) input, inlen);
-	 * if (rv != SECSuccess)
-	 *   goto exit4;
-	 */
-
 	context->encoder_buf_ptr = NULL;
 	context->encoder_buf_len = 0;
 	context->encoder_buf_alloc = 0;
@@ -327,13 +319,6 @@ int geier_pkcs7_encrypt(geier_context *context,
 
 	if (ecx == NULL) 
 		goto exit4;
-
-	/* 
-	 * SECItem *p7item = SEC_PKCS7EncodeItem(NULL, NULL, cinfo, bulkkey,
-	 * NULL, NULL);
-	 * if (!p7item)
-	 *	goto exit4;
-	 */
 
 	SECStatus rv;
 	rv = SEC_PKCS7EncoderUpdate(ecx, (const char *) input, inlen);
@@ -348,17 +333,19 @@ int geier_pkcs7_encrypt(geier_context *context,
 
 	*output = (unsigned char *) context->encoder_buf_ptr;
 	*outlen = context->encoder_buf_len;
+
 	retval = 0;
+	context->encoder_buf_ptr = NULL;
 
 exit5:
-	/* finish encoder, if ecx still set 
-	 * free ecx, if not NULL */
+	free(context->encoder_buf_ptr);
+	if(ecx) SEC_PKCS7EncoderFinish(ecx, NULL, NULL);
 exit4:
-	/* free bulkkey */
+	PK11_FreeSymKey(bulkkey);
 exit3:
-	/* free cinfo */
+	SEC_PKCS7DestroyContentInfo(cinfo);
 exit2:
-	/* free cert */
+	CERT_DestroyCertificate(cert);
 exit1:
 exit0:
 	return retval;

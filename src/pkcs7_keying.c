@@ -59,7 +59,7 @@ generate_session_key(geier_context *ctx)
 	 * dump the key out to the debugging user ...
 	 */
 	fprintf(stderr, PACKAGE_NAME ": new session key: \n");
-	int i;
+	unsigned int i;
 	for (i = 0; i < ctx->session_key_len; i ++)
 		fprintf(stderr, "%02x ", ctx->session_key[i]);
 	fprintf(stderr, "\n");

@@ -21,7 +21,7 @@
 #endif
 
 #include <geier.h>
-#include <geier-dsig.h>
+#include "dsig.h"
 #include "context.h"
 
 #include <string.h>
@@ -47,8 +47,8 @@ geier_dsig_rewrite_datenlieferant(xmlDoc *doc)
 	assert(node->type == XML_ELEMENT_NODE);
 	assert(node->children->type == XML_TEXT_NODE);
 	
-	if(! strstr(node->children->content, eoptext)) {
-		size_t len = strlen(node->children->content);
+	if(! strstr((const char *) node->children->content, eoptext)) {
+		size_t len = strlen((const char *) node->children->content);
 		node->children->content = 
 			realloc(node->children->content, len + sizeof(eoptext));
 		if(! node->children->content) return 1;

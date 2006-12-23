@@ -21,7 +21,7 @@
 #endif
 
 #include <geier.h>
-#include <geier-dsig.h>
+#include "dsig.h"
 #include "context.h"
 
 #include <openssl/err.h>
@@ -47,6 +47,11 @@
 #include "dsig.h"
 
 
+/* XPath expression pointing to the parent node, where to add the signature */
+static char *add_signature_xpathexpr =
+	"/elster:Elster/elster:DatenTeil/elster:Nutzdatenblock"
+	"/elster:NutzdatenHeader/elster:Empfaenger";
+
 
 /*
  * load template and attach to Elster XML document 
@@ -63,7 +68,7 @@ geier_dsig_sign_add_template(geier_context *context, xmlDoc *tree)
 	}
 
 	xmlNode *sig_sibling = NULL;
-	if(find_node(tree, context->add_signature_xpathexpr, &sig_sibling)) {
+	if(find_node(tree, add_signature_xpathexpr, &sig_sibling)) {
 		xmlFreeDoc(doc);
 		return 1;
 	}

@@ -21,7 +21,6 @@
 #endif
 
 #include <geier.h>
-#include <geier-dsig.h>
 #include "context.h"
 
 #include <assert.h>

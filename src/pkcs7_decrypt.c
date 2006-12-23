@@ -40,6 +40,8 @@
 static PK11SymKey *
 get_decryption_key(void *arg, SECAlgorithmID *algid)
 {
+	(void) algid;
+
 	return (PK11SymKey *)arg;
 }
 
@@ -49,6 +51,9 @@ get_decryption_key(void *arg, SECAlgorithmID *algid)
 static PRBool
 allow_decryption(SECAlgorithmID *algid, PK11SymKey *bulkkey)
 {
+	(void) algid;
+	(void) bulkkey;
+
 	return PR_TRUE;
 }
 

@@ -35,6 +35,7 @@
 
 /* Mozilla header files */
 #include <nss/nss.h>
+#include <nss/p12plcy.h>
 
 int geier_init(int debug)
 {

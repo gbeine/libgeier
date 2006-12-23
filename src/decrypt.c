@@ -21,6 +21,7 @@
 
 #include <libxml/tree.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "context.h"
 #include "find_node.h"

@@ -21,7 +21,7 @@
 #endif
 
 #include <geier.h>
-#include <geier-dsig.h>
+#include "dsig.h"
 #include "context.h"
 
 #include <string.h>
@@ -47,7 +47,7 @@ geier_dsig_rewrite_vorgang(xmlDoc *doc)
 	assert(node->children->type == XML_TEXT_NODE);
 
 	char *ptr;
-	if((ptr = strstr(node->children->content, "NoSig")))
+	if((ptr = strstr((const char *) node->children->content, "NoSig")))
 		memmove(ptr, ptr + 2, strlen(ptr + 2) + 1);
 
 	return 0;

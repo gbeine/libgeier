@@ -46,7 +46,7 @@ geier_dsig_get_cert(geier_context *context,
 	if(! fn) return NULL;
 	*fn = NULL;
 
-	if(! p12) p12 = geier_dsig_open(filename, pin, 0);
+	if(! p12) p12 = geier_dsig_open(filename, pin, 1);
 	if(! p12) goto out;
 
 	clist = SEC_PKCS12DecoderGetCerts(p12);

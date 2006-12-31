@@ -94,10 +94,18 @@ geier_dsig_open(const char *filename, const char *pincode, int import_bags)
 	SEC_PKCS12DecoderContext *p12dcx = NULL;
 	SECItem p12file = { 0 };
 	SECStatus rv = SECFailure;
+	
+	PK11SlotInfo *slot = geier_get_internal_key_slot();
+	if(! slot) {
+		fprintf(stderr, PACKAGE_NAME ": unable to get internal "
+			"nss slot.\n");
+		return NULL;
+	}
 
 	/* convert password */
 	int pincode_len = strlen(pincode);
-	SECItem *pwItem = SECITEM_AllocItem(NULL, NULL, (pincode_len + 1) << 1);
+	SECItem *pwItem = SECITEM_AllocItem(NULL, NULL,
+					    (pincode_len + 1) << 1);
 	int i;
 	for(i = 0; i <= pincode_len; i ++) {
 		pwItem->data[(i << 1) + 0] = 0;
@@ -105,7 +113,7 @@ geier_dsig_open(const char *filename, const char *pincode, int import_bags)
 	}
 
 	/* init the decoder context */
-	p12dcx = SEC_PKCS12DecoderStart(pwItem, NULL, NULL, NULL, NULL,
+	p12dcx = SEC_PKCS12DecoderStart(pwItem, slot, NULL, NULL, NULL,
 					NULL, NULL, NULL);
 
 	if(!p12dcx) {

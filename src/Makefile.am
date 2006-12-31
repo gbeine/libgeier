@@ -34,6 +34,7 @@ libgeier_la_SOURCES = \
 	dsig-rewrite-vorgang.c \
 	dsig-rewrite-datenlieferant.c \
 	dsig-sign.c \
+	dsig-slot.c \
 	dsig-get-cert.c
 
 libgeier_la_LDFLAGS = -version-info 0

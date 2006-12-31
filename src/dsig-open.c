@@ -45,7 +45,7 @@
  *      Dr Vipul Gupta <vipul.gupta@sun.com>, Sun Microsystems Laboratories
  */
 
-SECStatus
+static SECStatus
 SECU_FileToItem(SECItem *dst, PRFileDesc *src)
 {
     PRFileInfo info;
@@ -77,9 +77,19 @@ loser:
 }
 
 
+static SECItem *
+geier_nickname_coll_cb(SECItem *old_nick, PRBool *cancel, void *wincx)
+{
+	fprintf(stderr, PACKAGE_NAME ": nickname collisions in PKCS12 "
+		"container.\n");
+	return NULL; /* FIXME */
+}
+
+
+
 
 SEC_PKCS12DecoderContext *
-geier_dsig_open(const char *filename, const char *pincode)
+geier_dsig_open(const char *filename, const char *pincode, int import_bags)
 {
 	SEC_PKCS12DecoderContext *p12dcx = NULL;
 	SECItem p12file = { 0 };
@@ -131,7 +141,24 @@ geier_dsig_open(const char *filename, const char *pincode)
 	rv = SEC_PKCS12DecoderVerify(p12dcx);
 	if(rv != SECSuccess) {
 		fprintf(stderr, PACKAGE_NAME ": PKCS12 blob doesn't "
-			"authenticate properly.\n");
+			"authenticate properly. Maybe the PIN is wrong?\n");
+		goto loser;
+	}
+
+	if(! import_bags)
+		goto out;
+
+	rv = SEC_PKCS12DecoderValidateBags(p12dcx, geier_nickname_coll_cb);
+	if(rv != SECSuccess) {
+		fprintf(stderr, PACKAGE_NAME ": PKCS12 bags couldn't be "
+			"validated successfully.\n");
+		goto loser;
+	}
+
+	rv = SEC_PKCS12DecoderImportBags(p12dcx);
+	if(rv != SECSuccess) {
+		fprintf(stderr, PACKAGE_NAME ": PKCS12 bags couldn't be "
+			"imported successfully.\n");
 		goto loser;
 	}
 
@@ -141,8 +168,8 @@ loser:
 		p12dcx = NULL;
 	}
 
+ out:
 	SECITEM_ZfreeItem(pwItem, PR_TRUE);
-
 	return p12dcx;
 }
 
@@ -155,7 +182,7 @@ geier_dsig_verify_mac(geier_context *context,
 {
         (void) context;
 
-	SEC_PKCS12DecoderContext *p12 = geier_dsig_open(filename, pincode);
+	SEC_PKCS12DecoderContext *p12 = geier_dsig_open(filename, pincode, 0);
 	if(! p12) return 1;
 
 	SEC_PKCS12DecoderFinish(p12);

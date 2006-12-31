@@ -23,8 +23,6 @@
 #include <geier.h>
 #include <geierversion.h>
 
-#include "find_node.h"
-
 #include <stdio.h>
 #include <argp.h>
 #include <string.h>
@@ -36,6 +34,35 @@
 #include <sys/stat.h>
 
 #include <libxml/tree.h>
+
+#include "find_node.h"
+
+#include <nspr/prtypes.h>
+
+/*  These were stolen from the old sec.h... */
+/*
+** Check a password for legitimacy. Passwords must be at least 8
+** characters long and contain one non-alphabetic. Return DSTrue if the
+** password is ok, DSFalse otherwise.
+*/
+extern PRBool SEC_CheckPassword(char *password);
+
+/*
+** Blind check of a password. Complement to SEC_CheckPassword which 
+** ignores length and content type, just retuning DSTrue is the password
+** exists, DSFalse if NULL
+*/
+extern PRBool SEC_BlindCheckPassword(char *password);
+
+/*
+** Get a password.
+** First prompt with "msg" on "out", then read the password from "in".
+** The password is then checked using "chkpw".
+*/
+extern char *SEC_GetPassword(FILE *in, FILE *out, char *msg,
+				      PRBool (*chkpw)(char *));
+
+
 
 /* documentation, written out when called with either --usage or --help */
 const char *argp_program_version = 
@@ -93,7 +120,7 @@ int config_dry_run = 0;                 /* dry-run, don't send to IRO */
 int config_xsltify = 0;                 /* filter output through xslt */
 int config_encrypt_only = 0;            /* only encrypt the provided xml */
 char *softpse_filename = NULL;          /* name of software cert file */
-char pincode[24];                       /* pincode */
+char *pincode;                          /* pincode */
 char *config_dump = NULL;               /* dump received xml doc to a 
 					 * certain file, after sending */
 
@@ -150,16 +177,16 @@ static error_t parse_geier_opts(int key, char *arg, struct argp_state *state)
 		config_dry_run = 1;
 		break;
 
-#ifdef GEIER_ENABLE_DSIG
 	case OPT_SOFTPSE:
 		softpse_filename = strdup(arg);
-		if(EVP_read_pw_string(pincode, sizeof pincode, 
-				      "Enter Soft-PSE PIN:", 0)) {
+		pincode = SEC_GetPassword(stdin, stderr, "Enter Soft-PSE PIN:",
+					  SEC_BlindCheckPassword);
+
+		if(! pincode) {
 			fprintf(stderr, "Can't read Password. Sorry.\n");
 			return 1;
 		}
 		break;
-#endif
 
 	case OPT_DUMP:
 		config_dump = strdup(arg);
@@ -284,7 +311,6 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 		}
 	}
 
-#ifdef GEIER_ENABLE_DSIG
 	if(softpse_filename) {
 		unsigned char *obuf;
 		size_t olen;
@@ -303,7 +329,6 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 		buf = obuf;
 		buf_len = olen;
 	}
-#endif
 
 	if(config_encrypt_only) {
 		/** user requests to do nothing but encrypt and return */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005  Stefan Siegl <stesie@brokenpipe.de>, Germany
+ * Copyright (C) 2005,2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 #endif
 
 #include <geier.h>
-#include <geier-dsig.h>
 #include "context.h"
 
 #ifndef GEIER_DSIG_H
@@ -47,14 +46,59 @@ int geier_dsig_sign_doit(geier_context *context, xmlDoc **output,
 			 const char *softpse, const char *pin);
 
 
-/*
- * find the attribute `want' from the X509_ATTRIBUTE stack
- *
- * You need to free the returned memory (if not NULL, which means
- * that there is no attribute with that name)
- */
-char *geier_dsig_get_attr(STACK_OF(X509_ATTRIBUTE) *attrs, const char *want);
+/* just verify pkcs#12 file's mac, i.e. check whether pin is okay */
+int geier_dsig_verify_mac(geier_context *context, 
+			  const char *softpse_filename, 
+			  const char *password);
 
+
+int geier_dsig_get_signaturecert_text(geier_context *context,
+				      const char *pse, const char *pin,
+				      char **output, size_t *outlen,
+				      char **fN);
+
+
+#include <nss/p12.h>
+/* open and try to read file (filename, using pincode) and return
+ * the created SEC_PKCS12DecoderContext.
+ *
+ * You're responsible for calling SEC_PKCS12DecoderFinish later! */
+SEC_PKCS12DecoderContext *geier_dsig_open(const char *filename,
+					  const char *pincode,
+					  int import_bags);
+
+
+#include <xmlsec/xmlsec.h>
+/* return the signature key from the softpse file */
+xmlSecKeyData *geier_dsig_get_signaturekey(geier_context *context, 
+					   const char *softpse_filename, 
+					   const char *pincode);
+
+/* return the encryption key, contained in the pkcs#12 softpse file */
+xmlSecKeyData *geier_dsig_get_encryptionkey(geier_context *context, 
+					    const char *softpse_filename, 
+					    const char *pincode);
+
+
+/* return the encryption certificate, contained in the pkcs#12 file */
+CERTCertificate *geier_dsig_get_encryptioncert(geier_context *context,
+					       const char *filename,
+					       const char *password,
+					       char **friendlyName);
+
+/* return the signature certificate, held by the PKCS#12 file */
+CERTCertificate *geier_dsig_get_signaturecert(geier_context *context,
+					      const char *filename,
+					      const char *password,
+					      char **friendlyName);
+
+PK11SlotInfo *geier_get_internal_key_slot(void);
+
+int geier_dsig_resolve_nickname(geier_context *context,
+				const char *filename,
+				const char *pin,
+				SEC_PKCS12DecoderContext **p12,
+				const char **bagname);
 
 
 #endif

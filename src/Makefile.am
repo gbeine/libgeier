@@ -27,23 +27,19 @@ libgeier_la_SOURCES = \
 	iso_to_utf8.c iso_to_utf8.h \
 	get_clearing_error.c \
 	version.c \
-	xpath.c xpath.h
-
-dsig_sources = \
+	xpath.c xpath.h \
+	secpwd.c \
 	dsig.c \
 	dsig-open.c \
 	dsig-rewrite-vorgang.c \
 	dsig-rewrite-datenlieferant.c \
 	dsig-sign.c \
-	dsig-get-attr.c \
-	dsig-get-cert.c \
-	dsig-get-cert-text.c \
-	dsig-get-key.c
+	dsig-get-cert.c
 
 libgeier_la_LDFLAGS = -version-info 0
 
 noinst_HEADERS = \
-	dsig.h
+	dsig.h secutil.h
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \

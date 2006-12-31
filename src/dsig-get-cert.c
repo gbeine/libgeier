@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005  Stefan Siegl <stesie@brokenpipe.de>, Germany
+ * Copyright (C) 2005, 2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 #endif
 
 #include <geier.h>
-#include <geier-dsig.h>
 #include "context.h"
 
 #include <string.h>
@@ -29,134 +28,127 @@
 
 #include "dsig.h"
 
-static X509 *
+#include <nss/pk11pub.h>
+#include <nss/certt.h>
+
+static CERTCertificate *
 geier_dsig_get_cert(geier_context *context, 
 		    const char *filename, 
 		    const char *pin,
-		    const char *certname,
+		    /* const char *bagname, */
+		    unsigned char usage,
 		    char **fn)
 {
-	char *keyid = NULL;
-	X509 *result = NULL;
+	CERTCertificate *result = NULL;
+	SEC_PKCS12DecoderContext *p12 = NULL;
+	CERTCertList *clist = NULL;
+
+	if(! fn) return NULL;
 	*fn = NULL;
 
-	int pinlen = pin ? strlen(pin) : 0;
+	if(! p12) p12 = geier_dsig_open(filename, pin, 0);
+	if(! p12) goto out;
 
-	PKCS12 *p12 = geier_dsig_open(filename, pin);
-	if(! p12) return NULL;
-	
-	STACK_OF(PKCS7) *safes = PKCS12_unpack_authsafes(p12);
-	if(! safes) return NULL;
-
-	int i;
-	for(i = 0; i < sk_PKCS7_num(safes); i ++) {
-		PKCS7 *p7 = sk_PKCS7_value(safes, i);
-		assert(p7);
-
-		STACK_OF(PKCS12_SAFEBAGS) *bags = NULL;
-
-		int id = OBJ_obj2nid(p7->type);
-		if(id == NID_pkcs7_data)
-			bags = PKCS12_unpack_p7data(p7);
-
-		else if (id == NID_pkcs7_encrypted)
-			bags = PKCS12_unpack_p7encdata(p7, pin, pinlen);
-
-		else {
-			fprintf(stderr, PACKAGE_NAME "unknown PKCS12_SAFEBAGS "
-				"nid discovered.");
-			goto out0;
-		}
-
-		assert(bags);
-
-		int j;
-		for(j = 0; j < sk_PKCS12_SAFEBAG_num(bags); j ++) {
-			PKCS12_SAFEBAG *bag = sk_PKCS12_SAFEBAG_value(bags, j);
-			assert(bag);
-			
-			if(M_PKCS12_bag_type(bag) == NID_pkcs8ShroudedKeyBag) {
-				char *friendlyname = 
-					geier_dsig_get_attr(bag->attrib, 
-							    "friendlyName");
-
-				if(strcmp(friendlyname, certname) == 0) {
-					/* got the key we look for */
-					keyid = geier_dsig_get_attr
-						(bag->attrib, "localKeyID");
-				}
-			}
-			else if(M_PKCS12_bag_type(bag) == NID_certBag
-				&& M_PKCS12_cert_bag_type(bag)
-				== NID_x509Certificate) {
-				char *localKeyID =
-					geier_dsig_get_attr(bag->attrib, 
-							    "localKeyID");
-
-				if(localKeyID && keyid &&
-				   memcmp(localKeyID, keyid, 18) == 0) {
-					if(fn)
-						*fn = geier_dsig_get_attr
-							(bag->attrib,
-							 "friendlyName");
-
-					result = PKCS12_certbag2x509(bag);
-					sk_PKCS12_SAFEBAG_pop_free
-						(bags, PKCS12_SAFEBAG_free);
-					free(localKeyID);
-
-					goto out0;
-				}
-
-				free(localKeyID);
-			}
-		}
-
-		sk_PKCS12_SAFEBAG_pop_free(bags, PKCS12_SAFEBAG_free);
+	clist = SEC_PKCS12DecoderGetCerts(p12);
+	if(! clist) {
+		fprintf(stderr, PACKAGE_NAME ": unable to get "
+			"certificates list.\n");
+		goto out;
 	}
 
-out0:
-	sk_PKCS7_pop_free(safes, PKCS7_free);
-	PKCS12_free(p12);
+	CERTCertListNode *node;
+	for(node = CERT_LIST_HEAD(clist);
+	    ! CERT_LIST_END(node, clist);
+	    node = CERT_LIST_NEXT(node)) {
+		CERTCertificate *cert = node->cert;
 
-	if(fn && *fn) {
-		/* strip the friendlyName we return,
-		 * it's of the form "CN=Stefan\,Siegl,2.5.4.5=#blablabla"
+		/* fprintf(stderr, "%s: available certificate: %s\n",
+		 *	filename, cert->nickname);
 		 */
-		int i, l = strlen(*fn);
-		for(i = 1; i < l; i ++)
-			if((*fn)[i] == ',' && (*fn)[i - 1] != '\\') {
-				(*fn)[i] = 0;
-				break;
-			}
-		memmove(*fn, *fn + 3, strlen(*fn + 3) + 1);
-	}
+
+		SECKEYPrivateKey *privkey = PK11_FindKeyByAnyCert(cert, NULL); 
+		if(! privkey) {
+			/* fprintf(stderr, "... no private key available.\n");
+			 */
+			continue;
+		}
+
+		SECKEY_DestroyPrivateKey(privkey);
+
+		if(CERT_CheckCertUsage(cert, usage) != SECSuccess) {
+			/* fprintf(stderr, "... CheckCertUsage failed.\n");
+			 */
+			continue;
+		}
 	
+		*fn = strdup(cert->nickname + 3);
+		if(! *fn) {
+			perror(PACKAGE_NAME);
+			goto out;
+		}
+	
+		/* if(strcmp(cert->nickname, bagname))
+		 *	continue;
+		 */
+		result = CERT_DupCertificate(cert);
+		if(! result) {
+			fprintf(stderr, PACKAGE_NAME ": unable to duplicate "
+				"certificate.\n");
+			goto out;
+		}
+		
+		break;
+	}
+
+	if(! result)
+		fprintf(stderr, PACKAGE_NAME ": unable to match "
+			"certificate.  this should not happen.\n");
+
+ out:
+	SEC_PKCS12DecoderFinish(p12);
+
+	/* strip the friendlyName we return,
+	 * it's of the form "CN=Stefan\,Siegl,2.5.4.5=#blablabla"
+	 */
+	if(*fn) {
+		char *ptr = *fn;
+		for(; *ptr; ptr ++) {
+			if(*ptr != ',') continue;
+			if(ptr[-1] == '\\') continue; /* quoted comma */
+
+			*ptr = 0; /* terminate */
+			break;
+		}
+	}
+
+	if(clist)
+		CERT_DestroyCertList(clist);
+
 	return result;
 }
 
 
-X509 *
+CERTCertificate *
 geier_dsig_get_signaturecert(geier_context *context,
 			     const char *filename,
 			     const char *password,
 			     char **friendlyName) 
 {
 	return geier_dsig_get_cert(context, filename, password, 
-				   "signaturekey", friendlyName);
+				   KU_DIGITAL_SIGNATURE, friendlyName);
 }
 
 
 
 
-X509 *
+CERTCertificate *
 geier_dsig_get_encryptioncert(geier_context *context,
 			      const char *filename,
 			      const char *password,
 			      char **friendlyName) 
 {
 	return geier_dsig_get_cert(context, filename, password, 
-				   "encryptionkey", friendlyName);
+				   KU_KEY_ENCIPHERMENT, friendlyName);
 }
 
 

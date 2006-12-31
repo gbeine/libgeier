@@ -64,7 +64,9 @@ int geier_init(int debug)
 	/*
 	 * initialize libnss
 	 */
-	NSS_NoDB_Init(".");
+	/* NSS_NoDB_Init("."); */
+	NSS_Initialize("/home/stesie/.taxbird/", "taxbird", "taxbird",
+		       "secmod.db", 0);
 
 	SEC_PKCS12EnableCipher(PKCS12_RC4_40, 1);
 	SEC_PKCS12EnableCipher(PKCS12_RC4_128, 1);
@@ -88,6 +90,12 @@ int geier_init(int debug)
 		return 1;
 	}
 
+	if(xmlSecCheckVersion() != 1) {
+		fprintf(stderr, PACKAGE_NAME ": loaded xmlsec library "
+			"version is not compatible.\n");
+		return 1;
+	}
+
 	/* Load default crypto engine if we are supporting dynamic 
 	 * loading for xmlsec-crypto libraries. Use the crypto library
 	 * name ("openssl", "nss", etc.) to load corresponding 
@@ -103,15 +111,15 @@ int geier_init(int debug)
 
 	if(xmlSecCryptoAppInit(NULL) < 0) {
 		fprintf(stderr, PACKAGE_NAME
-			": xmlsec initialization failed.\n");
+			": xmlsec crypto initialization failed.\n");
 		return 1;
 	}
 
 	if(xmlSecCryptoInit() < 0) {
-		fprintf(stderr, PACKAGE_NAME
-			": xmlsec-crypto initialization failed.\n");
-		return 1;
+	 	fprintf(stderr, PACKAGE_NAME
+	 		": xmlsec-crypto initialization failed.\n");
+	 	return 1;
 	}
-
+	 
 	return 0;
 }

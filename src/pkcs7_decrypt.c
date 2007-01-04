@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005,2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
+ * Copyright (C) 2005,2006,2007  Stefan Siegl <stesie@brokenpipe.de>, Germany
  * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
@@ -68,7 +68,11 @@ int geier_pkcs7_decrypt(geier_context *context,
 	int retval = -1;
 	SEC_PKCS7ContentInfo *cinfo = NULL;
 
-	PK11SymKey *key = geier_pkcs7_encryption_key(context);
+        PK11SlotInfo* slot = PK11_GetBestSlot(CKM_DES3_CBC_PAD, NULL);
+	if (! slot)
+		goto exit0a;
+
+	PK11SymKey *key = geier_pkcs7_encryption_key(context, slot);
 	if (!key) goto exit0;
 
 	SECItem data_item;
@@ -100,7 +104,11 @@ int geier_pkcs7_decrypt(geier_context *context,
  exit1:
 	PK11_FreeSymKey(key);
 	free(context->encoder_buf_ptr);
+	
  exit0:
+	PK11_FreeSlot(slot);
+
+ exit0a:
 	return retval;
 }
 

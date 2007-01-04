@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004,2005,2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
+ * Copyright (C) 2004,2005,2006,2007  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *               2005  Jürgen Stuber <juergen@jstuber.net>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
@@ -56,8 +56,7 @@ geier_create_content_info(void)
 	 */
 	cinfo->contentTypeTag =
 		SECOID_FindOIDByTag (SEC_OID_PKCS7_ENVELOPED_DATA);
-	PORT_Assert (cinfo->contentTypeTag
-		     && cinfo->contentTypeTag->offset == kind);
+	PORT_Assert (cinfo->contentTypeTag);
 	SECStatus rv = SECITEM_CopyItem (cinfo->poolp, &(cinfo->contentType),
 					 &(cinfo->contentTypeTag->oid));
 	if (rv != SECSuccess) {
@@ -306,7 +305,12 @@ int geier_pkcs7_encrypt(geier_context *context,
 	if (!cinfo)
 		goto exit2;
 
-	PK11SymKey *bulkkey = geier_pkcs7_encryption_key(context);
+
+        PK11SlotInfo* slot = PK11_GetBestSlot(CKM_DES3_CBC_PAD, NULL);
+	if (! slot)
+		goto exit2a;
+
+	PK11SymKey *bulkkey = geier_pkcs7_encryption_key(context, slot);
 	if (!bulkkey)
 		goto exit3;
 
@@ -344,6 +348,8 @@ exit4:
 	PK11_FreeSymKey(bulkkey);
 exit3:
 	SEC_PKCS7DestroyContentInfo(cinfo);
+exit2a:
+	PK11_FreeSlot(slot);
 exit2:
 	CERT_DestroyCertificate(cert);
 exit1:

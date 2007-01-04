@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
+ * Copyright (C) 2006,2007  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #include <nss/pk11func.h>
 
 
-PK11SymKey *geier_pkcs7_encryption_key(geier_context *ctx);
+PK11SymKey *geier_pkcs7_encryption_key(geier_context *ctx, PK11SlotInfo* slot);
 
 #endif
 

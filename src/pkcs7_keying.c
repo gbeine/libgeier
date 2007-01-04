@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
+ * Copyright (C) 2006,2007  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ generate_session_key(geier_context *ctx)
 
 
 PK11SymKey *
-geier_pkcs7_encryption_key(geier_context *ctx)
+geier_pkcs7_encryption_key(geier_context *ctx, PK11SlotInfo* slot)
 {
 	assert(ctx);
 
@@ -80,19 +80,15 @@ geier_pkcs7_encryption_key(geier_context *ctx)
 	if(! ctx->session_key && generate_session_key(ctx))
 		return NULL; /* unable to generate new key */
 
-
 	/*
 	 * create PK11SymKey now ...
 	 */
-        CK_MECHANISM_TYPE cm = CKM_DES3_CBC_PAD;
-        PK11SlotInfo* slot = PK11_GetBestSlot(cm, NULL);
-
 	SECItem key_item;
 	key_item.type = siBuffer;
 	key_item.data = ctx->session_key;
 	key_item.len = ctx->session_key_len;
 
-	return PK11_ImportSymKey(slot, cm, PK11_OriginUnwrap,
+	return PK11_ImportSymKey(slot, CKM_DES3_CBC_PAD, PK11_OriginUnwrap,
 				 CKA_ENCRYPT, &key_item, NULL);
 }
 

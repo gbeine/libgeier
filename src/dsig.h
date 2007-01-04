@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005,2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
+ * Copyright (C) 2005,2006,2007  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,8 @@ int geier_dsig_get_signaturecert_text(geier_context *context,
  * the created SEC_PKCS12DecoderContext.
  *
  * You're responsible for calling SEC_PKCS12DecoderFinish later! */
-SEC_PKCS12DecoderContext *geier_dsig_open(const char *filename,
+SEC_PKCS12DecoderContext *geier_dsig_open(PK11SlotInfo *slot,
+					  const char *filename,
 					  const char *pincode,
 					  int import_bags);
 

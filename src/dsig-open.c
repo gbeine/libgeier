@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005, 2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
+ * Copyright (C) 2005,2006,2007  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,18 +89,16 @@ geier_nickname_coll_cb(SECItem *old_nick, PRBool *cancel, void *wincx)
 
 
 SEC_PKCS12DecoderContext *
-geier_dsig_open(const char *filename, const char *pincode, int import_bags)
+geier_dsig_open(PK11SlotInfo *slot, const char *filename,
+		const char *pincode, int import_bags)
 {
 	SEC_PKCS12DecoderContext *p12dcx = NULL;
 	SECItem p12file = { 0 };
 	SECStatus rv = SECFailure;
 	
-	PK11SlotInfo *slot = geier_get_internal_key_slot();
-	if(! slot) {
-		fprintf(stderr, PACKAGE_NAME ": unable to get internal "
-			"nss slot.\n");
-		return NULL;
-	}
+	/* PK11SlotInfo *slot = geier_get_internal_key_slot();
+	 * if(! slot) return NULL;
+	 */
 
 	/* convert password */
 	int pincode_len = strlen(pincode);
@@ -190,7 +188,14 @@ geier_dsig_verify_mac(geier_context *context,
 {
         (void) context;
 
-	SEC_PKCS12DecoderContext *p12 = geier_dsig_open(filename, pincode, 0);
+	PK11SlotInfo *slot = geier_get_internal_key_slot();
+	if(! slot) return 1;
+
+	SEC_PKCS12DecoderContext *p12 =
+		geier_dsig_open(slot, filename, pincode, 0);
+
+	PK11_FreeSlot(slot);
+
 	if(! p12) return 1;
 
 	SEC_PKCS12DecoderFinish(p12);

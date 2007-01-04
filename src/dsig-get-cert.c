@@ -46,7 +46,10 @@ geier_dsig_get_cert(geier_context *context,
 	if(! fn) return NULL;
 	*fn = NULL;
 
-	if(! p12) p12 = geier_dsig_open(filename, pin, 1);
+	PK11SlotInfo *slot = geier_get_internal_key_slot();
+	if(! slot) return NULL;
+
+	if(! p12) p12 = geier_dsig_open(slot, filename, pin, 1);
 	if(! p12) goto out;
 
 	clist = SEC_PKCS12DecoderGetCerts(p12);
@@ -123,6 +126,8 @@ geier_dsig_get_cert(geier_context *context,
 
 	if(clist)
 		CERT_DestroyCertList(clist);
+
+	PK11_FreeSlot(slot);
 
 	return result;
 }

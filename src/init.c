@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
- * Copyright (C) 2006,2007  Stefan Siegl <stesie@brokenpipe.de>, Germany
+ * Copyright (C) 2005,2006,2007  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,50 +67,7 @@ int geier_init(int debug)
 	xmlLoadExtDtdDefaultValue = XML_DETECT_IDS | XML_COMPLETE_ATTRS;
 	xmlSubstituteEntitiesDefault(1);
 
-	/*
-	 * initialize libnss
-	 */
-	const char *homedir = getenv("HOME");
-	if(! homedir) {
-		fprintf(stderr, PACKAGE_NAME ": unable to figure out path to "
-			"home directory.\n");
-		return 1;
-	}
 
-	
-	char *geierdir = malloc(strlen(homedir) + 10);
-	if(! geierdir) {
-		perror(PACKAGE_NAME);
-		return 1;
-	}
-
-	sprintf(geierdir, "%s/.taxbird", homedir);
-
-	struct stat geierdir_stat;
-	if(stat(geierdir, &geierdir_stat)) {
-		if(errno != ENOENT || mkdir(geierdir, 0700) != 0) {
-			fprintf(stderr, PACKAGE_NAME ": failed to stat the "
-				"taxbird home directory: %s\n", geierdir);
-			return 1;
-		}
-	}
-
-	if(NSS_Initialize(geierdir, "libgeier-", "libgeier-",
-			  "secmod.db", 0) != SECSuccess) {
-		fprintf(stderr, PACKAGE_NAME ": failed to initialize NSS.\n");
-		return 1;
-	}
-
-	free(geierdir);
-
-	SEC_PKCS12EnableCipher(PKCS12_RC4_40, 1);
-	SEC_PKCS12EnableCipher(PKCS12_RC4_128, 1);
-	SEC_PKCS12EnableCipher(PKCS12_RC2_CBC_40, 1);
-	SEC_PKCS12EnableCipher(PKCS12_RC2_CBC_128, 1);
-	SEC_PKCS12EnableCipher(PKCS12_DES_56, 1);
-	SEC_PKCS12EnableCipher(PKCS12_DES_EDE3_168, 1);
-	SEC_PKCS12SetPreferredCipher(PKCS12_DES_EDE3_168, 1); 
-	
 	/* 
 	 * initialize xmlsec
 	 */
@@ -144,17 +101,50 @@ int geier_init(int debug)
 	}
 #endif /* XMLSEC_CRYPTO_DYNAMIC_LOADING */
 
-	if(xmlSecCryptoAppInit(NULL) < 0) {
+
+
+	/*
+	 * now initialize the NSS backend, 
+	 * create ~/.taxbird/ directory if necessary
+	 */
+	const char *homedir = getenv("HOME");
+	if(! homedir) {
+		fprintf(stderr, PACKAGE_NAME ": unable to figure out path to "
+			"home directory.\n");
+		return 1;
+	}
+
+	char *geierdir = malloc(strlen(homedir) + 10);
+	if(! geierdir) {
+		perror(PACKAGE_NAME);
+		return 1;
+	}
+
+	sprintf(geierdir, "%s/.taxbird", homedir);
+
+	struct stat geierdir_stat;
+	if(stat(geierdir, &geierdir_stat)) {
+		if(errno != ENOENT || mkdir(geierdir, 0700) != 0) {
+			fprintf(stderr, PACKAGE_NAME ": failed to stat the "
+				"taxbird home directory: %s\n", geierdir);
+			free(geierdir);
+			return 1;
+		}
+	}
+
+	if(xmlSecCryptoAppInit(geierdir) < 0) {
 		fprintf(stderr, PACKAGE_NAME
 			": xmlsec crypto initialization failed.\n");
 		return 1;
 	}
 
+	free(geierdir);
+
 	if(xmlSecCryptoInit() < 0) {
-	 	fprintf(stderr, PACKAGE_NAME
-	 		": xmlsec-crypto initialization failed.\n");
-	 	return 1;
+		fprintf(stderr, PACKAGE_NAME
+			": xmlsec-crypto initialization failed.\n");
+		return 1;
 	}
-	 
+
 	return 0;
 }

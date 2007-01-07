@@ -26,9 +26,9 @@
 #include <geier.h>
 
 /* Mozilla header files */
-#include <nss/nss.h>
-#include <nss/secpkcs7.h>
-#include <nss/pk11func.h>
+#include <nss.h>
+#include <secpkcs7.h>
+#include <pk11func.h>
 
 #include "context.h"
 #include "pkcs7_keying.h"

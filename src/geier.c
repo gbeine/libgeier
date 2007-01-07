@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005,2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
+ * Copyright (C) 2005,2006,2007  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@
 
 #include "find_node.h"
 
-#include <nspr/prtypes.h>
+#include <prtypes.h>
 
 /*  These were stolen from the old sec.h... */
 /*

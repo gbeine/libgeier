@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005, 2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
+ * Copyright (C) 2005,2006,2007  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,8 +28,8 @@
 
 #include "dsig.h"
 
-#include <nss/pk11pub.h>
-#include <nss/certt.h>
+#include <pk11pub.h>
+#include <certt.h>
 
 static CERTCertificate *
 geier_dsig_get_cert(geier_context *context, 

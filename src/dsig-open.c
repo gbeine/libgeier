@@ -24,8 +24,8 @@
 #include "context.h"
 #include "dsig.h"
 
-#include <nss/pk11pub.h>
-#include <nss/p12plcy.h>
+#include <pk11pub.h>
+#include <p12plcy.h>
 
 /*
  * Portions of this file are taken from mozilla libnss, which originally

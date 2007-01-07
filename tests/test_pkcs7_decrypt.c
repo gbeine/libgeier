@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
+ * Copyright (C) 2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +21,11 @@
 
 #include <stdio.h>
 #include <string.h>
-
-#include <WWWUtil.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #include <geier.h>
-
 #include <context.h>
-#include <chunk_from_file.h>
-
 #include <pkcs7_decrypt.h>
 
 
@@ -38,26 +36,61 @@ static unsigned char key1[] = {
 };
 
 
+static int
+chunk_from_file (const char *filename, unsigned char **output, size_t *outlen) 
+{
+	int fd = open(filename, O_RDONLY);
+
+	int alloc = 4096, len = 0;
+	char *ptr = malloc(alloc);
+
+	int readlen;
+	for(;;) {
+		if(! ptr) {
+			close(fd);
+			return -1;
+		}
+
+		readlen = read(fd, ptr + len, alloc - len);
+		len += readlen;
+
+		if(len < alloc) break;
+		alloc <<= 1;
+
+		ptr = realloc(ptr, alloc);
+	}
+	
+	close(fd);
+	
+	*output = realloc(ptr, len);
+	*outlen = len;
+
+	return 0;
+}
+
+
 int main(int argc, char *argv[])
 {
 	geier_context *context = geier_context_new();
 	unsigned char *output = NULL;
+	unsigned char *input; size_t inlen;
+	unsigned char *expected; size_t expected_len;
 	size_t outlen;
-	HTChunk *input = NULL;
-	HTChunk *expected = NULL;
 	int result;
+
+	geier_init(0);
 
 	if (argc != 1) {
 		fprintf(stderr, "usage: %s\n", argv[0]);
 		exit(1);
 	}
-	input = chunk_from_file(TESTDATADIR "/pkcs7/teststring.gzip.pkcs7-encrypted");
-	if (!input) {
+	if(chunk_from_file(TESTDATADIR "/pkcs7/teststring.gzip.pkcs7-encrypted",
+			   &input, &inlen)) {
 		fprintf(stderr, "Loading input failed\n");
 		exit(2);
 	}
-	expected = chunk_from_file(TESTDATADIR "/pkcs7/teststring.gzip");
-	if (!expected) {
+	if(chunk_from_file(TESTDATADIR "/pkcs7/teststring.gzip",
+			   &expected, &expected_len)) {
 		fprintf(stderr, "Loading expected failed\n");
 		exit(2);
 	}
@@ -66,31 +99,29 @@ int main(int argc, char *argv[])
 	context->session_key = key1;
 	context->session_key_len = sizeof(key1);
 
-	result = geier_pkcs7_decrypt(context,
-				     HTChunk_data(input), HTChunk_size(input),
-				     &output, &outlen);
+	result = geier_pkcs7_decrypt(context, input, inlen, &output, &outlen);
 
 	/* check result */
 	if (result != 0
-	    || outlen != HTChunk_size(expected)
-	    || memcmp(HTChunk_data(expected), output, outlen) != 0) {
+	    || outlen != expected_len
+	    || memcmp(expected, output, outlen) != 0) {
 		
 		int i;
-		unsigned char *d = HTChunk_data(expected);
+		unsigned char *d = expected;
 
 		fprintf(stderr, "result = %d\n", result);
 
 		fprintf(stderr, "Expected:\n");
-		fprintf(stderr, "length = %d\n", HTChunk_size(expected));
-		for (i=0; i<HTChunk_size(expected); i++) {
+		fprintf(stderr, "length = %d\n", expected_len);
+		for (i = 0; i < expected_len; i++) {
 			fprintf(stderr, " %02x", d[i]);
-			if (i%16 == 15) {
+			if (i % 16 == 15) {
 				fprintf(stderr, "\n");
 			}
 		}
 		fprintf(stderr, "\n");
 
-		if (!result) {			
+		if (! result) {			
 			FILE *f = fopen("test_pkcs7_decrypt.result","w");
 			fwrite(output, 1, outlen, f);
 			fclose(f);

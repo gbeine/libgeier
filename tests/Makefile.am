@@ -35,13 +35,10 @@ EXTRA_DIST = \
 
 # FIXME: let configure determine library header locations
 AM_CPPFLAGS = -Wall \
-	-I/usr/include/libxml2 \
-	-I/usr/include/w3c-libwww \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/include \
 	-DETCDIR=\"$(top_srcdir)/etc\" \
-	-DTESTDATADIR=\"$(TESTDATADIR)\" \
-	-DDEFAULT_HTCHUNK_GROWBY=1024
+	-DTESTDATADIR=\"$(TESTDATADIR)\" 
 
 LDADD = $(top_builddir)/src/libgeier.la
 

@@ -27,13 +27,33 @@
 #define GEIER_END_PROTOS
 #endif
 
+/** 
+ * LIBGEIER_DOTTED_VERSION:
+ * 
+ * The version string of the GEIER library shipping this header file.
+ */
 #define LIBGEIER_DOTTED_VERSION "@PACKAGE_VERSION@"
+
+/**
+ * LIBGEIER_TEST_VERSION:
+ *
+ * Check whether the version of the installed header file (used and
+ * installed at compile time) matches the installed library version. 
+ * 
+ * If the versions don't match, a warning message is written to
+ * stderr.
+ */
 #define LIBGEIER_TEST_VERSION   geier_check_version(LIBGEIER_DOTTED_VERSION)
 
 GEIER_BEGIN_PROTOS
 
-/* check whether the version from the header file matches
- * the libraries version
+/**
+ * geier_check_version
+ * @version: the version number to check the library against.
+ *
+ * Check whether the version number of the library matches the
+ * provided version information.  If not, a warning message is emitted
+ * to stderr.
  */
 void geier_check_version(const char *version);
 

@@ -5,7 +5,7 @@ SUBDIRS = src include etc config doc \
 DIST_SUBDIRS= config etc include src python doc
 # todo: perl tests doc 
 
-pkgconfigdir = $(prefix)/lib/pkgconfig/
+pkgconfigdir = $(libdir)/pkgconfig/
 pkgconfig_DATA = \
         libgeier.pc
 

@@ -1,5 +1,5 @@
 /*                                              -*- mode: C; coding: utf-8 -*-
- * Copyright (C) 2005  Stefan Siegl <stesie@brokenpipe.de>, Germany
+ * Copyright (C) 2005,2007  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,8 +15,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
+#include <libxml/encoding.h>
  	
-#include <iconv.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 
@@ -29,49 +35,51 @@
  *        or at least ISO-8859-15)
  */
 int
-geier_iso_to_utf8(const unsigned char *input, const size_t inlen,
+geier_iso_to_utf8(const unsigned char *input, size_t inlen,
 		  unsigned char **output, size_t *outlen)
 {
-	size_t my_inlen = inlen;
 	unsigned char *buffer, *ptr;
 
 	if(!input || !output || !outlen)
 		return -1;
 
-	iconv_t cd = iconv_open("UTF-8", "ISO8859-1");
-	if(cd == (iconv_t) -1) 
-		return -1; /* sorry, didn't work */
-
-	size_t alloc = inlen + 16, avail = alloc;
-	if(! (buffer = ptr = malloc(alloc)))
+	size_t alloc = inlen + 16;
+	if(! (buffer = ptr = malloc(alloc))) {
+		perror(PACKAGE_NAME);
 		return -1;
+	}
 	
-	while(my_inlen) {
-		size_t nconv = iconv(cd, (char **) &input, &my_inlen,
-				     (char **) &ptr, &avail);
-		if(nconv == (size_t) -1) {
-			if(errno == E2BIG) {
-				/* output buffer is not large enough,
-				 * let's allocate some more memory  */
-				alloc += 16;
-				avail += 16;
-
-				if(! (buffer = realloc(buffer, alloc))) 
-					return 1;
-				ptr = buffer + alloc - avail;
-				
-				continue; /* ... calling iconv */
+	while(inlen) {
+		int avail = alloc - (ptr - buffer);
+		if(avail < inlen + 16) {
+			int offset = ptr - buffer;
+			avail += 16;
+			alloc = offset + avail;
+			buffer = realloc(buffer, alloc);
+			if(! buffer) {
+				perror(PACKAGE_NAME);
+				return -1;
 			}
+			ptr = buffer + offset;
+		}
 
-			/* something went wrong, sorry */
+		int my_inlen = inlen;
+		size_t nconv = isolat1ToUTF8(ptr, &avail, input, &my_inlen);
+
+		if(nconv < 0) {
+			fprintf(stderr, PACKAGE_NAME ": isolat1ToUTF8 "
+				"failed.\n");
 			free(buffer);
 			return -1;
 		}
+
+		inlen -= my_inlen;
+		input += my_inlen;
+
+		ptr += avail;
 	}
 
-	iconv_close(cd);
-
-	*output = realloc(buffer, alloc - avail); /* shrink buffer */
-	*outlen = alloc - avail;
+	*outlen = ptr - buffer;
+	*output = realloc(buffer, *outlen); /* shrink buffer */
 	return 0;
 }

@@ -1,5 +1,0 @@
-usr/share/libgeier/schemas/*.xsd
-usr/share/libgeier/stylesheets/*.xsl
-usr/share/libgeier/*.cer
-usr/share/libgeier/*.tmpl
-usr/lib/libgeier.so.*

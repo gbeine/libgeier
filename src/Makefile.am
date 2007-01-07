@@ -40,6 +40,7 @@ libgeier_la_SOURCES = \
 libgeier_la_LDFLAGS = -version-info 0
 
 noinst_HEADERS = \
+	encoder.h \
 	dsig.h secutil.h
 
 AM_CPPFLAGS = \

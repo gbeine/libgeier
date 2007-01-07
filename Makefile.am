@@ -1,8 +1,8 @@
-SUBDIRS = src include etc config \
+SUBDIRS = src include etc config doc \
 	@PYTHON_SUBDIR@
 
 # always include subdir python into dist
-DIST_SUBDIRS= config etc include src python
+DIST_SUBDIRS= config etc include src python doc
 # todo: perl tests doc 
 
 pkgconfigdir = $(prefix)/lib/pkgconfig/

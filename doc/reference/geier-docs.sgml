@@ -43,7 +43,7 @@
     </para>
 
     <para>
-      Please mind, that GEIER heavily relies on OpenSSL.
+      Please mind, that GEIER heavily relies on Mozilla (xulrunner) NSS.
     </para>
   </chapter>
 
@@ -51,6 +51,5 @@
     <title>GEIER Core API</title>
     <xi:include href="xml/geier.xml"/>
     <xi:include href="xml/geierversion.xml"/>
-    <xi:include href="xml/geier-dsig.xml"/>
   </chapter>
 </book>

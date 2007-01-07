@@ -45,15 +45,3 @@ LIBGEIER_DOTTED_VERSION
 LIBGEIER_TEST_VERSION
 geier_check_version
 </SECTION>
-
-<SECTION>
-<TITLE>Digital Signature Internals</TITLE>
-<FILE>geier-dsig</FILE>
-geier_dsig_verify_mac
-geier_dsig_open
-geier_dsig_get_signaturekey
-geier_dsig_get_encryptionkey
-geier_dsig_get_encryptioncert
-geier_dsig_get_signaturecert
-</SECTION>
-

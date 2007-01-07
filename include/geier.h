@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
- * Copyright (C) 2005,2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
+ * Copyright (C) 2005,2006,2007  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,18 @@
 #define GEIER_ERROR_SCHEMA_VALIDATE_DOC  (GEIER_ERROR_BASE+4)
 #define GEIER_ERROR_FIND_NODE_NO_UNIQUE_NODE  (GEIER_ERROR_BASE+5)
 
-/* Kontext, enthält Konfigurationsparameter, Sitzungsschlüssel, ... */
+/**
+ * geier_context:
+ *
+ * A transparent structure, that has to be passed to most of the
+ * functions contained in this library.  It mainly is used to store
+ * encoder information as well as session keys, needed when sending
+ * data to the fiscal authorities.
+ *
+ * Please make sure not to call two library functions using the same
+ * context within two different threads.  Everything else should be
+ * threadsafe.
+ */
 typedef struct _geier_context geier_context;
 
 /* Parameter for gzip */
@@ -138,9 +149,51 @@ int geier_send_text(geier_context *context,
 int geier_send(geier_context *context,
 	       const xmlDoc *input, xmlDoc **output);
 
-/* Kompletten Elster-Datensatz abschicken und Rückgabe abholen */
+
+/**
+ * geier_send_encrypted
+ * @context: a #geier_context.
+ * @input: the XML document that should be sent.
+ * @output: pointer to where the returned XML document should be written to.
+ * 
+ * Send an already encrypted Elster-XML document, which is supplied as
+ * @input, quite like #geier_send does.  But unlike the latter don't
+ * care for encipherment.  This is, #geier_send_encrypted relies on
+ * @input being encrypted using #geier_encrypt already.
+ *
+ * Beware that this functions returns %0 upon successful transmission, this
+ * is, if the transmitted data is invalid, %0 is returned no matter what.
+ * See #geier_get_clearing_error for details.
+ *
+ * Returns: %0 upon successful transmission, %1 on error.  The returned
+ * document is written to @output on success.
+ */
+
 int geier_send_encrypted(geier_context *context,
 			 const xmlDoc *input, xmlDoc **output);
+
+/**
+ * geier_send_encrypted_text
+ * @context: a #geier_context.
+ * @input: the XML document that should be sent, supplied as a C string.
+ * @inlen: the length of @input.
+ * @output: pointer to where the returned XML document should be written to
+ * (as a C string).
+ * @outlen: the length of the buffer @output points to.
+ * 
+ * Send an already encrypted Elster-XML document, which is supplied as
+ * @input, quite like #geier_send_text does.  But unlike the latter
+ * don't care for encipherment.  This is, #geier_send_encrypted_text
+ * relies on @input being encrypted using #geier_encrypt_text already.
+ *
+ * Beware that this functions returns %0 upon successful transmission, this
+ * is, if the transmitted data is invalid, %0 is returned no matter what.
+ * See #geier_get_clearing_error_text for details.
+ *
+ * Returns: %0 upon successful transmission, %1 on error.  The returned
+ * document is written to @output on success, the length of @output is
+ * stored to @outlen.
+ */
 int geier_send_encrypted_text(geier_context *context,
 			      const unsigned char *input, size_t inlen,
 			      unsigned char **output, size_t *outlen);
@@ -194,7 +247,12 @@ int geier_encrypt_text(geier_context *context,
  *
  * Decrypt the encrypted parts (those that the Coala specification requires
  * to be sent encrypted) of the Elster-XML document provided as @input.
- * Furthermore decompression and Base64 decoding is handled internally.
+ * Furthermore decompression and Base64 decoding is handled
+ * internally.
+ *
+ * Please mind, that you cannot use #geier_decrypt to decrypt data
+ * that has been enciphered and sent using another #geier_context.
+ * This is due to the 3DES key to be contained in the #geier_context.
  *
  * Returns: %0 on success, %1 on error.  The decrypted document is written to
  * @output on success.
@@ -214,6 +272,10 @@ int geier_decrypt(geier_context *context,
  * Decrypt the encrypted parts (those that the Coala specification requires
  * to be sent encrypted) of the Elster-XML document provided as @input.
  * Furthermore decompression and Base64 decoding is handled internally.
+ *
+ * Please mind, that you cannot use #geier_decrypt to decrypt data
+ * that has been enciphered and sent using another #geier_context.
+ * This is due to the 3DES key to be contained in the #geier_context.
  *
  * Returns: %0 on success, %1 on error.  The decrypted document is written to
  * @output on success, the length of @output is stored to @outlen.
@@ -276,7 +338,21 @@ int geier_text_to_xml(geier_context *context,
 		      const unsigned char *input, size_t inlen,
 		      xmlDoc **output);
 
-/* Eingabeformate */
+
+
+/*
+ * validation routines
+ */
+/**
+ * geier_format:
+ *
+ * Format specifier that has to be passed to #geier_validate and
+ * #geier_validate_text for those to distinct between different
+ * Elster-XML tree flavours.
+ *
+ * Please mind, that currently only geier_format_unencrypted is
+ * supported. 
+ */
 typedef enum _geier_format {
 	geier_format_encrypted,
 	geier_format_unencrypted,
@@ -285,17 +361,89 @@ typedef enum _geier_format {
 /*	geier_nutzdaten_user, */
 } geier_format;
 
-/* Validiere XML
- * 0 = OK */
+
+/**
+ * geier_validate
+ * @context: a #geier_context.
+ * @f: #geier_format specifier.
+ * @input: the XML document that should be validated.
+ * 
+ * Validate the Elster-XML document against the Schema files supplied
+ * by the German fiscal authorities and shipped along with libgeier.
+ *
+ * Please mind the the only #geier_format (@f) that currently is supported
+ * by #geier_validate is geier_format_unencrypted.
+ *
+ * Returns: %0 upon successful validation, %1 on error.
+ */
 int geier_validate(geier_context *context,
 		   geier_format f, const xmlDoc *input);
+/**
+ * geier_validate_text
+ * @context: a #geier_context.
+ * @f: #geier_format specifier.
+ * @input: the XML document that should be validated, supplied as a C string.
+ * @inlen: the length of @input.
+ * 
+ * Validate the Elster-XML document against the Schema files supplied
+ * by the German fiscal authorities and shipped along with libgeier.
+ *
+ * Please mind the the only #geier_format (@f) that currently is supported
+ * by #geier_validate_text is geier_format_unencrypted.
+ *
+ * Returns: %0 upon successful validation, %1 on error.
+ */
 int geier_validate_text(geier_context *context, geier_format f,
 			const unsigned char *input, size_t inlen);
 
-/* unverschlüsselten Elster-Datensatz mittels XSLT in HTML aufbereiten */
+
+/*
+ * xsltification functions (protocol generation)
+ */
+
+/**
+ * geier_xsltify_text
+ * @context: a #geier_context.
+ * @input: the XML document for that a protocol should be generated,
+ * supplied as a C string.
+ * @inlen: the length of @input.
+ * @output: pointer to where the returned XHTML document should be written to
+ * (as a C string).
+ * @outlen: the length of the buffer @output points to.
+ * 
+ * Automatically generate a transmission protocol for the Elster-XML
+ * document, that is supplied as @input.  The protocol is generated
+ * using the XSLT-File that is shipped along with this library.
+ *
+ * You can call this function even before calling #geier_send_text,
+ * this will result in a common protocol that only states that it has
+ * been printed before transmission.
+ *
+ * Returns: %0 upon successful generation, %1 on error.  The returned
+ * document is written to @output on success, the length of @output is
+ * stored to @outlen.
+ */
 int geier_xsltify_text(geier_context *context,
 		       const unsigned char *input, size_t inlen,
 		       unsigned char **output, size_t *outlen);
+
+/**
+ * geier_xsltify
+ * @context: a #geier_context.
+ * @input: the XML document for that a protocol should be generated.
+ * @output: pointer to where the returned XHTML document should be written to.
+ * 
+ * Automatically generate a transmission protocol for the Elster-XML
+ * document, that is supplied as @input.  The protocol is generated
+ * using the XSLT-File that is shipped along with this library.
+ *
+ * You can call this function even before calling #geier_send,
+ * this will result in a common protocol that only states that it has
+ * been printed before transmission.
+ *
+ * Returns: %0 upon successful transmission, %1 on error.  The returned
+ * document is written to @output on success.
+ */
 int geier_xsltify(geier_context *context,
 		  const xmlDoc *input, xmlDoc **output);
 

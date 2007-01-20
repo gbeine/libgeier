@@ -21,7 +21,7 @@ _geier_la_LDFLAGS = -module -rpath '$(libdir)'
 _geier_la_LIBADD = $(top_srcdir)/src/libgeier.la
 
 GENERATED = libgeier_wrap.c geier.py \
-	_geier.a _geier.so*
+	_geier.a _geier.so* libgeier-ignores.i
 
 libgeier_wrap.c : libgeier.i libgeier-ignores.i geier-Context.py.i
 	swig -python -I$(top_srcdir)/include -o $@ $<

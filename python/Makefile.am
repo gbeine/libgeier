@@ -5,7 +5,7 @@
 # Licence: GPL, see www.taxbird.de
 #
 
-EXTRA_DIST = libgeier.i geier-Context.py.i gen-ignores.sh
+EXTRA_DIST = libgeier.i geier-Context.py.i gen-ignores.awk
 
 INCLUDES = \
 	-I$(PYTHON_INCLUDES) \
@@ -26,8 +26,8 @@ GENERATED = libgeier_wrap.c geier.py \
 libgeier_wrap.c : libgeier.i libgeier-ignores.i geier-Context.py.i
 	$(SWIG) -python -I$(top_srcdir)/include -o $@ $<
 
-libgeier-ignores.i: $(top_srcdir)/include/geier.h gen-ignores.sh
-	sh ./gen-ignores.sh $<  > $@ 
+libgeier-ignores.i: $(top_srcdir)/include/geier.h gen-ignores.awk
+	$(AWK) -f gen-ignores.awk $< > $@
 
 _geier.so: $(PWD)/_geier.so
 

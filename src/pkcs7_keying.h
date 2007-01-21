@@ -20,9 +20,9 @@
 #define GEIER_PKCS7_KEYING
 
 /* Mozilla header files */
-#include <nss/nss.h>
-#include <nss/secpkcs7.h>
-#include <nss/pk11func.h>
+#include <nss.h>
+#include <secpkcs7.h>
+#include <pk11func.h>
 
 
 PK11SymKey *geier_pkcs7_encryption_key(geier_context *ctx, PK11SlotInfo* slot);

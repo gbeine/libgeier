@@ -58,7 +58,7 @@ int geier_dsig_get_signaturecert_text(geier_context *context,
 				      char **fN);
 
 
-#include <nss/p12.h>
+#include <p12.h>
 /* open and try to read file (filename, using pincode) and return
  * the created SEC_PKCS12DecoderContext.
  *

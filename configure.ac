@@ -29,7 +29,7 @@ AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION, $PACKAGE_BUGREPORT)
 AC_PREREQ(2.59)
 # we need the extra parentheses in order to cope with the comma
 AC_COPYRIGHT([configure.ac Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany])
-AC_REVISION($Revision: 1.33 $)
+AC_REVISION($Revision: 1.34 $)
 
 AC_CONFIG_SRCDIR([srcdir_marker])
 
@@ -68,6 +68,8 @@ AC_ARG_WITH(python, [  --with-python=PATH      Path to specific Python binary],
      PYTHON="$withval")
 AM_PATH_PYTHON(2.2,[
     PYTHON_SUBDIR=python
+
+    AC_PROG_SWIG
 
     ### This overwrites pythondir and pyexecdir from AM_PATH_PYTHON
     ### since those do not honour sys.prefix!

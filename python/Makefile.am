@@ -24,7 +24,7 @@ GENERATED = libgeier_wrap.c geier.py \
 	_geier.a _geier.so* libgeier-ignores.i
 
 libgeier_wrap.c : libgeier.i libgeier-ignores.i geier-Context.py.i
-	swig -python -I$(top_srcdir)/include -o $@ $<
+	$(SWIG) -python -I$(top_srcdir)/include -o $@ $<
 
 libgeier-ignores.i: $(top_srcdir)/include/geier.h gen-ignores.sh
 	sh ./gen-ignores.sh $<  > $@ 

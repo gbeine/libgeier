@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
- * Copyright (C) 2005,2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
+ * Copyright (C) 2005,2006,2007  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 
 #include "context.h"
 #include "tcpip.h"
+#include "xpath.h"
 
 #include <geier.h>
 #include <string.h>
@@ -34,6 +35,9 @@ static char *clearing_uri_list[] = {
   	"http://193.109.238.58:80/Elster2/EMS",
   	"http://193.109.238.59:80/Elster2/EMS",
 };
+
+static const char *val_verfahren_xpathexpr =
+"/elster:Elster/elster:TransferHeader/elster:Verfahren";
 
 static const size_t clearing_uri_list_length =
 	sizeof(clearing_uri_list) / sizeof(*clearing_uri_list);
@@ -118,19 +122,38 @@ int geier_send_encrypted_text(geier_context *context,
 		return -1; 
 	}
 
+
+	/*
+	 * extract `Verfahrensbezeichnung' which has to be added to the URI
+	 */
+	xmlDoc *doc;
+	if(geier_text_to_xml(context, input, inlen, &doc))
+		goto send_failed;
+
+	char *val_verfahren = elster_xpath_get_content(context, doc,
+						       val_verfahren_xpathexpr);
+
+	xmlFreeDoc(doc);
+	if(! val_verfahren) goto send_failed;
+
+
 	/*
 	 * send http header
 	 */
 	if(proxy) {
-		if(fprintf(handle, "POST %s HTTP/1.0\r\n", 
-			   clearing_uri_list[clearing_uri_index]) < 0)
+		if(fprintf(handle, "POST %s/%s HTTP/1.0\r\n", 
+			   clearing_uri_list[clearing_uri_index],
+			   val_verfahren) < 0)
 			goto send_failed;
 	}
 	else {
-		if(fprintf(handle, "POST /%s HTTP/1.0\r\n" "Host: %s:%ld\r\n",
-			   path, dest_uri, port) < 0)
+		if(fprintf(handle, "POST /%s/%s HTTP/1.0\r\n"
+			   "Host: %s:%ld\r\n",
+			   path, val_verfahren, dest_uri, port) < 0)
 			goto send_failed;
 	}
+
+	free(val_verfahren);
 
 	if(fprintf(handle,
 		   "User-Agent: " PACKAGE_NAME "/" PACKAGE_VERSION "\r\n"

@@ -44,7 +44,7 @@ noinst_HEADERS = \
 	dsig.h secutil.h
 
 AM_CPPFLAGS = \
-	-I$(top_srcdir)/include \
+	-I$(top_srcdir)/include -I$(top_builddir)/include \
 	-DDEFAULT_XMLSEC_TEMPLATE=\"$(datadir)/libgeier/xmlsec.tmpl\" \
 	-DDEFAULT_CERT_FILE=\"$(datadir)/libgeier/Elster2Cry.b64.cer\" \
 	-DDEFAULT_SCHEMA_DIR_URL=\"file://$(datadir)/libgeier/schemas\" \

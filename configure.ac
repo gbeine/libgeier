@@ -29,9 +29,9 @@ AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION, $PACKAGE_BUGREPORT)
 AC_PREREQ(2.59)
 # we need the extra parentheses in order to cope with the comma
 AC_COPYRIGHT([configure.ac Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany])
-AC_REVISION($Revision: 1.36 $)
+AC_REVISION($Revision: 1.37 $)
 
-AC_CONFIG_SRCDIR([srcdir_marker])
+AC_CONFIG_SRCDIR([libgeier.pc.in])
 
 # FIXME: Make conditional on C compilers that know -Wall?
 if test "x$CFLAGS" = "x"; then CFLAGS="-Wall -ggdb"; fi

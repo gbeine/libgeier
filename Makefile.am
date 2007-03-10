@@ -12,7 +12,6 @@ pkgconfig_DATA = \
 man_MANS=geier.1
 
 EXTRA_DIST = \
-	srcdir_marker \
 	libgeier.pc.in \
 	${man_MANS} 
 

@@ -20,6 +20,7 @@
 #  include <config.h>
 #endif
 
+#include <pk11pub.h>
 #include <geier.h>
 #include "dsig.h"
 #include "context.h"

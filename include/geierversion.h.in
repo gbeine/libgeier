@@ -32,7 +32,7 @@
  * 
  * The version string of the GEIER library shipping this header file.
  */
-#define LIBGEIER_DOTTED_VERSION "@PACKAGE_VERSION@"
+#define LIBGEIER_DOTTED_VERSION "@PACKAGE_VERSION@-@crypto_module@"
 
 /**
  * LIBGEIER_TEST_VERSION:

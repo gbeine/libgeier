@@ -32,10 +32,6 @@
 #include <xmlsec/xmlsec.h>
 #include <xmlsec/crypto.h>
 
-/* Mozilla header files */
-#include <nss.h>
-#include <p12plcy.h>
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>

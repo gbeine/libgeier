@@ -29,7 +29,7 @@ AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION, $PACKAGE_BUGREPORT)
 AC_PREREQ(2.59)
 # we need the extra parentheses in order to cope with the comma
 AC_COPYRIGHT([configure.ac Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany])
-AC_REVISION($Revision: 1.37 $)
+AC_REVISION($Revision: 1.38 $)
 
 AC_CONFIG_SRCDIR([libgeier.pc.in])
 
@@ -50,16 +50,44 @@ if test -z "$mkdir_p"; then
 	AC_SUBST(mkdir_p)
 fi
 
-# checks for libraries ...
-
 # check for mozilla/xmlsec1-nss, libxml2 and libxslt using pkg-config ...
-PKG_CHECK_MODULES(PACKAGE, [libxml-2.0 libxslt xmlsec1-nss])
+PKG_CHECK_MODULES(libxml, [libxml-2.0])
+PKG_CHECK_MODULES(libxslt, [libxslt])
+
+AC_ARG_WITH(nss, [  --with-nss              Use Mozilla NSS for cryptography],[
+  if test "${with_nss}" = "no"; then
+    crypto_module=nss
+  else
+    crypto_module=nss
+  fi
+])
+
+AC_ARG_WITH(openssl, [  --with-openssl          Use OpenSSL for cryptography],[
+  if test "${with_openssl}" = "no"; then
+    crypto_module=nss
+  else
+    crypto_module=openssl
+  fi
+])
+
+# if user didn't specify a module, try to guess ...
+if test "x${crypto_module}" = "x"; then
+  # PKG_CHECK_EXISTS(MODULES, [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
+  PKG_CHECK_EXISTS(xmlsec1-nss, [crypto_module=nss], [
+    PKG_CHECK_EXISTS(xmlsec1-openssl, [crypto_module=openssl], [
+      AC_MSG_ERROR([no suitable crypto module found.])])])
+fi
+
+echo "Configured crypto_module: ${crypto_module}"
+PKG_CHECK_MODULES(xmlsec, [xmlsec1-${crypto_module}])
+#AM_CONDITIONAL(USE_NSS, test "${crypto_module}" = "nss")
+AC_SUBST(crypto_module)
+
+CFLAGS="$CFLAGS $libxml_CFLAGS $libxslt_CFLAGS $xmlsec_CFLAGS"
+LDFLAGS="$LDFLAGS $libxml_LIBS $libxslt_LIBS $xmlsec_LIBS"
 
 # check for zlib
 AC_CHECK_LIB([z], [deflateBound],,AC_MSG_ERROR([libz library missing.]))
-
-CFLAGS="$CFLAGS $PACKAGE_CFLAGS"
-LDFLAGS="$LDFLAGS $PACKAGE_LIBS"
 
 #
 # check for python
@@ -101,25 +129,19 @@ fi
 AC_SUBST(PYTHON_SUBDIR)
 AC_SUBST(PYTHON_INCLUDES)
 
-
-# checks for header files
-
-# checks for typedefs
-
-# checks for structures
-
-# checks for compiler characteristics
-
-# checks for library functions
-
-# checks for system services
-
 # output
-AC_CONFIG_FILES([Makefile src/Makefile include/Makefile etc/Makefile 
-		 etc/stylesheets/Makefile include/geierversion.h
-		 etc/schemas/Makefile config/Makefile
+AC_CONFIG_FILES([Makefile 
+		 src/Makefile 
+		 src/nss/Makefile
+		 include/Makefile 
+		 include/geierversion.h
+		 etc/Makefile 
+		 etc/stylesheets/Makefile 
+		 etc/schemas/Makefile 
+		 config/Makefile
 		 python/Makefile
-		 doc/Makefile doc/reference/Makefile
+		 doc/Makefile 
+		 doc/reference/Makefile
 		 doc/reference/version.xml
 		 libgeier.pc])
 AC_OUTPUT

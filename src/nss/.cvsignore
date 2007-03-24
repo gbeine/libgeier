@@ -1,0 +1,12 @@
+Makefile
+Makefile.in
+libgeier.la
+.deps
+.libs
+*.lo
+config.h
+config.h.in
+stamp*
+geier
+*.pfx
+libgeier_nss.la

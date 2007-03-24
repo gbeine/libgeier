@@ -29,7 +29,7 @@ AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION, $PACKAGE_BUGREPORT)
 AC_PREREQ(2.59)
 # we need the extra parentheses in order to cope with the comma
 AC_COPYRIGHT([configure.ac Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany])
-AC_REVISION($Revision: 1.38 $)
+AC_REVISION($Revision: 1.39 $)
 
 AC_CONFIG_SRCDIR([libgeier.pc.in])
 
@@ -133,6 +133,7 @@ AC_SUBST(PYTHON_INCLUDES)
 AC_CONFIG_FILES([Makefile 
 		 src/Makefile 
 		 src/nss/Makefile
+		 src/openssl/Makefile
 		 include/Makefile 
 		 include/geierversion.h
 		 etc/Makefile 

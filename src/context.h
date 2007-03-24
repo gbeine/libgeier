@@ -35,6 +35,9 @@ struct _geier_context {
 	/* for testing encryption we can set the session key directly */
 	unsigned char *session_key;
 	size_t session_key_len;
+#ifdef XMLSEC_CRYPTO_OPENSSL
+	unsigned char *iv;
+#endif
 
 	/* used by geier_encoder, for NSS callbacks */
 	char *encoder_buf_ptr;

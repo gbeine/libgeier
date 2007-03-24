@@ -34,7 +34,7 @@ libgeier_la_SOURCES = \
 	dsig-rewrite-datenlieferant.c
 
 libgeier_la_LDFLAGS = -version-info 0
-libgeier_la_LIBADD = $(top_builddir)/src/nss/libgeier_@crypto_module@.la
+libgeier_la_LIBADD = $(top_builddir)/src/@crypto_module@/libgeier_@crypto_module@.la
 
 noinst_HEADERS = \
 	encoder.h \

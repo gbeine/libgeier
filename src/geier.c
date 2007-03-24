@@ -37,6 +37,8 @@
 
 #include "find_node.h"
 
+
+#ifdef XMLSEC_CRYPTO_NSS
 #include <prtypes.h>
 
 /*  These were stolen from the old sec.h... */
@@ -62,6 +64,7 @@ extern PRBool SEC_BlindCheckPassword(char *password);
 extern char *SEC_GetPassword(FILE *in, FILE *out, char *msg,
 				      PRBool (*chkpw)(char *));
 
+#endif /* defined XMLSEC_CRYPTO_NSS */
 
 
 /* documentation, written out when called with either --usage or --help */
@@ -120,7 +123,12 @@ int config_dry_run = 0;                 /* dry-run, don't send to IRO */
 int config_xsltify = 0;                 /* filter output through xslt */
 int config_encrypt_only = 0;            /* only encrypt the provided xml */
 char *softpse_filename = NULL;          /* name of software cert file */
-char *pincode;                          /* pincode */
+#ifdef XMLSEC_CRYPTO_NSS
+char *pincode = NULL;                   /* pincode */
+#endif
+#ifdef XMLSEC_CRYPTO_OPENSSL
+char pincode[24];                       /* pincode */
+#endif
 char *config_dump = NULL;               /* dump received xml doc to a 
 					 * certain file, after sending */
 
@@ -179,6 +187,16 @@ static error_t parse_geier_opts(int key, char *arg, struct argp_state *state)
 
 	case OPT_SOFTPSE:
 		softpse_filename = strdup(arg);
+
+#ifdef XMLSEC_CRYPTO_OPENSSL
+                if(EVP_read_pw_string(pincode, sizeof pincode,
+                                      "Enter Soft-PSE PIN:", 0)) {
+			fprintf(stderr, "Can't read Password. Sorry.\n");
+			return 1;
+		}
+#endif
+
+#ifdef XMLSEC_CRYPTO_NSS           
 		pincode = SEC_GetPassword(stdin, stderr, "Enter Soft-PSE PIN:",
 					  SEC_BlindCheckPassword);
 
@@ -186,6 +204,7 @@ static error_t parse_geier_opts(int key, char *arg, struct argp_state *state)
 			fprintf(stderr, "Can't read Password. Sorry.\n");
 			return 1;
 		}
+#endif
 		break;
 
 	case OPT_DUMP:

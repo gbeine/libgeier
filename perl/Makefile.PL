@@ -22,10 +22,6 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     'NAME'	    => 'Geier',
     'MAN3PODS'	    => { 'Geier.pod' => '$(INST_MAN3DIR)/Geier.3',
-    			 'Geier/Simple.pm'
-			 => '$(INST_MAN3DIR)/Geier::Simple.3',
-			 'Geier/Simple/UStVA.pm'
-			 => '$(INST_MAN3DIR)/Geier::Simple::UStVA.3',
     		       },
     'VERSION_FROM'  => 'Geier.pm',
     'PREREQ_PM'     => { },

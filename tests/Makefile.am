@@ -12,6 +12,7 @@ check_PROGRAMS = \
 
 check_SCRIPTS = \
 	test_dsig_digestvalue \
+	test_dsig_send_text \
 	test_send_text \
 	test_validate
 

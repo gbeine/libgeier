@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Elster xmlns="http://www.elster.de/2002/XMLSchema">
+  <TransferHeader version="7">
+    <Verfahren>ElsterAnmeldung</Verfahren>
+    <DatenArt>UStVA</DatenArt>
+    <Vorgang>send-Sig</Vorgang>
+    <TransferTicket>0000004088162200307</TransferTicket>
+    <Testmerker>700000004</Testmerker>
+    <HerstellerID>74931</HerstellerID>
+    <DatenLieferant>ElsterOnline-Portal: libgeier</DatenLieferant>
+    <EingangsDatum>20070331182225</EingangsDatum>
+    <Datei>
+      <Verschluesselung>PKCS#7v1.5</Verschluesselung>
+      <Kompression>GZIP</Kompression>
+      <DatenGroesse>3476</DatenGroesse>
+      <TransportSchluessel/>
+    </Datei>
+    <RC>
+      <Rueckgabe>
+        <Code>0</Code>
+        <Text/>
+      </Rueckgabe>
+      <Stack>
+        <Code/>
+        <Text/>
+      </Stack>
+    </RC>
+    <VersionClient/>
+    <Zusatz>
+      <Info>Testzusatz</Info>
+    </Zusatz>
+  </TransferHeader>
+  <DatenTeil>
+    <Nutzdatenblock>
+      <NutzdatenHeader version="9">
+        <NutzdatenTicket>1</NutzdatenTicket>
+        <Empfaenger id="F">9144</Empfaenger>
+        <SigUser>
+          <SigPruefung>AccountID: 1000006174; StNr: 9198020000113; RegDatum: 20051111; TestCA: true</SigPruefung>
+          <UserInfo>
+            <User id="1">
+              <Vorname>Hersteller</Vorname>
+              <Name>Tester</Name>
+            </User>
+          </UserInfo>
+          <Sig>
+            <dsig:Signature xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" Id="Sign1">
+      <dsig:SignedInfo>
+        <dsig:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+	<dsig:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+	<dsig:Reference URI="">
+	  <dsig:Transforms>
+	    <dsig:Transform Algorithm="http://www.w3.org/TR/1999/REC-xpath-19991116">
+	      <dsig:XPath>ancestor-or-self::Nutzdaten</dsig:XPath>
+	    </dsig:Transform>
+	    <dsig:Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+	  </dsig:Transforms>
+	  <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+	  <dsig:DigestValue>s2EXvL99L9RhvQsrs/K6hUhcEQY=</dsig:DigestValue>
+	</dsig:Reference>
+      </dsig:SignedInfo>
+      <dsig:SignatureValue>PnKB1ueEb5SpR7910bvTK3zpwAcHUDypehyfps6ZjokuWXh83VR+KWHUIzJ6gexv
+Q4YbmJOac+hejFjvbyBR2KbiBGXQNkTyxdhYEkM+ne5fzUWRIjVPaMlBjz+2N0J8
+hftOQ3HrEBpYpnsMNzgkxzrbuZye8C+WcjrZplSYKZI=</dsig:SignatureValue>
+      <dsig:KeyInfo>
+        <dsig:X509Data>
+          
+	<X509Certificate xmlns="http://www.w3.org/2000/09/xmldsig#">MIIDKzCCAhOgAwIBAgIEO5rKzTANBgkqhkiG9w0BAQUFADBGMQswCQYDVQQGEwJE
+RTEPMA0GA1UEChMGRWxzdGVyMQswCQYDVQQLEwJDQTEZMBcGA1UEAxMQRWxzdGVy
+U29mdFRlc3RDQTAeFw0wNTExMTExMjQxMTlaFw0wODExMTExMjQxMTlaMDIxFDAS
+BgNVBAUTCzEwMDAwMDYxNzRBMRowGAYDVQQDExFIZXJzdGVsbGVyLFRlc3RlcjCB
+njANBgkqhkiG9w0BAQEFAAOBjAAwgYgCgYBoiBjwliSQjku+Apb3sHB3GE0IxvaU
+io3Esi9OgT4OGAi5JrpFpOp279MeTkyhU6+IkokV5GMIXNElGdXmXkLEJmmETBFz
+tnWFrR22B0aMv5V28auoA6HgXEgwPk32xJfQQ3zmdYPq7I71X8M3rx+x05H1G+3d
+2ISu6hnz5YKdvwIDAQABo4G5MIG2MAsGA1UdDwQEAwIHgDCBmwYDVR0fBIGTMIGQ
+MIGNoIGGoIGDhoGAbGRhcDovLzE5Mi4xNjguNi4yNDozODkvbCUzZENBJTIwWmVy
+dGlmaWthdGUsb3UlM2RDQSxjbiUzZEVsc3RlclNvZnRUZXN0Q0EsZGMlM2R3aWVz
+ZWwsZGMlM2RlbHN0ZXIsZGMlM2RkZT8/YmFzZT8ob2JqZWN0Q2xhc3M9KimBAgZA
+MAkGA1UdEwQCMAAwDQYJKoZIhvcNAQEFBQADggEBAGy7Bfwhy/xq++UQ4ygvmNmY
+XUW5OHwRZGD3KkDLo+8fQcXAZxnmBFbHvimY7LhUMOAoQM4BIUoohCrHVlcxMAO9
+gFfdp9EHKRKeV4Or1ixsTHRY6Bt1Yy6ffHxmbYY5LD5+ya8EiThSwtpM0NQqc9BR
+qN2aKzRcyh1uZPIMsBofS86y+em7i5PF6MLDa/OESxeipqmKAeJkAkTP89EN3Moo
+gXLS+uZg0a1HZ1wa4RSMdbbzYfFGrIeJUF+mQF0lYI8BmZAbUqR0PSRFoQ5sv16a
+sx1my6b8cSouabqNhlK0i60j2+wxroys3TjWy2ZVwTgJeonDjJKagWMX8aUnhpA=</X509Certificate>
+</dsig:X509Data>
+      </dsig:KeyInfo>
+    </dsig:Signature>
+          </Sig>
+        </SigUser>
+        <Hersteller>
+          <ProduktName>libgeier</ProduktName>
+          <ProduktVersion>0.1</ProduktVersion>
+        </Hersteller>
+        <DatenLieferant>Testlieferant</DatenLieferant>
+        <RC>
+          <SigIntern/>
+          <VerarbeitungsVersion/>
+          <Rueckgabe>
+            <Code>0</Code>
+            <Text>Daten wurden erfolgreich abgespeichert.</Text>
+          </Rueckgabe>
+          <Stack>
+            <Code/>
+            <Text/>
+          </Stack>
+        </RC>
+        <Zusatz>
+                <Info>Dies ist ein Test</Info>
+            </Zusatz>
+      </NutzdatenHeader>
+      <Nutzdaten>
+            <Anmeldungssteuern art="UStVA" version="200501">
+                <DatenLieferant>
+            	    <Name>Till Tester</Name>
+            	    <Strasse>Ausprobiererstr. 23</Strasse>
+            	    <PLZ>45678</PLZ>
+            	    <Ort>Testheim</Ort>
+                </DatenLieferant>
+                <Erstellungsdatum>20050102</Erstellungsdatum>
+                <Steuerfall>
+            	<Umsatzsteuervoranmeldung>
+            	    <Jahr>2005</Jahr>
+            	    <Zeitraum>01</Zeitraum>
+            	    <Steuernummer>9144058870702</Steuernummer>
+            	    <Kz09>74931*Name Steuerber.*Berufsbez.*089*59958327*Name Mandant</Kz09>
+            	    <Kz10>1</Kz10>
+            	    <Kz26>1</Kz26>
+            	    <Kz29>1</Kz29>
+		    <Kz35>-99999999999</Kz35>
+            	    <Kz36>123456789.00</Kz36>
+            	    <Kz39>999999999.99</Kz39>
+            	    <Kz41>-99999999999</Kz41>
+            	    <Kz42>-99999999999</Kz42>
+            	    <Kz43>-99999999999</Kz43>
+            	    <Kz44>-99999999999</Kz44>
+            	    <Kz45>-99999999999</Kz45>
+            	    <Kz48>-99999999999</Kz48>
+            	    <Kz49>-99999999999</Kz49>
+            	    <Kz51>-99999999999</Kz51>
+            	    <Kz52>-99999999999</Kz52>
+            	    <Kz53>-999999999.99</Kz53>
+            	    <Kz59>-999999999.99</Kz59>
+            	    <Kz60>-99999999999</Kz60>
+            	    <Kz61>-999999999.99</Kz61>
+            	    <Kz62>-999999999.99</Kz62>
+            	    <Kz63>-999999999.99</Kz63>
+            	    <Kz64>-999999999.99</Kz64>
+            	    <Kz65>-999999999.99</Kz65>
+            	    <Kz66>-999999999.99</Kz66>
+            	    <Kz67>-999999999.99</Kz67>
+            	    <Kz69>-999999999.99</Kz69>
+            	    <Kz76>-99999999999</Kz76>
+            	    <Kz73>-99999999999</Kz73>
+            	    <Kz74>-999999999.99</Kz74>
+            	    <Kz77>-99999999999</Kz77>
+            	    <Kz80>-999999999.99</Kz80>
+            	    <Kz83>-999999999.99</Kz83>
+            	    <Kz84>-99999999999</Kz84>
+            	    <Kz85>-999999999.99</Kz85>
+            	    <Kz86>-99999999999</Kz86>
+            	    <Kz91>-99999999999</Kz91>
+            	    <Kz93>-99999999999</Kz93>
+            	    <Kz94>-99999999999</Kz94>
+            	    <Kz95>-99999999999</Kz95>
+            	    <Kz96>-999999999.99</Kz96>
+            	    <Kz97>-99999999999</Kz97>
+            	    <Kz98>-999999999.99</Kz98>
+            	</Umsatzsteuervoranmeldung>
+                </Steuerfall>
+            </Anmeldungssteuern>
+	</Nutzdaten>
+    </Nutzdatenblock>
+  </DatenTeil>
+</Elster>

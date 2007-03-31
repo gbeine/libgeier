@@ -1,0 +1,62 @@
+#! /usr/bin/perl -w
+use strict;
+use Geier;
+
+Geier::init 0;
+my $coala = new Geier();
+
+#
+# read infile and validate
+#
+open INFILE, "< data/test_ustva_unencrypted.xml" 
+  or die "unable to open input file";
+my $indata = "";
+while(<INFILE>) { $indata .= $_ }
+close INFILE or die;
+die "unable to validate input" if $coala->validate($indata);
+
+#
+# read pincode
+#
+open PINFILE, "< data/TestHersteller_ELSTEstR.pin"
+  or die "unable to open pincode file";
+my $pincode = <PINFILE>; 
+chop $pincode;
+close PINFILE or die;
+
+#
+# sign it ...
+#
+my $signed = $coala->sign($indata, "data/TestHersteller_ELSTEstR.pfx", 
+                          $pincode);
+die "cannot sign document" unless $signed;
+
+my $result = $coala->send($signed);
+die "communication with elster host failed" unless $result;
+
+my $fail = $coala->get_clearing_error($result);
+die "send failed: $fail" if $fail;
+
+open EXPECTFILE, "< data/test_ustva_signed_reply.xml"
+  or die "unable to open expect file";
+my $expdata = "";
+while(<EXPECTFILE>) { $expdata .= $_ }
+close EXPECTFILE or die;
+#die "unable to validate expect file" if $coala->validate($expdata);
+
+open RESULTFILE, "> test_dsig_send_text.result"
+  or die "unable to open result file";
+print RESULTFILE $result;
+close RESULTFILE or die;
+
+for ($result, $expdata) {
+  s/<TransferTicket.*\/TransferTicket>//g;
+  s/<EingangsDatum.*\/EingangsDatum>//g;
+}
+
+if($result ne $expdata) {
+  print "result:\n\n$result\n";
+  print "expectation:\n\n$expdata\n";
+  die "test_send_text failed, result doesn't match expectation";
+}
+

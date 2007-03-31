@@ -1,0 +1,8 @@
+
+The test application `test_dsig_digestvalue' needs the PKCS#12 
+container as distributed by the fiscal authorities to be available
+as TestHersteller_ELSTEstR.pfx (original filename) from the data/
+directory.  According to the README file, the .pfx file must
+not be shared to end users, therefore it's not contained in the
+CVS repository.
+

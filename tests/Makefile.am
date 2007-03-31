@@ -1,22 +1,18 @@
 # tests run for make check
 TESTS = \
-	test_base64 \
-	test_pkcs7_encrypt \
-	test_pkcs7_decrypt \
-	test_gzip_deflate \
-	test_gzip_inflate \
-	test_encrypt \
-	test_decrypt \
-	test_validate
+	$(check_PROGRAMS) \
+	$(check_SCRIPTS)
 
-XFAIL_TESTS = \
-	test_encrypt
+#XFAIL_TESTS =
 
 # add tests run by hand here
-check_PROGRAMS = $(TESTS) \
-	test_send_text \
-	test_send \
-	test_send_encrypted_text
+check_PROGRAMS = \
+	test_base64 \
+	test_pkcs7_decrypt
+
+check_SCRIPTS = \
+	test_dsig_digestvalue \
+	test_validate
 
 
 TESTDATADIR = $(top_srcdir)/tests/data

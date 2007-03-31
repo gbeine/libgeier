@@ -1,0 +1,16 @@
+#! /usr/bin/perl -w
+use strict;
+use Geier;
+
+Geier::init 0;
+my $coala = new Geier();
+
+#
+# read infile and validate
+#
+open INFILE, "< data/test_ustva_unencrypted.xml" 
+  or die "unable to open input file";
+my $indata = "";
+while(<INFILE>) { $indata .= $_ }
+close INFILE or die;
+die "unable to validate input" if $coala->validate($indata);

@@ -15,7 +15,6 @@ test_encrypt
 test_encrypt.result
 test_send_encrypted_text
 test_send_encrypted_text.result
-test_validate
 test_decrypt
 test_decrypt.result
 test_send

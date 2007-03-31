@@ -69,8 +69,8 @@ extern char *SEC_GetPassword(FILE *in, FILE *out, char *msg,
 
 /* documentation, written out when called with either --usage or --help */
 const char *argp_program_version = 
-"Geier Command Line Interface (" PACKAGE_NAME ") " PACKAGE_VERSION "\n"
-"Copyright (C) 2005 Stefan Siegl <ssiegl@gmx.de>, Germany\n"
+"Geier Command Line Interface (" PACKAGE_NAME ") " LIBGEIER_DOTTED_VERSION "\n"
+"Copyright (C) 2005,2006,2007 Stefan Siegl <stesie@brokenpipe.de>, Germany\n"
 "This is free software; see the source for copying conditions.  There is NO\n"
 "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
 "\n";

@@ -28,15 +28,15 @@ while(<EXPECTFILE>) { $expdata .= $_ }
 close EXPECTFILE or die;
 die "unable to validate expect file" if $coala->validate($expdata);
 
-for ($result, $expdata) {
-  s/<TransferTicket.*\/TransferTicket>//g;
-  s/<EingangsDatum.*\/EingangsDatum>//g;
-}
-
 open RESULTFILE, "> test_send_text.result"
   or die "unable to open result file";
 print RESULTFILE $result;
 close RESULTFILE or die;
+
+for ($result, $expdata) {
+  s/<TransferTicket.*\/TransferTicket>//g;
+  s/<EingangsDatum.*\/EingangsDatum>//g;
+}
 
 if($result ne $expdata) {
   print "result:\n\n$result\n";

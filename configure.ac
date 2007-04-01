@@ -29,7 +29,7 @@ AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION, $PACKAGE_BUGREPORT)
 AC_PREREQ(2.59)
 # we need the extra parentheses in order to cope with the comma
 AC_COPYRIGHT([configure.ac Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany])
-AC_REVISION($Revision: 1.40 $)
+AC_REVISION($Revision: 1.41 $)
 
 AC_CONFIG_SRCDIR([libgeier.pc.in])
 
@@ -128,6 +128,19 @@ fi
 
 AC_SUBST(PYTHON_SUBDIR)
 AC_SUBST(PYTHON_INCLUDES)
+
+
+
+#
+# configure Perl bindings
+#
+AC_PATH_PROG(PERL, perl, no)
+AC_ARG_ENABLE(perl, [  --disable-perl          do not build the perl module],
+              [], [enable_perl=yes])
+AM_CONDITIONAL(BUILD_PERL, test "x${enable_perl}" = "xyes" -a "x${PERL}" != "xno")
+AC_SUBST(PERL)
+
+
 
 # output
 AC_CONFIG_FILES([Makefile 

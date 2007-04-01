@@ -39,8 +39,11 @@
 #define GEIER_ERROR_SCHEMA_VALIDATE_DOC  (GEIER_ERROR_BASE+4)
 #define GEIER_ERROR_FIND_NODE_NO_UNIQUE_NODE  (GEIER_ERROR_BASE+5)
 
-#ifndef __attribute_deprecated__
-#define __attribute_deprecated__
+#ifndef __attribute__
+/* This feature is available in gcc versions 2.5 and later.  */
+# if __cplusplus == 1 || __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 5)
+#  define __attribute__(Spec)  /* empty */
+# endif
 #endif
 
 /**
@@ -312,6 +315,7 @@ int geier_xml_to_text(geier_context *context,
  * geier_xml_to_encoded_text
  * @context: a #geier_context.
  * @input: the XML document that should be converted
+ * @encoding: the encoding to possibly convert the XML document to.
  * @output: pointer to where the document should be written to (as a C string)
  * @outlen: the length of the buffer @output points to.
  *
@@ -505,15 +509,16 @@ char *geier_get_clearing_error_text(geier_context *context,
  * certificate, that is automatically extracted from the PKCS&num;12 file with
  * the provided filename.  The @pincode is used to decrypt the container.
  *
+ * @Deprecated: This funtion has been renamed since 0.8.  Please use
+ * #geier_dsig_sign_softpse, which has exactly the same signature.
+ *
  * Returns: %0 on success, %1 on error.  The signed document is written to
  * @output.
- *
- * @deprecated
  */
 int geier_dsig_sign(geier_context *context,
 		    const xmlDoc *input, xmlDoc **output,
 		    const char *softpse_filename, const char *pincode)
-     __attribute_deprecated__;
+	__attribute__((deprecated));
 
 /**
  * geier_dsig_sign_softpse
@@ -557,6 +562,34 @@ int geier_dsig_sign_softpse_text(geier_context *context,
 				 unsigned char **output, size_t *outlen,
 				 const char *softpse_filename,
 				 const char *pincode);
+
+/**
+ * geier_dsig_sign_text
+ * @context: a #geier_context.
+ * @input: the XML document that should be signed, supplied as a C string.
+ * @inlen: the length of @input.
+ * @output: pointer to where the resulting XML document should be written to
+ * (as a C string)
+ * @outlen: the length of the buffer @output points to.
+ * @softpse_filename: name of the PKCS&num;12 container file.
+ * @pincode: the pincode.
+ *
+ * Sign the provided Elster-XML document (supplied as @input) with the software
+ * certificate, that is automatically extracted from the PKCS&num;12 file with
+ * the provided filename.  The @pincode is used to decrypt the container.
+ *
+ * @Deprecated: This funtion has been renamed since 0.8.  Please use
+ * #geier_dsig_sign_softpse_text, which has exactly the same signature.
+ *
+ * Returns: %0 on success, %1 on error.  The signed document is written to
+ * @output, the length of @output is stored to @outlen on success.
+ */
+int geier_dsig_sign_text(geier_context *context,
+			 const unsigned char *input, size_t inlen,
+			 unsigned char **output, size_t *outlen,
+			 const char *softpse_filename,
+			 const char *pincode)
+	__attribute__((deprecated));
 
 GEIER_END_PROTOS
 

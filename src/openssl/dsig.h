@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005  Stefan Siegl <stesie@brokenpipe.de>, Germany
+ * Copyright (C) 2005,2007  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,5 +94,8 @@ int geier_dsig_get_signaturecert_text(geier_context *context,
 				      const char *pse, const char *pin,
 				      char **output, size_t *outlen,
 				      char **fN);
+
+int geier_dsig_sign_cruft_softpse(geier_context *context, xmlDoc **output,
+				  const char *softpse, const char *pin);
 
 #endif

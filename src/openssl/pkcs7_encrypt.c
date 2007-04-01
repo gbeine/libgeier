@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004, 2005  Stefan Siegl <ssiegl@gmx.de>, Germany
+ * Copyright (C) 2004,2005,2007  Stefan Siegl <ssiegl@gmx.de>, Germany
  *               2005        Jürgen Stuber <juergen@jstuber.net>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
@@ -269,9 +269,8 @@ static int p7_set_enc_key(const EVP_CIPHER *cipher,
 	char buf[512];
 	EVP_PKEY *elster_pubkey = X509_get_pubkey((X509 *)x509_cert);
 
-	int len = EVP_PKEY_encrypt(buf,
-				   key,
-				   EVP_CIPHER_key_length(cipher),
+	int len = EVP_PKEY_encrypt((unsigned char *) buf,
+				   key, EVP_CIPHER_key_length(cipher),
 				   elster_pubkey);
 	if(len < 0) {
 		retval = -1;

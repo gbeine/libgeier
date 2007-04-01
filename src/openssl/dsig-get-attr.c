@@ -51,7 +51,8 @@ geier_dsig_get_attr(STACK_OF(X509_ATTRIBUTE) *attrs, const char *want)
 					       val->value.bmpstring->length);
 
 			if(val->type == V_ASN1_OCTET_STRING)
-				return strdup(val->value.bmpstring->data);
+				return strdup((const char *)
+					      val->value.bmpstring->data);
 
 
 			fprintf(stderr, PACKAGE_NAME ": unsupported "

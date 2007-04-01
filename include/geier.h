@@ -39,6 +39,10 @@
 #define GEIER_ERROR_SCHEMA_VALIDATE_DOC  (GEIER_ERROR_BASE+4)
 #define GEIER_ERROR_FIND_NODE_NO_UNIQUE_NODE  (GEIER_ERROR_BASE+5)
 
+#ifndef __attribute_deprecated__
+#define __attribute_deprecated__
+#endif
+
 /**
  * geier_context:
  *
@@ -503,13 +507,35 @@ char *geier_get_clearing_error_text(geier_context *context,
  *
  * Returns: %0 on success, %1 on error.  The signed document is written to
  * @output.
+ *
+ * @deprecated
  */
 int geier_dsig_sign(geier_context *context,
 		    const xmlDoc *input, xmlDoc **output,
-		    const char *softpse_filename, const char *pincode);
+		    const char *softpse_filename, const char *pincode)
+     __attribute_deprecated__;
 
 /**
- * geier_dsig_sign_text
+ * geier_dsig_sign_softpse
+ * @context: a #geier_context.
+ * @input: the XML document that should be signed.
+ * @output: pointer to where the signed XML document should be written to.
+ * @softpse_filename: name of the PKCS&num;12 container file.
+ * @pincode: the pincode.
+ *
+ * Sign the provided Elster-XML document (supplied as @input) with the software
+ * certificate, that is automatically extracted from the PKCS&num;12 file with
+ * the provided filename.  The @pincode is used to decrypt the container.
+ *
+ * Returns: %0 on success, %1 on error.  The signed document is written to
+ * @output.
+ */
+int geier_dsig_sign_softpse(geier_context *context,
+			    const xmlDoc *input, xmlDoc **output,
+			    const char *softpse_filename, const char *pincode);
+
+/**
+ * geier_dsig_sign_softpse_text
  * @context: a #geier_context.
  * @input: the XML document that should be signed, supplied as a C string.
  * @inlen: the length of @input.
@@ -526,10 +552,11 @@ int geier_dsig_sign(geier_context *context,
  * Returns: %0 on success, %1 on error.  The signed document is written to
  * @output, the length of @output is stored to @outlen on success.
  */
-int geier_dsig_sign_text(geier_context *context,
-			 const unsigned char *input, size_t inlen,
-			 unsigned char **output, size_t *outlen,
-			 const char *softpse_filename, const char *pincode);
+int geier_dsig_sign_softpse_text(geier_context *context,
+				 const unsigned char *input, size_t inlen,
+				 unsigned char **output, size_t *outlen,
+				 const char *softpse_filename,
+				 const char *pincode);
 
 GEIER_END_PROTOS
 

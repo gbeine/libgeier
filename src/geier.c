@@ -35,6 +35,10 @@
 
 #include <libxml/tree.h>
 
+#ifdef XMLSEC_CRYPTO_OPENSSL
+#include <openssl/evp.h>
+#endif
+
 #include "find_node.h"
 
 
@@ -334,8 +338,9 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 		unsigned char *obuf;
 		size_t olen;
 
-		if(geier_dsig_sign_text(context, buf, buf_len, &obuf, &olen,
-					softpse_filename, pincode)) {
+		if(geier_dsig_sign_softpse_text(context, buf, buf_len, &obuf,
+						&olen, softpse_filename,
+						pincode)) {
 			fprintf(stderr, "%s: cannot sign document.\n",
 				filename);
 			exitcode = 1;

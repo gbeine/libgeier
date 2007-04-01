@@ -36,6 +36,8 @@ geier_dsig_get_key(geier_context *context,
 		   const char *pin,
 		   const char *keyname)
 {
+	(void) context;
+
 	EVP_PKEY *result = NULL;
 
 	int pinlen = pin ? strlen(pin) : 0;

@@ -593,10 +593,45 @@ int geier_dsig_sign_text(geier_context *context,
 
 
 
+/**
+ * geier_dsig_sign_opensc
+ * @context: a #geier_context.
+ * @input: the XML document that should be signed.
+ * @output: pointer to where the signed XML document should be written to.
+ * @cert_id: the certificate id to use.
+ *
+ * Sign the provided Elster-XML document (supplied as @input) using a
+ * smartcard.  You need to specify the ID of the certificate to use for
+ * signing as @cert_id, as it is returned by pkcs15-tool.
+ *
+ * This function is only available in OpenSSL-based libgeier versions.
+ *
+ * Returns: %0 on success, %1 on error.  The signed document is written to
+ * @output.
+ */
 int geier_dsig_sign_opensc(geier_context *context,
 			   const xmlDoc *input, xmlDoc **output,
 			   unsigned int cert_id);
 
+/**
+ * geier_dsig_sign_opensc_text
+ * @context: a #geier_context.
+ * @input: the XML document that should be signed, supplied as a C string.
+ * @inlen: the length of @input.
+ * @output: pointer to where the resulting XML document should be written to
+ * (as a C string)
+ * @outlen: the length of the buffer @output points to.
+ * @cert_id: the certificate id to use.
+ *
+ * Sign the provided Elster-XML document (supplied as @input) using a
+ * smartcard.  You need to specify the ID of the certificate to use for
+ * signing as @cert_id, as it is returned by pkcs15-tool.
+ *
+ * This function is only available in OpenSSL-based libgeier versions.
+ *
+ * Returns: %0 on success, %1 on error.  The signed document is written to
+ * @output, the length of @output is stored to @outlen on success.
+ */
 int geier_dsig_sign_opensc_text(geier_context *context,
 				const unsigned char *input, size_t inlen,
 				unsigned char **output, size_t *outlen,

@@ -17,6 +17,6 @@ libgeier_wrap.c : libgeier.i
 
 lib_LTLIBRARIES = libguilegeier.la
 libguilegeier_la_SOURCES = libgeier_wrap.c
-libguilegeier_la_LIBADD = $(top_builddir)/src/libgeier.la
+libguilegeier_la_LIBADD = $(top_builddir)/src/libgeier.la @GUILE_LDFLAGS@
 
 CLEANFILES = $(GENERATED)

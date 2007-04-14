@@ -9,7 +9,9 @@ geier_context_free
 
 <SUBSECTION>
 geier_dsig_sign
+geier_dsig_sign_softpse
 geier_dsig_sign_text
+geier_dsig_sign_softpse_text
 geier_send
 geier_send_text
 geier_get_clearing_error

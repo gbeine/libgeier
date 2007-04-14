@@ -180,3 +180,59 @@ int geier_dsig_sign_text(geier_context *context,
 					    output, outlen, pse, pincode);
 }
 
+
+
+int
+geier_dsig_sign_opensc(geier_context *context,
+		       const xmlDoc *input, xmlDoc **output,
+		       unsigned int cert_id)
+{
+	int retval = -1;
+
+	assert(context);
+	assert(input);
+	assert(output);
+
+	*output = xmlCopyDoc((xmlDoc *) input, 1);
+	if(! *output) return -1; /* pre-fail */
+
+	if(geier_dsig_rewrite_datenlieferant(*output)) goto out;
+	if(geier_dsig_rewrite_vorgang(*output)) goto out;
+	if(geier_dsig_sign_add_template(context, *output)) goto out;
+	if(geier_dsig_sign_strip_ns(context, output)) goto out;
+	
+	retval = geier_dsig_sign_cruft_opensc(context, output, cert_id);
+			
+out:
+	if(retval) xmlFreeDoc(*output);
+	return retval;
+}
+
+
+
+int geier_dsig_sign_opensc_text(geier_context *context,
+				const unsigned char *input, size_t inlen,
+				unsigned char **output, size_t *outlen,
+				unsigned int cert_id)
+{
+	int retval;
+	xmlDoc *indoc;
+	xmlDoc *outdoc;
+
+	if((retval = geier_text_to_xml(context, input, inlen, &indoc)))
+		goto out0;
+
+	if((retval = geier_dsig_sign_opensc(context, indoc, &outdoc,
+					    cert_id)))
+		goto out1;
+
+	if((retval = geier_xml_to_text(context, outdoc, output, outlen)))
+		goto out2;
+
+ out2:
+	xmlFreeDoc(outdoc);
+ out1:
+	xmlFreeDoc(indoc);
+ out0:
+	return retval;
+}

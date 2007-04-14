@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005  Stefan Siegl <stesie@brokenpipe.de>, Germany
+ * Copyright (C) 2005,2007  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,16 +26,14 @@
 
 #include <openssl/pem.h>
 
-
+#include <assert.h>
 
 int
-geier_dsig_get_signaturecert_text(geier_context *context,
-				  const char *pse, const char *pin,
-				  char **output, size_t *outlen,
-				  char **fN)
+geier_dsig_X509_to_textcert(geier_context *context, X509 *cert,
+			    char **output, size_t *outlen)
 {
-	X509 *cert = geier_dsig_get_signaturecert(context, pse, pin, fN);
-	if(! cert) return 1;
+	(void) context;
+	assert(cert);
 
 	BIO *bio = BIO_new(BIO_s_mem());
 	if(! bio) {
@@ -51,5 +49,18 @@ geier_dsig_get_signaturecert_text(geier_context *context,
 	BIO_free(bio);
 
 	return 0;
+}
+			    
+
+int
+geier_dsig_get_signaturecert_text(geier_context *context,
+				  const char *pse, const char *pin,
+				  char **output, size_t *outlen,
+				  char **fN)
+{
+	X509 *cert = geier_dsig_get_signaturecert(context, pse, pin, fN);
+	if(! cert) return 1;
+
+	return geier_dsig_X509_to_textcert(context, cert, output, outlen);
 }
 

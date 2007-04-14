@@ -42,8 +42,11 @@ int geier_dsig_rewrite_vorgang(xmlDoc *doc);
 /* 
  * perform actual signing process 
  */
-int geier_dsig_sign_doit(geier_context *context, xmlDoc **output,
-			 const char *softpse, const char *pin);
+int geier_dsig_sign_cruft_softpse(geier_context *context, xmlDoc **output,
+				  const char *softpse, const char *pin);
+int geier_dsig_sign_cruft_opensc(geier_context *context, xmlDoc **output,
+				 unsigned int cert_id);
+
 
 
 #include <openssl/x509.h>
@@ -95,7 +98,7 @@ int geier_dsig_get_signaturecert_text(geier_context *context,
 				      char **output, size_t *outlen,
 				      char **fN);
 
-int geier_dsig_sign_cruft_softpse(geier_context *context, xmlDoc **output,
-				  const char *softpse, const char *pin);
+int geier_dsig_X509_to_textcert(geier_context *context, X509 *cert,
+				char **output, size_t *outlen);
 
 #endif

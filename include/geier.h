@@ -591,6 +591,18 @@ int geier_dsig_sign_text(geier_context *context,
 			 const char *pincode)
 	__attribute__((deprecated));
 
+
+
+int geier_dsig_sign_opensc(geier_context *context,
+			   const xmlDoc *input, xmlDoc **output,
+			   unsigned int cert_id);
+
+int geier_dsig_sign_opensc_text(geier_context *context,
+				const unsigned char *input, size_t inlen,
+				unsigned char **output, size_t *outlen,
+				unsigned int cert_id);
+
+
 GEIER_END_PROTOS
 
 #endif 

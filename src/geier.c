@@ -96,6 +96,7 @@ enum
 	OPT_XSLTIFY = 'x',
 	OPT_ENCRYPT_ONLY = 'e',
 	OPT_SOFTPSE = 's',
+	OPT_OPENSC = 'o',
 
 	OPT_DUMP = 'D' | 0x7f,
 };
@@ -112,6 +113,8 @@ static const struct argp_option geier_cli_options[] =
 	  "encrypt the provided Coala XML only, nothing more", 0 },
 	{ "softpse", OPT_SOFTPSE, "FILE", 0,
 	  "sign using soft-pse certificate data", 0 },
+	{ "opensc", OPT_OPENSC, "CERT-ID", 0,
+	  "use opensc to access smartcard to sign with", 0 },
 	{ "dump", OPT_DUMP, "FILE", 0,
 	  "dump data to a certain file, after sending them to the IRO", 0 },
 
@@ -126,6 +129,7 @@ int config_validate = 0;                /* validate document before sending */
 int config_dry_run = 0;                 /* dry-run, don't send to IRO */
 int config_xsltify = 0;                 /* filter output through xslt */
 int config_encrypt_only = 0;            /* only encrypt the provided xml */
+int config_opensc = 0;                  /* sign with opensc backend */
 char *softpse_filename = NULL;          /* name of software cert file */
 #ifdef XMLSEC_CRYPTO_NSS
 char *pincode = NULL;                   /* pincode */
@@ -209,6 +213,15 @@ static error_t parse_geier_opts(int key, char *arg, struct argp_state *state)
 			return 1;
 		}
 #endif
+		break;
+
+	case OPT_OPENSC:
+		config_opensc = strtol(arg, NULL, 0);
+		if(config_opensc < 1 || config_opensc > 255) {
+			fprintf(stderr, PACKAGE_NAME ": CERT-ID parameter out "
+				"of range.\n");
+			return (exitcode = 1);
+		}
 		break;
 
 	case OPT_DUMP:
@@ -334,7 +347,29 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 		}
 	}
 
-	if(softpse_filename) {
+	/*
+	 * sign the document
+	 */
+	if(config_opensc) {
+		unsigned char *obuf;
+		size_t olen;
+
+		if(geier_dsig_sign_opensc_text(context, buf, buf_len, &obuf,
+					       &olen, config_opensc)) {
+			fprintf(stderr, "%s: cannot sign document.\n",
+				filename);
+			exitcode = 1;
+
+			goto out;
+		}
+
+		free(buf);
+
+		buf = obuf;
+		buf_len = olen;
+	}
+
+	else if(softpse_filename) {
 		unsigned char *obuf;
 		size_t olen;
 

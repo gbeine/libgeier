@@ -1,0 +1,192 @@
+			-*- mode: auto-fill; coding: utf-8 -*-
+
+libgeier - C-Bibliothek zur Kommunikation mit der Elster Clearingstelle
+
+Copyright (C) 2004,2005,2007 Stefan Siegl <ssiegl@gmx.de>, Germany
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        This program is distributed in the hope that it will be useful,
+         but WITHOUT ANY WARRANTY; without even the implied warranty of
+         MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+                 GNU General Public License for more details.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+			Digitale Signaturen mit libgeier
+                     ======================================
+
+a) Präambel
+
+   Ab dem 1. Januar des Jahres 2006 wird seitens der Finanzverwaltung die 
+   Möglichkeit eingeräumt werden, Steueranmeldungen digital signiert
+   abzugeben. Bislang war dies nicht möglich, zukünftig ist dies nicht
+   unbedingt notwendig.
+
+   Seitens der Finanzverwaltung werden drei Möglichkeiten angeboten,
+   wie die Signatur erfolgen kann:
+
+     * mittels Software-Zertifikaten (sog. ELSTER-Basis)
+     * mittels ELSTER-Stick (sog. ELSTER-Spezial)
+     * mittels Signaturkarte (sog. ELSTER-Plus)
+
+   Die libgeier unterstützt gegenwärtig nur ELSTER-Basis und
+   ELSTER-Plus.  Eine Unterstützung von ELSTER-Spezial ist momentan
+   nicht geplant.  Falls Sie jedoch einen ELSTER-Stick besitzen,
+   nehmen Sie bitte mit mir Kontakt auf (E-Mail: stesie@brokenpipe.de),
+   sodass wir klären können, ob eine Unterstützung denkbar ist.
+
+   Die Signatur mittels Smartcard ist gegenwärtig nur mit einer
+   libgeier auf OpenSSL-Basis möglich.  Zur Kommunikation mit der
+   Smartcard wird die PKCS#11-Engine von OpenSSL verwendet.
+
+   Bitte beachten Sie, dass Taxbird gegenwärtig nur das ELSTER-Basis
+   Verfahren unterstützt. 
+
+
+b) Wie komme ich an ein Software-Zertifikat?
+
+   Bei dem Software-Zertifikat. Hierbei handelt es sich um eine
+   mittels PIN-Code geschützte Datei, in der sowohl Ihr sog. privater
+   Schlüssel als auch ein hierzu gehörendes Zertifikat gespeichert
+   sind.  Der private Schlüssel ist grundsätzlich nur Ihnen bekannt
+   und sollte niemals preisgegeben/veröffentlicht werden.  Das
+   Zertifikat ist quasi öffentlich und kann genutzt werden, um zu
+   überprüfen, ob Sie die Daten unterzeichnet haben (es wird zusammen
+   mit den Nutzdaten an die Clearingstelle zurück übermittelt).
+
+   Um nun ein solches Schlüssel/Zertifikat-Paar zu erhalten, wählen
+   Sie zunächst unter http://www.portal.elster.de/ in der Navigation
+   den Menüpunkt "Registrierung" aus. Beachten Sie bitte, dass Sie
+   hierzu einen Java und JavaScript-fähigen Browser benötigen.
+
+   Wählen Sie zunächst die entsprechende Registrierungsart, sprich
+   Software-Zertifikat/ELSTER-Basis. Geben Sie weiter die abgefragten
+   persönlichen Daten ein. Sie erhalten daraufhin eine
+   sog. Aktivierungs-ID mittels E-Mail sowie einen Aktivierungs-Code
+   per `herkömmlicher' Post. (Letzteres kann durchaus zwei Wochen
+   dauern)
+
+   Nachdem Ihnen sowohl Aktivierungs-ID und -Code vorliegen, können
+   Sie das Portal erneut aufrufen und mit der Aktivierung
+   fortfahren.  Zuerst wird hierbei ein vorläufiges Konto und
+   Zertifikat erzeugt.
+
+   Melden Sie sich nun erstmals bei Ihrem noch vorläufigen Konto an,
+   daraufhin wird das vorläufige Zertifikat durch das endgültige
+   ersetzt.  Dieses ist von jetzt ab drei Jahre gültig.
+
+   Im Zuge der Registrierung werden Sie aufgefordert, einen Dateinamen
+   anzugeben, wo der Zertifikat-Container gespeichert werden soll,
+   sowie mit welchem PIN-Code die Datei geschützt werden soll. 
+
+
+c) Daten mittels libgeier mit einem Software-Zertifikat signieren
+
+   Verwenden Sie die Option `--softpse DATEINAME' der
+   Kommandozeilenapplikation `geier'.  Als Dateinamen müssen Sie den
+   Pfad des vom Java-Applet erstellten Zertifikat-Containers angeben.  
+
+   Der PIN-Code wird dann zur Laufzeit der Anwendung abgefragt.
+
+
+d) Daten mittels Smartcard signiert abgeben
+
+   Beachten Sie bitte, dass die Smartcard zunächst im Elster-Portal
+   registriert werden muss.  Das Verfahren läuft ähnlich dem beim
+   Software-Zertifikat ab (nur dass eben kein PKCS#12-Container
+   erstellt wird).
+
+   Zunächst benötigen Sie eine libgeier, die OpenSSL verwendet.
+   (Führen Sie `geier --version' aus, wenn an die Versionsnummer
+   `-openssl' angehängt ist, verwenden Sie eine geeignete Version)
+
+     $ ./configure --with-openssl
+     $ make
+     $ make install
+
+   Die Kommandozeilenapplikation `geier' kennt jetzt die weitere
+   Option `--opensc', welche Sie später benötigen werden.
+
+   Geier verwendet grundsätzlich die OpenSSL-Engine `pkcs11', welche
+   neben OpenSSL separat zu installieren ist.  Das entsprechende
+   Debian-Paket heisst `libengine-pkcs11-openssl'.
+
+   Sodann ist die neue Engine unter dem Namen `pkcs11' zu
+   registrieren.  Fügen Sie hierzu in der Datei /etc/ssl/openssl.cnf
+   folgende Zeilen ein:
+
+     ,----
+     | openssl_conf            = openssl_def
+     | 
+     | [openssl_def]
+     | engines = engine_section
+     |
+     | [engine_section]
+     | pkcs11 = pkcs11_section
+     | 
+     | [pkcs11_section]
+     | engine_id = pkcs11
+     | dynamic_path = /usr/lib/engines/engine_pkcs11.so
+     | MODULE_PATH = /usr/lib/opensc-pkcs11.so
+     | init = 0
+     `----
+   
+   Wenn Sie jetzt OpenSSL im interaktiven Modus starten (ohne
+   Befehlszeilenargumente) muss der Befehl `engine pkcs11' ohne
+   Fehlermeldung abgeschlossen werden.
+
+   
+   Die libgeier nebst Komponenten ist für den Signaturprozess jetzt
+   soweit vorbereitet.  Jetzt müssen Sie noch ermitteln, welches
+   Zertifikat beim Signieren verwendet werden soll.  Führen Sie hierzu
+   bei gesteckter Smartcard
+   
+     $ pkcs15-tool -c
+
+   aus.  Die Ausgabe enthält Einträge analog diesem:
+
+     ,----
+     | X.509 Certificate [DATEV Authentifizierungs Zertifikat]
+     |         Flags    : 0
+     |         Authority: no
+     |         Path     : df02c500
+     |         ID       : 47
+     `----
+  
+   Die Zertifikate tragen eine fortlaufende Nummer, welche in
+   hexadezimaler Schreibweise dargestellt wird (hier 0x47).
+
+   Im Fall der DATEV SmartCard classic ist dieses Zertifikat zur
+   Signatur zu verwenden.  Rufen Sie nun geier mit der ID und der
+   Option `--opensc' auf:
+
+     $ ./geier --validate --opensc 0x47 elster-datensatz.xml
+
+   Falls die Clearingstelle eine Meldung zurück gibt, dass das
+   Zertifikat nicht registriert ist, verwenden Sie evtl. ein anderes,
+   welches in der Ausgabe von pkcs15-tool gelistet war.
+
+
+d) Warum digital signieren?
+
+   Gegenwärtig werden die Daten seitens der Clearingstelle der
+   Finanzverwaltung angenommen, ohne dass es einer Authentifizierung
+   bedarf.  Das heißt, grundsätzlich kann jeder, der Ihre Steuernummer
+   kennt, auch für Sie eine Umsatzsteuervoranmeldung abgeben, die -
+   gewisse Plausibilität vorausgesetzt - seitens Ihres Finanzamtes
+   auch verarbeitet werden wird.  Für Sie bedeutet dies einfach nur
+   Ärger mit eigentlich Unnützem - welcher Scherzbold die Meldung
+   abgegeben hat, ist übrigens nur kaum bis gar nicht heraus zu
+   finden. 
+
+   Wenn Sie nun einmalig eine Steueranmeldung abgeben, die digital
+   signiert ist, wird zukünftig unter Ihrer Steuernummer keine
+   Voranmeldung mehr verarbeitet werden, die nicht signiert ist -
+   zumindest nicht ohne Rückfrage.
+   
+
+
+Vielen Dank, dass Sie Taxbird verwenden!
+
+$Id: README.dsig,v 1.1 2007-04-14 13:49:53 stesie Exp $
+   

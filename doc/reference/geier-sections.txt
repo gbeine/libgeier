@@ -8,10 +8,6 @@ geier_context_new
 geier_context_free
 
 <SUBSECTION>
-geier_dsig_sign
-geier_dsig_sign_softpse
-geier_dsig_sign_text
-geier_dsig_sign_softpse_text
 geier_send
 geier_send_text
 geier_get_clearing_error
@@ -34,6 +30,14 @@ geier_text_to_xml
 geier_format
 geier_validate
 geier_validate_text
+
+<SUBSECTION>
+geier_dsig_sign
+geier_dsig_sign_softpse
+geier_dsig_sign_opensc
+geier_dsig_sign_text
+geier_dsig_sign_softpse_text
+geier_dsig_sign_opensc_text
 
 <SUBSECTION>
 geier_xsltify

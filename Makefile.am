@@ -1,8 +1,8 @@
 SUBDIRS = src include etc config doc tests \
-	@PYTHON_SUBDIR@
+	@PYTHON_SUBDIR@ @GUILE_SUBDIR@
 
 # always include subdir python into dist
-DIST_SUBDIRS= config etc include src python perl doc tests
+DIST_SUBDIRS= config etc include src python perl doc tests guile
 
 # list of modules to build local
 all_local_cruft=

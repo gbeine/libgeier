@@ -29,7 +29,7 @@ AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION, $PACKAGE_BUGREPORT)
 AC_PREREQ(2.59)
 # we need the extra parentheses in order to cope with the comma
 AC_COPYRIGHT([configure.ac Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany])
-AC_REVISION($Revision: 1.41 $)
+AC_REVISION($Revision: 1.42 $)
 
 AC_CONFIG_SRCDIR([libgeier.pc.in])
 
@@ -142,6 +142,22 @@ AC_SUBST(PERL)
 
 
 
+#
+# configure Guile bindings
+#
+AC_ARG_ENABLE(guile, [  --enable-guile          build the guile bindings],
+              [], [enable_guile=no])
+if test "x${enable_guile}" = "xyes"; then
+  GUILE_FLAGS
+  AC_PROG_SWIG
+
+  GUILE_SUBDIR=guile
+else
+  GUILE_SUBDIR=
+fi
+AC_SUBST(GUILE_SUBDIR)
+
+
 # output
 AC_CONFIG_FILES([Makefile 
 		 src/Makefile 
@@ -154,6 +170,7 @@ AC_CONFIG_FILES([Makefile
 		 etc/schemas/Makefile 
 		 config/Makefile
 		 python/Makefile
+		 guile/Makefile
 		 doc/Makefile 
 		 doc/reference/Makefile
 		 doc/reference/version.xml

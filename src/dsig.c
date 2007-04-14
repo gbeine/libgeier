@@ -182,6 +182,7 @@ int geier_dsig_sign_text(geier_context *context,
 
 
 
+#ifdef XMLSEC_CRYPTO_OPENSSL
 int
 geier_dsig_sign_opensc(geier_context *context,
 		       const xmlDoc *input, xmlDoc **output,
@@ -207,13 +208,16 @@ out:
 	if(retval) xmlFreeDoc(*output);
 	return retval;
 }
+#endif /* XMLSEC_CRYPTO_OPENSSL */
 
 
 
-int geier_dsig_sign_opensc_text(geier_context *context,
-				const unsigned char *input, size_t inlen,
-				unsigned char **output, size_t *outlen,
-				unsigned int cert_id)
+#ifdef XMLSEC_CRYPTO_OPENSSL
+int 
+geier_dsig_sign_opensc_text(geier_context *context,
+			    const unsigned char *input, size_t inlen,
+			    unsigned char **output, size_t *outlen,
+			    unsigned int cert_id)
 {
 	int retval;
 	xmlDoc *indoc;
@@ -236,3 +240,4 @@ int geier_dsig_sign_opensc_text(geier_context *context,
  out0:
 	return retval;
 }
+#endif /* XMLSEC_CRYPTO_OPENSSL */

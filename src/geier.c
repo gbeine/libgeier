@@ -96,7 +96,10 @@ enum
 	OPT_XSLTIFY = 'x',
 	OPT_ENCRYPT_ONLY = 'e',
 	OPT_SOFTPSE = 's',
+
+#ifdef XMLSEC_CRYPTO_OPENSSL
 	OPT_OPENSC = 'o',
+#endif
 
 	OPT_DUMP = 'D' | 0x7f,
 };
@@ -113,8 +116,10 @@ static const struct argp_option geier_cli_options[] =
 	  "encrypt the provided Coala XML only, nothing more", 0 },
 	{ "softpse", OPT_SOFTPSE, "FILE", 0,
 	  "sign using soft-pse certificate data", 0 },
+#ifdef XMLSEC_CRYPTO_OPENSSL
 	{ "opensc", OPT_OPENSC, "CERT-ID", 0,
 	  "use opensc to access smartcard to sign with", 0 },
+#endif
 	{ "dump", OPT_DUMP, "FILE", 0,
 	  "dump data to a certain file, after sending them to the IRO", 0 },
 
@@ -129,13 +134,13 @@ int config_validate = 0;                /* validate document before sending */
 int config_dry_run = 0;                 /* dry-run, don't send to IRO */
 int config_xsltify = 0;                 /* filter output through xslt */
 int config_encrypt_only = 0;            /* only encrypt the provided xml */
-int config_opensc = 0;                  /* sign with opensc backend */
 char *softpse_filename = NULL;          /* name of software cert file */
 #ifdef XMLSEC_CRYPTO_NSS
 char *pincode = NULL;                   /* pincode */
 #endif
 #ifdef XMLSEC_CRYPTO_OPENSSL
 char pincode[24];                       /* pincode */
+int config_opensc = 0;                  /* sign with opensc backend */
 #endif
 char *config_dump = NULL;               /* dump received xml doc to a 
 					 * certain file, after sending */
@@ -215,6 +220,7 @@ static error_t parse_geier_opts(int key, char *arg, struct argp_state *state)
 #endif
 		break;
 
+#ifdef XMLSEC_CRYPTO_OPENSSL
 	case OPT_OPENSC:
 		config_opensc = strtol(arg, NULL, 0);
 		if(config_opensc < 1 || config_opensc > 255) {
@@ -223,6 +229,7 @@ static error_t parse_geier_opts(int key, char *arg, struct argp_state *state)
 			return (exitcode = 1);
 		}
 		break;
+#endif
 
 	case OPT_DUMP:
 		config_dump = strdup(arg);
@@ -350,6 +357,7 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 	/*
 	 * sign the document
 	 */
+#ifdef XMLSEC_CRYPTO_OPENSSL
 	if(config_opensc) {
 		unsigned char *obuf;
 		size_t olen;
@@ -368,8 +376,9 @@ static void geier_cli_exec(const char *filename, FILE *handle)
 		buf = obuf;
 		buf_len = olen;
 	}
-
-	else if(softpse_filename) {
+	else 
+#endif /* XMLSEC_CRYPTO_OPENSSL */
+	if(softpse_filename) {
 		unsigned char *obuf;
 		size_t olen;
 

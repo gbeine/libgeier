@@ -32,8 +32,10 @@
 #include <xmlsec/xmlsec.h>
 #include <xmlsec/crypto.h>
 
+#ifdef XMLSEC_CRYPTO_OPENSSL
 #include <openssl/engine.h>
 #include <openssl/conf.h>
+#endif
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -145,12 +147,16 @@ int geier_init(int debug)
 	}
 
 
+#ifdef XMLSEC_CRYPTO_OPENSSL
+#ifndef OPENSSL_NO_ENGINE
 	/*
 	 * initialize OpenSSL, if necessary
 	 */
 	OPENSSL_load_builtin_modules();
 	OPENSSL_config("/etc/ssl/openssl.cnf");
 	ENGINE_load_dynamic();
-	
+#endif /* !OPENSSL_NO_ENGINE */
+#endif /* XMLSEC_CRYPTO_OPENSSL */
+
 	return 0;
 }

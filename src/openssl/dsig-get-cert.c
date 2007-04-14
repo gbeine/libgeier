@@ -36,6 +36,8 @@ geier_dsig_get_cert(geier_context *context,
 		    const char *certname,
 		    char **fn)
 {
+	(void) context;
+
 	char *keyid = NULL;
 	X509 *result = NULL;
 	*fn = NULL;

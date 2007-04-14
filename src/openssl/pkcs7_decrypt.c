@@ -46,7 +46,7 @@ int geier_pkcs7_decrypt(geier_context *context,
 	EVP_CIPHER_CTX ctx;
 	const EVP_CIPHER *ciph;
 	const unsigned char *iv;
-	size_t len;
+	int len;
 	unsigned char *p = (unsigned char *) input;
 	int retval = 0;
 

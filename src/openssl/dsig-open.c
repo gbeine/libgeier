@@ -53,6 +53,8 @@ geier_dsig_verify_mac(geier_context *context,
 		      const char *filename, 
 		      const char *pincode)
 {
+	(void) context;
+
 	PKCS12 *p12 = geier_dsig_open(filename, pincode);
 	if(! p12) return 1;
 

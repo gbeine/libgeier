@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005  Stefan Siegl <ssiegl@gmx.de>, Germany
+ * Copyright (C) 2005,2007  Stefan Siegl <ssiegl@gmx.de>, Germany
  *               2005  Juergen Stuber <juergen@jstuber.net>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
@@ -139,8 +139,14 @@ static int asn1hack_forward(const unsigned char *input, size_t inlen,
 	output += 6; /* maximum length, we may need */
 
 	for(; inlen;) {
-		size_t el_len = input[1] == 0x80 ? inlen :
-			(get_len(&input[1]) + head_len(input));
+		size_t el_len;
+		if(input[1] == 0x80)
+			el_len = inlen;
+		else {
+			int l = get_len(&input[1]);
+			if(l < 0) return -1; /* grrrr. */
+			el_len = (size_t)l + head_len(input);
+		}
 
 		if(! patched && *input == patch[1].asn1_type_id) {
 			/* we need to further cope with this ASN.1 element */
@@ -239,10 +245,10 @@ static void set_len(unsigned char *buf, int new_length)
 		buf[0] = (unsigned char)new_length;
 	}
 	else {
-		int i;
+		size_t i;
 
 		buf[0] = (unsigned char)(0x80 | (llen-1));
-		for (i=1; i<llen; i++) {
+		for (i = 1; i < llen; i++) {
 			buf[i] = (unsigned char)
 				(new_length >> (8 * (llen-i-1))) & 0xff;
 		}
@@ -257,6 +263,8 @@ static int asn1hack_do_octet_string_patch(const unsigned char *input,
 					  size_t *outlen,
 					  const asn1hack_stack *stack_level)
 {
+	(void) stack_level;
+
 	/* at asn1_buf_ptr there should be something like
 	 * 0x80 <LENSPEC> 0x?? 0x??   --> [0] <CONTENT>
 	 *
@@ -268,8 +276,14 @@ static int asn1hack_do_octet_string_patch(const unsigned char *input,
 	assert(input && output && outlen);
 	assert(*input == 0x80);
 
-	size_t content_len =
-		input[1] == 0x80 ? (inlen - 2) : get_len(&input[1]);
+	size_t content_len;
+	if(input[1] == 0x80)
+		content_len = (inlen - 2);
+	else {
+		int l = get_len(&input[1]);
+		if(l < 0) return 1;  /* grmml. */
+		content_len = (size_t) l;
+	}
 
 	/* write outer thingy, i.e. [0] struct ... */
 	output[0] = 0xA0;

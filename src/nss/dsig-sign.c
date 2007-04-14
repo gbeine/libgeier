@@ -46,70 +46,6 @@
 #include "find_node.h"
 #include "dsig.h"
 
-/* XPath expression pointing to the parent node, where to add the signature */
-static char *add_signature_xpathexpr =
-	"/elster:Elster/elster:DatenTeil/elster:Nutzdatenblock"
-	"/elster:NutzdatenHeader/elster:Empfaenger";
-
-
-/*
- * load template and attach to Elster XML document 
- */
-static int 
-geier_dsig_sign_add_template(geier_context *context, xmlDoc *tree)
-{
-	xmlDoc *doc = xmlParseFile(context->xmlsec_tpl_filename);
-	if((doc == NULL) || (xmlDocGetRootElement(doc) == NULL)) {
-		fprintf(stderr, PACKAGE_NAME 
-			": unable to parse template file \"%s\"\n", 
-			context->xmlsec_tpl_filename);
-		return 1;
-	}
-
-	xmlNode *sig_sibling = NULL;
-	if(find_node(tree, add_signature_xpathexpr, &sig_sibling)) {
-		xmlFreeDoc(doc);
-		return 1;
-	}
-
-	xmlAddNextSibling(sig_sibling, xmlDocGetRootElement(doc));
-	xmlFreeDoc(doc);
-	return 0;
-}
-
-
-
-/*
- * strip namespace from `/elster:Elster' node
- */
-static int
-geier_dsig_sign_strip_ns(geier_context *context, xmlDoc **output)
-{
-	/* sic! This is somewhat a hack but I cannot think of another way 
-	 * to implement things. Elster's clearing host obviously does not
-	 * allow us to set the XPath-expression
-	 * `ancestor-or-self::Elster:Nutzdaten' 
-	 * (i.e. it does not support a namespace specification there). 
-	 */
-	xmlNode *rootnode;
-	if(find_node(*output, "/elster:Elster", &rootnode)) 
-		return 1;
-
-	xmlNs *ns = rootnode->ns;
-	rootnode->ns = rootnode->nsDef = NULL;
-	
-	/* reparse the tree; FIXME why doesn't it work without? */
-	unsigned char *buf; size_t buflen;
-	geier_xml_to_text(context, *output, &buf, &buflen);
-	rootnode->ns = rootnode->nsDef = ns; /* restore .. */
-	xmlFreeDoc(*output);                 /* .. and kill everything */
-
-	geier_text_to_xml(context, buf, buflen, output);
-	free(buf);
-
-	return 0;
-}
-
 
 /*
  * assign the private key
@@ -119,6 +55,8 @@ geier_dsig_sign_add_pkey(geier_context *context, xmlSecDSigCtx *ctx,
 			 CERTCertificate *cert
 			 /* const char *softpse, const char *pin */)
 {
+	(void) context;
+
 	int result = 1;
 
 	SECKEYPrivateKey *privkey = NULL;
@@ -248,13 +186,10 @@ geier_dsig_sign_fill_user(geier_context *context, xmlDoc *output,
 
 /* carry out the actual signing process */
 int
-geier_dsig_sign_doit(geier_context *context, xmlDoc **output,
-		     const char *softpse, const char *pin)
+geier_dsig_sign_cruft_softpse(geier_context *context, xmlDoc **output,
+		              const char *softpse, const char *pin)
 {
 	int retval = 1;
-
-	if(geier_dsig_sign_add_template(context, *output)) return 1;
-	if(geier_dsig_sign_strip_ns(context, output)) return 1;
 
 	/* find start node */
 	xmlNode *node = xmlSecFindNode(xmlDocGetRootElement(*output), 

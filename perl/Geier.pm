@@ -88,14 +88,23 @@ sub decrypt($$) {
     return _decrypt($self->{context}, $indata);
 }
 
-sub sign($$$$) {
+sub sign_softpse($$$$) {
     my $self = shift;
     my $indata = shift;
     my $filename = shift;
     my $pincode = shift;
    
-    return _sign($self->{context}, $indata, $filename, $pincode);
+    return _sign_softpse($self->{context}, $indata, $filename, $pincode);
 }
+
+sub sign_opensc($$$$) {
+    my $self = shift;
+    my $indata = shift;
+    my $cert_id = shift;
+   
+    return _sign_opensc($self->{context}, $indata, $cert_id);
+}
+
 
 
 

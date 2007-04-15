@@ -246,7 +246,7 @@ _decrypt(context, indata)
 
 
 SV *
-_sign(context, indata, infn, inpin)
+_sign_softpse(context, indata, infn, inpin)
         Geier_context context;
 	SV *indata;
 	SV *infn;
@@ -265,8 +265,39 @@ _sign(context, indata, infn, inpin)
 	softpse = (const unsigned char *) SvPV(infn, PL_na);
 	pincode = (const unsigned char *) SvPV(inpin, PL_na);
 	
-	result = geier_dsig_sign_text(context, input, inlen, &output, &outlen,
-				      softpse, pincode);
+	result = geier_dsig_sign_softpse_text(context, input, inlen, &output, 
+					      &outlen, softpse, pincode);
+
+	if(result) {
+	    // FIXME, return error number somewhere in $! or so ...
+	    XSRETURN_UNDEF;
+	}
+
+	RETVAL = newSVpvn((char *) output, outlen);
+	free(output);
+	
+    OUTPUT:
+	RETVAL
+
+SV *
+_sign_opensc(context, indata, in_cert_id)
+        Geier_context context;
+	SV *indata;
+	SV *in_cert_id;
+
+    INIT:
+	const unsigned char *input;
+	unsigned int cert_id;
+	unsigned char *output;
+	size_t inlen, outlen;
+	int result;
+	
+    CODE:
+	input = (const unsigned char *) SvPV(indata, inlen);
+	cert_id = SvIV(in_cert_id);
+	
+	result = geier_dsig_sign_opensc_text(context, input, inlen, &output, 
+					     &outlen, cert_id);
 
 	if(result) {
 	    // FIXME, return error number somewhere in $! or so ...

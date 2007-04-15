@@ -46,6 +46,18 @@
 int geier_init(int debug)
 {
 	/*
+	 * perform libgeier initialization only once
+	 */
+	static int initialized = 0;
+
+	if(initialized) {
+		if(debug > geier_debug)
+			geier_debug = debug; /* allow to incr. debug level */
+		return 0;
+	} else
+		initialized ++;
+
+	/*
 	 * set debug level
 	 */
 	geier_debug = debug;

@@ -102,4 +102,9 @@ int geier_dsig_resolve_nickname(geier_context *context,
 				const char **bagname);
 
 
+/* 
+ * perform actual signing process 
+ */
+int geier_dsig_sign_cruft_softpse(geier_context *context, xmlDoc **output,
+				  const char *softpse, const char *pin);
 #endif

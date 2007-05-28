@@ -51,7 +51,7 @@ geier_iso_to_utf8(const unsigned char *input, size_t inlen,
 	
 	while(inlen) {
 		int avail = alloc - (ptr - buffer);
-		if(avail < inlen + 16) {
+		if((size_t) avail < inlen + 16) {
 			int offset = ptr - buffer;
 			avail += 16;
 			alloc = offset + avail;
@@ -64,7 +64,7 @@ geier_iso_to_utf8(const unsigned char *input, size_t inlen,
 		}
 
 		int my_inlen = inlen;
-		size_t nconv = isolat1ToUTF8(ptr, &avail, input, &my_inlen);
+		int nconv = isolat1ToUTF8(ptr, &avail, input, &my_inlen);
 
 		if(nconv < 0) {
 			fprintf(stderr, PACKAGE_NAME ": isolat1ToUTF8 "

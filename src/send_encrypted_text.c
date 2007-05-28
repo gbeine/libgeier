@@ -159,7 +159,7 @@ int geier_send_encrypted_text(geier_context *context,
 		   "User-Agent: " PACKAGE_NAME "/" PACKAGE_VERSION "\r\n"
 		   "Content-Length: %d\r\n"
 		   "Content-Type: text/xml\r\n"
-		   "\r\n", inlen) < 0)
+		   "\r\n", (int) inlen) < 0)
 		goto send_failed;
 
 	free(dest_uri);

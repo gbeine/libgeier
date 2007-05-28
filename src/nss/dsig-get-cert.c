@@ -39,6 +39,8 @@ geier_dsig_get_cert(geier_context *context,
 		    unsigned char usage,
 		    char **fn)
 {
+	(void) context;
+
 	CERTCertificate *result = NULL;
 	SEC_PKCS12DecoderContext *p12 = NULL;
 	CERTCertList *clist = NULL;

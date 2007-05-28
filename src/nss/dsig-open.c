@@ -80,6 +80,10 @@ loser:
 static SECItem *
 geier_nickname_coll_cb(SECItem *old_nick, PRBool *cancel, void *wincx)
 {
+	(void) old_nick;
+	(void) cancel;
+	(void) wincx;
+
 	fprintf(stderr, PACKAGE_NAME ": nickname collisions in PKCS12 "
 		"container.\n");
 	return NULL; /* FIXME */

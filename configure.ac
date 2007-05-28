@@ -21,7 +21,7 @@
 # Process this file with autoconf to produce a configure script.
 
 # FIXME: we need a proper project bugreport email address
-AC_INIT([libgeier],[0.7],[taxbird@taxbird.de])
+AC_INIT([libgeier],[0.8],[taxbird@taxbird.de])
 AC_CONFIG_AUX_DIR(config)
 AM_CONFIG_HEADER(src/config.h)
 AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION, $PACKAGE_BUGREPORT)
@@ -29,7 +29,7 @@ AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION, $PACKAGE_BUGREPORT)
 AC_PREREQ(2.59)
 # we need the extra parentheses in order to cope with the comma
 AC_COPYRIGHT([configure.ac Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany])
-AC_REVISION($Revision: 1.42 $)
+AC_REVISION($Revision: 1.43 $)
 
 AC_CONFIG_SRCDIR([libgeier.pc.in])
 
@@ -89,74 +89,6 @@ LDFLAGS="$LDFLAGS $libxml_LIBS $libxslt_LIBS $xmlsec_LIBS"
 # check for zlib
 AC_CHECK_LIB([z], [deflateBound],,AC_MSG_ERROR([libz library missing.]))
 
-#
-# check for python
-#
-if test "${with_python}" = "no"; then
-    AC_MSG_WARN(Python disabled. Not building Python extension.)
-    PYTHON_SUBDIR=
-else
-    AC_ARG_WITH(python, [  --with-python=PATH      Path to specific Python binary],
-	 PYTHON="$withval")
-    AM_PATH_PYTHON(2.2,[
-	PYTHON_SUBDIR=python
-
-	AC_PROG_SWIG
-	AC_PROG_AWK
-
-	### This overwrites pythondir and pyexecdir from AM_PATH_PYTHON
-	### since those do not honour sys.prefix!
-	AC_SUBST(pythondir)
-	AC_MSG_CHECKING(python libraries are installed into)
-	pythondir=`$PYTHON -c 'import distutils.sysconfig; print distutils.sysconfig.get_python_lib(plat_specific=0, standard_lib=0)'`
-	AC_MSG_RESULT($pythondir)
-
-	AC_MSG_CHECKING(platform-specific python libraries are installed into)
-	pyexecdir=`$PYTHON -c 'import distutils.sysconfig; print distutils.sysconfig.get_python_lib(plat_specific=1, standard_lib=0)'`
-	AC_MSG_RESULT($pyexecdir)
-
-	AC_MSG_CHECKING(checking where for python includes)
-	PYTHON_INCLUDES=`$PYTHON -c 'import distutils.sysconfig; print distutils.sysconfig.get_python_inc(plat_specific=1)'`
-	AC_MSG_RESULT($PYTHON_INCLUDES)
-	])
-
-    if test -z "$PYTHON_INCLUDES" ; then
-	AC_MSG_WARN([Python-includes not found. Not building Python extension.])
-	PYTHON_SUBDIR=
-    fi
-fi
-
-AC_SUBST(PYTHON_SUBDIR)
-AC_SUBST(PYTHON_INCLUDES)
-
-
-
-#
-# configure Perl bindings
-#
-AC_PATH_PROG(PERL, perl, no)
-AC_ARG_ENABLE(perl, [  --disable-perl          do not build the perl module],
-              [], [enable_perl=yes])
-AM_CONDITIONAL(BUILD_PERL, test "x${enable_perl}" = "xyes" -a "x${PERL}" != "xno")
-AC_SUBST(PERL)
-
-
-
-#
-# configure Guile bindings
-#
-AC_ARG_ENABLE(guile, [  --enable-guile          build the guile bindings],
-              [], [enable_guile=no])
-if test "x${enable_guile}" = "xyes"; then
-  GUILE_FLAGS
-  AC_PROG_SWIG
-
-  GUILE_SUBDIR=guile
-else
-  GUILE_SUBDIR=
-fi
-AC_SUBST(GUILE_SUBDIR)
-
 
 # output
 AC_CONFIG_FILES([Makefile 
@@ -169,8 +101,6 @@ AC_CONFIG_FILES([Makefile
 		 etc/stylesheets/Makefile 
 		 etc/schemas/Makefile 
 		 config/Makefile
-		 python/Makefile
-		 guile/Makefile
 		 doc/Makefile 
 		 doc/reference/Makefile
 		 doc/reference/version.xml

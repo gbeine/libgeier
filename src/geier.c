@@ -73,7 +73,8 @@ extern char *SEC_GetPassword(FILE *in, FILE *out, char *msg,
 
 /* documentation, written out when called with either --usage or --help */
 const char *argp_program_version = 
-"Geier Command Line Interface (" PACKAGE_NAME ") " LIBGEIER_DOTTED_VERSION "\n"
+"Geier Command Line Interface (" PACKAGE_NAME ") " LIBGEIER_DOTTED_VERSION
+"-" LIBGEIER_CRYPTO_MODULE "\n"
 "Copyright (C) 2005,2006,2007 Stefan Siegl <stesie@brokenpipe.de>, Germany\n"
 "This is free software; see the source for copying conditions.  There is NO\n"
 "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
@@ -82,11 +83,8 @@ const char *argp_program_version =
 static char *args_doc = "[FILE]...";
 static char *doc =
 "Geier Command Line Interface\v"
-"Please mind that " PACKAGE_NAME " is currently very much in alpha alike "
-"state, therefore please do not expect a tool working perfectly right now.\n\n"
-PACKAGE_NAME " will try to transmit the provided XML document to the German "
-"Inland Revenue Office, optionally validating it against provided XML "
-"schema.";
+PACKAGE_NAME " allows you to validate, apply stylesheets, digitally sign and "
+"send Elster XML documents to the German fiscal authorities.";
 
 /* options our libgeier interface understands, to be used by libc argp */
 enum 
@@ -160,6 +158,7 @@ int main(int argc, char **argv)
 	};
 
 	LIBGEIER_TEST_VERSION;
+	LIBGEIER_TEST_CRYPTO_MODULE;
 
 	if(geier_init(0)) {
 		fprintf(stderr, "%s: unable to initialize libgeier\n", *argv);

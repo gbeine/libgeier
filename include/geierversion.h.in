@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
+ * Copyright (C) 2006,2007  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,12 +27,33 @@
 #define GEIER_END_PROTOS
 #endif
 
+/**
+ * LIBGEIER_CRYPTO_MODULE:
+ *
+ * The crypto module the GEIER library is linked against.  Currently
+ * this is either "nss" or "openssl".
+ */
+#define LIBGEIER_CRYPTO_MODULE "@crypto_module@"
+
+/**
+ * LIBGEIER_TEST_CRYPTO_MODULE
+ *
+ * Check whether the crypto module's name of the installed header file
+ * (used and installed at compile time) matches the name of the installed
+ * library's crypto module.
+ *
+ * If the names don't match, a warning message is written to stderr.
+ */
+#define LIBGEIER_TEST_CRYPTO_MODULE \
+  geier_check_crypto_module(LIBGEIER_CRYPTO_MODULE);
+
 /** 
  * LIBGEIER_DOTTED_VERSION:
  * 
- * The version string of the GEIER library shipping this header file.
+ * The version string of the GEIER library shipping this header file,
+ * not including the crypto module specification.
  */
-#define LIBGEIER_DOTTED_VERSION "@PACKAGE_VERSION@-@crypto_module@"
+#define LIBGEIER_DOTTED_VERSION "@PACKAGE_VERSION@"
 
 /**
  * LIBGEIER_TEST_VERSION:
@@ -54,8 +75,19 @@ GEIER_BEGIN_PROTOS
  * Check whether the version number of the library matches the
  * provided version information.  If not, a warning message is emitted
  * to stderr.
+ *
+ * The name of the crypto module is not compared.
  */
 void geier_check_version(const char *version);
+
+/**
+ * geier_check_crypto_module
+ * @module_name: the crypto module name to check the library against.
+ *
+ * Check whether the crypto module's name of the library matches the 
+ * provided name.  If not, a warning message is emitted to stderr.
+ */
+void geier_check_crypto_module(const char *module_name);
 
 GEIER_END_PROTOS
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006  Stefan Siegl <stesie@brokenpipe.de>, Germany
+ * Copyright (C) 2006,2007  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,5 +35,16 @@ void geier_check_version(const char *version)
 	else if(strcmp(myversion, version)) {
 		fprintf(stderr, "Warning: program compiled against libgeier "
 			"%s using libgeier %s\n\n", version, myversion);
+	}
+}
+
+void geier_check_crypto_module(const char *module_name)
+{
+	const char *mymodule_name = LIBGEIER_CRYPTO_MODULE;
+
+	if(strcmp(mymodule_name, module_name)) {
+		fprintf(stderr, "Warning: program compiled against libgeier "
+		        "with crypto module `%s' using a libgeier based "
+			"on `%s'.\n\n", module_name, mymodule_name);
 	}
 }

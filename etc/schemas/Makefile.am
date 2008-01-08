@@ -21,6 +21,7 @@ schema_DATA = \
 	elster0810_UStA_200601_extern.xsd \
 	elster0810_UStA_200701_extern.xsd \
 	elster0810_UStA_200801_extern.xsd \
+	headerbasis000002.xsd \
 	kontoabfrage.xsd \
 	kontoabfrage_rootish.xsd \
 	lsta_200401.xsd \
@@ -29,9 +30,11 @@ schema_DATA = \
 	lsta_200701.xsd \
 	lsta_200801.xsd \
 	ndh000009.xsd \
+	ndh000010_extern.xsd \
 	registrierung.xsd \
 	registrierung_rootish.xsd \
 	th000007_extern.xsd \
+	th000008_extern.xsd \
 	usta_200401.xsd \
 	usta_200501.xsd \
 	usta_200601.xsd \

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
- *               2005,2006  Stefan Siegl <ssiegl@gmx.de>, Germany
+ *               2005,2006,2008  Stefan Siegl <stesie@brokenpipe.de>, Germany
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -128,16 +128,44 @@ static int validate(char *schema_url, const xmlDoc *doc)
 }
 
 
+static const char *val_th_xpathexpr =
+"/elster:Elster/elster:TransferHeader";
 static const char *val_verfahren_xpathexpr =
 "/elster:Elster/elster:TransferHeader/elster:Verfahren";
 static const char *val_datenart_xpathexpr =
 "/elster:Elster/elster:TransferHeader/elster:DatenArt";
-static const char *val_version_xpathexpr = 
+
+static const char *val_nh_xpathexpr =
+"/elster:Elster/elster:DatenTeil/elster:Nutzdatenblock/elster:NutzdatenHeader";
+static const char *val_anmeldungssteuern_xpathexpr = 
 "/elster:Elster/elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten"
 "/elster:Anmeldungssteuern";
 
 
+/* Return the version specified in the TransferHeader tag,
+   -1 if extraction is not possible. */
+static int validate_get_th_version(geier_context *context, xmlDoc *doc)
+{
+	const char *val_vers =
+		elster_xpath_get_attr(context, doc, val_th_xpathexpr,
+				      "version");
+	if(! val_vers) return -1;
 
+	return atoi(val_vers);
+}
+
+
+/* Return the version specified in the NutzdatenHeader tag,
+   -1 if extraction is not possible. */
+static int validate_get_nh_version(geier_context *context, xmlDoc *doc)
+{
+	const char *val_vers =
+		elster_xpath_get_attr(context, doc, val_nh_xpathexpr,
+				      "version");
+	if(! val_vers) return -1;
+
+	return atoi(val_vers);
+}
 
 
 static char *validate_elsteranmeldung(geier_context *context, xmlDoc *doc)
@@ -156,7 +184,8 @@ static char *validate_elsteranmeldung(geier_context *context, xmlDoc *doc)
 	}
 
 	const char *val_vers =
-		elster_xpath_get_attr(context, doc, val_version_xpathexpr,
+		elster_xpath_get_attr(context, doc,
+				      val_anmeldungssteuern_xpathexpr,
 				      "version");
 	if(! val_vers) goto out1;
 
@@ -164,7 +193,22 @@ static char *validate_elsteranmeldung(geier_context *context, xmlDoc *doc)
      	if(! buf) goto out2;
 
 	xmlBufferCCat(buf, context->schema_dir_url);
-	xmlBufferCCat(buf, "/elster_");
+
+	int th_version = validate_get_th_version(context, doc);
+	int nh_version = validate_get_nh_version(context, doc);
+
+	if(th_version == 7 && nh_version == 9)
+		xmlBufferCCat(buf, "/elster_");
+
+	else if(th_version == 8 && nh_version == 10)
+		xmlBufferCCat(buf, "/elster0810_");
+
+	else {
+		fprintf(stderr, "libgeier: invalid combination of "
+			"TransferHeader(%d) and NutzdatenHeader(%d).\n",
+			th_version, nh_version);
+		goto out3;
+	}
 
 	if(! strcmp(val_datenart, "UStVA"))
 		xmlBufferCCat(buf, "UStA");
@@ -176,6 +220,7 @@ static char *validate_elsteranmeldung(geier_context *context, xmlDoc *doc)
 	xmlBufferCCat(buf, "_extern.xsd");
 	retval = strdup((char *) xmlBufferContent(buf));
 
+out3:
 	xmlBufferFree(buf);
 
 out2:

@@ -791,6 +791,11 @@
         <td valign="bottom" align="right" colspan="1" >
           <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="elster:Kz65" />
         </td>
+        <td valign="bottom" align="center" colspan="1" >--</td>
+        <td valign="bottom" align="right" colspan="1" >
+          <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.16 * elster:Kz51, '0.00')" />
+	  <sup>*)</sup>
+        </td>
       </xsl:if>
     </tr>
 <?XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ?>
@@ -857,6 +862,11 @@
         <td valign="bottom" align="right" colspan="1" >
           <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="elster:Kz39" />
         </td>
+        <td valign="bottom" align="center" colspan="1" >--</td>
+        <td valign="bottom" align="right" colspan="1" >
+          <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.19 * elster:Kz81, '0.00')" />
+	  <sup>*)</sup>
+        </td>
       </xsl:if>
     </tr>
 <?XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ?>
@@ -878,6 +888,11 @@
           <b>
             <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="elster:Kz83" />
           </b>
+        </td>
+        <td valign="bottom" align="center" colspan="1" >--</td>
+        <td valign="bottom" align="right" colspan="1" >
+          <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.07 * elster:Kz86, '0.00')" />
+	  <sup>*)</sup>
         </td>
       </xsl:if>
     </tr>
@@ -913,6 +928,11 @@
         <td valign="bottom" align="right" colspan="1" >26</td>
         <td valign="bottom" align="right" colspan="1" >
           <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="elster:Kz26" />
+        </td>
+        <td valign="bottom" align="center" colspan="1" >--</td>
+        <td valign="bottom" align="right" colspan="1" >
+          <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.16 * elster:Kz54, '0.00')" />
+	  <sup>*)</sup>
         </td>
       </xsl:if>
     </tr>
@@ -1352,6 +1372,11 @@
         <td valign="bottom" align="right" colspan="1" >
           <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="elster:Kz66" />
         </td>
+        <td valign="bottom" align="center" colspan="1" >--</td>
+        <td valign="bottom" align="right" colspan="1" >
+          <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.07 * elster:Kz55, '0.00')" />
+	  <sup>*)</sup>
+        </td>
       </xsl:if>
     </tr>
     <tr>
@@ -1391,6 +1416,11 @@
         <td valign="bottom" align="right" colspan="1" >
           <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="elster:Kz67" />
         </td>
+        <td valign="bottom" align="center" colspan="1" >--</td>
+        <td valign="bottom" align="right" colspan="1" >
+          <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.16 * elster:Kz97, '0.00')" />
+	  <sup>*)</sup>
+        </td>
       </xsl:if>
     </tr>
     <tr>
@@ -1404,6 +1434,11 @@
         <td valign="bottom" align="right" colspan="1" >
           <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="elster:Kz63" />
         </td>
+        <td valign="bottom" align="center" colspan="1" >--</td>
+        <td valign="bottom" align="right" colspan="1" >
+          <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.19 * elster:Kz89, '0.00')" />
+	  <sup>*)</sup>
+        </td>
       </xsl:if>
     </tr>
     <tr>
@@ -1416,6 +1451,11 @@
         <td valign="bottom" align="right" colspan="1" >64</td>
         <td valign="bottom" align="right" colspan="1" >
           <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="elster:Kz64" />
+        </td>
+        <td valign="bottom" align="center" colspan="1" >--</td>
+        <td valign="bottom" align="right" colspan="1" >
+          <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.07 * elster:Kz93, '0.00')" />
+	  <sup>*)</sup>
         </td>
       </xsl:if>
     </tr>
@@ -1579,5 +1619,14 @@
         <br/>
       </td>
     </tr>
+    <xsl:if xmlns:xsl="http://www.w3.org/1999/XSL/Transform" test="elster:Kz51|elster:Kz81|elster:Kz86|elster:Kz54|elster:Kz55|elster:Kz97|elster:Kz89|elster:Kz93" >
+      <tr>
+	<sup>*)</sup> 
+	<xsl:text xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+		Dieser Wert wurde arithmetisch ermittelt und nicht an 
+		die Finanzbehörde übermittelt.
+	</xsl:text>
+      </tr>
+    </xsl:if>
   </xsl:template>
 <!-- ***********************************************************--></xsl:stylesheet>

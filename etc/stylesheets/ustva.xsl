@@ -1,5 +1,9 @@
 <?xml version = '1.0' encoding = 'ISO-8859-1'?>
-<!--Es müssen immer mindestens drei Jahre im Stylesheet möglich sein, wegen der Verzinsung nach § 233a AO. d.h. das aktuelle + die beiden vorangegangenen --><!--Beispiel: Voranmeldungen für 12/2004 können bis zum 31.03.2006 abgegeben werden --><!-- Version 1.2.3  A.M.--><xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" exclude-result-prefixes="elster" version="1.0" >
+<!--Es müssen immer mindestens drei Jahre im Stylesheet möglich sein, wegen der Verzinsung nach § 233a AO. d.h. das aktuelle + die beiden vorangegangenen -->
+<!--Beispiel: Voranmeldungen für 12/2004 können bis zum 31.03.2006 abgegeben werden --><!-- Version 1.2.3  A.M.-->
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+                xmlns:elster="http://www.elster.de/2002/XMLSchema"
+		exclude-result-prefixes="elster" version="1.0" >
   <xsl:output xmlns:xsl="http://www.w3.org/1999/XSL/Transform" method="html" indent="yes" encoding="UTF-8" />
   <xsl:output xmlns:xsl="http://www.w3.org/1999/XSL/Transform" doctype-public="-//W3C//DTD HTML 4.01//EN" />
   <xsl:output xmlns:xsl="http://www.w3.org/1999/XSL/Transform" doctype-system="http://www.w3.org/TR/html4/loose.dtd" />

@@ -30,7 +30,11 @@
 			<xs:documentation xml:lang="DE">Verweis auf http://www.w3.org/TR/2001/REC-xmlschema-2-20010502/#regexs</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="elsterheaderbasis:BaseStringNoLeadingSeparators">
-			<xs:pattern value=".*[\P{Z}]"/>
+			<!-- 
+			  modified for purposes of libgeier, original:
+			  <xs:pattern value=".*[\P{Z}]"/>
+			-->
+			<xs:pattern value=".*[^\p{Z}]"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="BaseStringNoLeadingSeparators">
@@ -39,7 +43,11 @@
 			<xs:documentation xml:lang="DE">Verweis auf http://www.w3.org/TR/2001/REC-xmlschema-2-20010502/#regexs</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="elsterheaderbasis:BaseStringUltraLightSType">
-			<xs:pattern value="[\P{Z}].*"/>
+			<!-- 
+			  modified for purposes of libgeier, original:
+			  <xs:pattern value="[\P{Z}].*"/> 
+			-->
+			<xs:pattern value="[^\p{Z}].*" />
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="BaseStringUltraLightSType">
@@ -48,7 +56,11 @@
 			<xs:documentation xml:lang="DE">Verweis auf http://www.w3.org/TR/2001/REC-xmlschema-2-20010502/#regexs</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:pattern value="([^\n\r\t\p{C}\p{Zl}])*"/>
+			<!-- 
+			  modified for purposes of libgeier, original:
+			  <xs:pattern value="([^\n\r\t\p{C}\p{Zl}])*"/>
+			-->
+			<xs:pattern value="([^\p{C}\p{Zl}])*"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="BundeslandSType">

@@ -1,6 +1,6 @@
 # Configure.ac script for libgeier
 # Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany
-# Copyright (C) 2005,2006,2007  Stefan Siegl <ssiegl@gmx.de>, Germany
+# Copyright (C) 2005,2006,2007,2008  Stefan Siegl <stesie@brokenpipe.de>, Germany
 #
 # This file is part of libgeier.
 # 
@@ -21,26 +21,19 @@
 # Process this file with autoconf to produce a configure script.
 
 # FIXME: we need a proper project bugreport email address
-AC_INIT([libgeier],[0.8],[taxbird@taxbird.de])
+AC_INIT([libgeier],[0.9],[taxbird@taxbird.de])
 AC_CONFIG_AUX_DIR(config)
 AM_CONFIG_HEADER(src/config.h)
 AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION, $PACKAGE_BUGREPORT)
 
 AC_PREREQ(2.59)
-# we need the extra parentheses in order to cope with the comma
-AC_COPYRIGHT([configure.ac Copyright (C) 2005  Juergen Stuber <juergen@jstuber.net>, Germany])
-AC_REVISION($Revision: 1.43 $)
 
 AC_CONFIG_SRCDIR([libgeier.pc.in])
-
-# FIXME: Make conditional on C compilers that know -Wall?
-if test "x$CFLAGS" = "x"; then CFLAGS="-Wall -ggdb"; fi
 
 # checks for programs
 AC_PROG_CC
 
 AC_PROG_LIBTOOL
-AC_PROG_RANLIB
 
 GTK_DOC_CHECK(1.0)
 

@@ -16,11 +16,13 @@ schema_DATA = \
 	elster0810_LStA_200601_extern.xsd \
 	elster0810_LStA_200701_extern.xsd \
 	elster0810_LStA_200801_extern.xsd \
+	elster0810_LStA_200901_extern.xsd \
 	elster0810_UStA_200401_extern.xsd \
 	elster0810_UStA_200501_extern.xsd \
 	elster0810_UStA_200601_extern.xsd \
 	elster0810_UStA_200701_extern.xsd \
 	elster0810_UStA_200801_extern.xsd \
+	elster0810_UStA_200901_extern.xsd \
 	headerbasis000002.xsd \
 	kontoabfrage.xsd \
 	kontoabfrage_rootish.xsd \
@@ -29,6 +31,7 @@ schema_DATA = \
 	lsta_200601.xsd \
 	lsta_200701.xsd \
 	lsta_200801.xsd \
+	lsta_200901.xsd \
 	ndh000009.xsd \
 	ndh000010_extern.xsd \
 	registrierung.xsd \
@@ -39,6 +42,7 @@ schema_DATA = \
 	usta_200501.xsd \
 	usta_200601.xsd \
 	usta_200701.xsd \
-	usta_200801.xsd
+	usta_200801.xsd \
+	usta_200901.xsd
 
 EXTRA_DIST = $(schema_DATA)

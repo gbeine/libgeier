@@ -185,9 +185,7 @@
         </td>
       </tr>
     </table>
-    <table width="1024" >
-      <xsl:call-template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" name="BearbeitungsKennzahlen" />
-    </table>
+    <xsl:call-template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" name="BearbeitungsKennzahlen" />
     <table width="1024" >
       <xsl:if xmlns:xsl="http://www.w3.org/1999/XSL/Transform" test="starts-with(local-name(),'Umsatzsteuervoranmeldung')" >
         <xsl:call-template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" name="UStVA" />
@@ -613,6 +611,7 @@
   </xsl:template>
 <!-- **************** BearbeitungsKennzahlen ********************************* -->  <xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" name="BearbeitungsKennzahlen" >
     <xsl:if xmlns:xsl="http://www.w3.org/1999/XSL/Transform" test="elster:Kz10 | elster:Kz22 " >
+    <table width="1024" >
       <tr>
         <td style="width:65%" />
         <td style="width:15%" />
@@ -651,6 +650,7 @@
           <hr/>
 <!-- ***********************************************************-->        </td>
       </tr>
+    </table>
     </xsl:if>
   </xsl:template>
 <!--******************** UStVA *******************************-->  <xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" name="UStVA" >

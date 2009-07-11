@@ -1360,7 +1360,7 @@
         </xsl:if>
       </tr>
     </xsl:if>
-    <xsl:if xmlns:xsl="http://www.w3.org/1999/XSL/Transform" test="elster:Jahr[starts-with(.,'2007')]|elster:Jahr[starts-with(.,'2008')]" >
+    <xsl:if xmlns:xsl="http://www.w3.org/1999/XSL/Transform" test="elster:Jahr[starts-with(.,'2007')]|elster:Jahr[starts-with(.,'2008')]|elster:Jahr[starts-with(.,'2009')]" >
       <tr>
         <xsl:if xmlns:xsl="http://www.w3.org/1999/XSL/Transform" test="elster:Kz45" >
           <td align="left" colspan="1" >

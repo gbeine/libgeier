@@ -1,1 +1,798 @@
-<?xml version="1.0" encoding="ISO-8859-1"?><!--Es müssen immer mindestens drei Jahre im Stylesheet möglich sein, wegen der Verzinsung nach § 233a AO. d.h. das aktuelle + die beiden vorangegangenen --><!--Beispiel: Voranmeldungen für 12/2004 können bis zum 31.03.2006 abgegeben werden --><!-- Version 1.2.3  A.M.--><xsl:stylesheet version="1.0" exclude-result-prefixes="elster" xmlns:elster="http://www.elster.de/2002/XMLSchema" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"><xsl:output method="html" indent="yes" encoding="UTF-8" /><xsl:output doctype-public="-//W3C//DTD HTML 4.01//EN" /><xsl:output doctype-system="http://www.w3.org/TR/html4/loose.dtd" />	<xsl:template match="elster:Elster">		<html>			<head>				<title>StylesheetLStA</title>				<STYLE TYPE="text/css">				body {   	color: #000000;                      background: #FFFFFF;    padding: 0px;  font-family:helvetica;    font-style:normal;         font-size:10pt;          }     				td {        	 padding: 0px;         	font-style:normal;   	font-size:10pt;          }     				td.kz {           padding: 0px;            font-style:normal;    font-size:10pt;          }     				small {		 padding: 0px;             font-style:normal;    font-size:8pt;          }   				big {		 padding: 0px;             font-weight:bold;     font-size:12pt;          }     				b {			 padding: 0px;              font-weight:bold;      font-size:10pt;          }     							</STYLE>			</head>			<body>				<table width="1024" cellspacing="2">									<tr>					<td align="left">							Übermittelt von:					</td>				</tr>				<tr>					<td align="left" >						<small><xsl:value-of select="elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:DatenLieferant/elster:Name"/></small>					</td>					<td  align="right">						<xsl:choose>							<xsl:when test="elster:TransferHeader/elster:EingangsDatum">								<xsl:text>Eingang auf Server </xsl:text>								<xsl:apply-templates select="elster:TransferHeader/elster:EingangsDatum"/>							</xsl:when>							<xsl:otherwise>Ausdruck vor Übermittlung </xsl:otherwise>						</xsl:choose>					</td>				</tr>				<tr>					<td align="left">						<small><xsl:value-of select="elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:DatenLieferant/elster:Strasse"/></small>					</td>					<td align="right">							<xsl:if test="elster:TransferHeader/elster:TransferTicket">								Transferticket  								<xsl:value-of select="elster:TransferHeader/elster:TransferTicket"/>							</xsl:if>						</td>					</tr>					<tr>						<td align="left" colspan="1">							<small><xsl:value-of select="elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:DatenLieferant/elster:PLZ"/> &#160;							<xsl:value-of select="elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:DatenLieferant/elster:Ort"/></small>						</td>						<td align="right" >							Erstellungsdatum    							<xsl:apply-templates select="elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:Erstellungsdatum"/>						</td>					</tr>					<tr>						<td align="left">							<small><xsl:value-of select="elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:DatenLieferant/elster:Telefon"/></small>						</td>					</tr>					<tr>						<td align="left">							<small><xsl:value-of select="elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:DatenLieferant/elster:Email"/>	</small>									</td>					</tr>			</table>			<table width="1024">					<tr>						<td align="left"><br/>							<big><xsl:if test="elster:TransferHeader[starts-with(elster:Testmerker,'7')]">								*** TESTFALL ***							</xsl:if></big>						</td>						<td align="center"><br/>							<xsl:if test="elster:TransferHeader[starts-with(elster:Testmerker,'7')]">								<big>*** TESTFALL ***</big>							</xsl:if>						</td>						<td align="right"><br/>							<xsl:if test="elster:TransferHeader[starts-with(elster:Testmerker,'7')]">								<big>*** TESTFALL ***</big>							</xsl:if>						</td>					</tr> 					<tr>						<td align="center" colspan="3">							<hr/>				<!-- ***********************************************************-->							<hr/>				<!-- *********************************************************** -->						</td>					</tr>				</table>				<xsl:if test="//elster:Berater | //elster:Mandant | //elster:Unternehmer">										<xsl:call-template name="Berater_Mandant_Unternehmer"/>				</xsl:if>					<xsl:apply-templates select="//elster:Steuerfall/elster:Lohnsteueranmeldung"/>			</body>		</html>	</xsl:template>	<!-- **************** STEUERFALL ********************************* -->	<xsl:template match="//elster:Steuerfall/*">						<table width="1024">					<xsl:if test="contains(elster:Kz09,'*')">							<tr>								<td align="left" colspan="2">									<small>										<xsl:call-template name="Erstellt_von"/>									</small>									<br/>									<p/>								</td>							</tr>					</xsl:if>					<tr>						<td align="left">							<br/>							<xsl:if test="substring-after((substring-after(substring-after(substring-after(substring-after(normalize-space(elster:Kz09),'*'),'*'),'*'),'*')),'*')">								<xsl:text>Unternehmer: </xsl:text>							</xsl:if>						</td>						<td align="right">							<br/>							<xsl:call-template name="Steuernummer"/>						</td>					</tr>					<tr>						<td align="left">							<xsl:if test="substring-after((substring-after(substring-after(substring-after(substring-after(normalize-space(elster:Kz09),'*'),'*'),'*'),'*')),'*')">												<xsl:call-template name="Unternehmer"/>							</xsl:if>							<br/>						</td>					</tr>					<tr>						<td align="center" colspan="2">							<br/>															<p>									<big>										<xsl:text>Lohnsteuer-Anmeldung</xsl:text>									</big>										</p>								<p>									<big>										<xsl:call-template name="Zeitraum"/>										<xsl:value-of select="elster:Jahr"/>									</big>								</p>								<br/>						</td>					</tr>				</table>				<table width="1024">											<xsl:call-template name="BearbeitungsKennzahlen"/>							</table>								<table width="1024">											<xsl:call-template name="LStA"/>									</table>				<table width="1024">											<xsl:call-template name="Hinweise"/>				</table>				</xsl:template>	<!--*****    ERSTELLUNGSDATUM    *******************************-->	<xsl:template match="elster:Erstellungsdatum">		<xsl:value-of select="substring(.,7)"/>		<xsl:text>.</xsl:text>		<xsl:value-of select="substring(.,5,2)"/>		<xsl:text>.</xsl:text>		<xsl:value-of select="substring(.,1,4)"/>	</xsl:template>	<!--******   EINGANGSDATUM   *******************************-->	<xsl:template match="elster:TransferHeader/elster:EingangsDatum">		<xsl:value-of select="substring(.,7,2)"/>		<xsl:text>.</xsl:text>		<xsl:value-of select="substring(.,5,2)"/>		<xsl:text>.</xsl:text>		<xsl:value-of select="substring(.,1,4)"/>		<xsl:text>,</xsl:text>		<xsl:value-of select="substring(.,9,2)"/>		<xsl:text>:</xsl:text>		<xsl:value-of select="substring(.,11,2)"/>		<xsl:text>:</xsl:text>		<xsl:value-of select="substring(.,13,2)"/>	</xsl:template>	<!--*******   ERSTELLT VON   *******************************-->	<xsl:template name="Erstellt_von">		<!-- aus Kz09 -->		<xsl:if test="not(starts-with(normalize-space(substring-after(elster:Kz09,'*')),'*'))">				<xsl:text>Erstellt von: </xsl:text>			</xsl:if>				&#160;		<!-- NameBerater -->		<xsl:value-of select="substring-before(substring-after(elster:Kz09,'*'),'*')"/>		&#160;&#160;&#160;&#160;&#160;&#160;		<!-- Berufsbezeichung -->		<xsl:value-of select="substring-before((substring-after(substring-after(elster:Kz09,'*'),'*')),'*')"/>		&#160;&#160;&#160;&#160;&#160;&#160;		<!-- Vorwahl -->		<xsl:value-of select="substring-before(substring-after((substring-after(substring-after(elster:Kz09,'*'),'*')),'*'),'*')"/>		&#160;		<!-- Rufnummer -->		<xsl:value-of select="substring-before(substring-after((substring-after(substring-after(substring-after(elster:Kz09,'*'),'*'),'*')),'*') ,'*')"/>	</xsl:template>	<!--****  UNTERNEHMER    *****************-->	<xsl:template name="Unternehmer">		<xsl:value-of select="substring-after((substring-after(substring-after(substring-after(substring-after(elster:Kz09,'*'),'*'),'*'),'*')),'*')"/>	</xsl:template>	<!-- Berater Mandant Unternehmer -->	<xsl:template name="Berater_Mandant_Unternehmer">	<table width="1024">						<tr>			<td colspan="2" align="left" valign="top" style="width:50%">					<xsl:if test="//elster:Berater">										<xsl:text>Berater:</xsl:text><br/>					</xsl:if>					<small>								<xsl:if test="//elster:Berater/elster:Bezeichnung">								<xsl:value-of select="//elster:Berater/elster:Bezeichnung"/><br/>								</xsl:if>							<xsl:if test="//elster:Berater/elster:Name | //elster:Berater/elster:Vorname">										<xsl:if test="//elster:Berater/elster:Namensvorsatz">										<xsl:value-of select="//elster:Berater/elster:Namensvorsatz"/> &#160;									</xsl:if>									<xsl:if test="//elster:Berater/elster:Vorname">										<xsl:value-of select="//elster:Berater/elster:Vorname"/>	&#160;									</xsl:if>									<xsl:if test="//elster:Berater/elster:Namenszusatz">										<xsl:value-of select="//elster:Berater/elster:Namenszusatz"/> &#160;									</xsl:if>									<xsl:if test="//elster:Berater/elster:Name">										<xsl:value-of select="//elster:Berater/elster:Name"/>									</xsl:if>			<br/>										</xsl:if>									<xsl:if test="//elster:Berater/elster:Str | //elster:Berater/elster:Hausnummer">												<xsl:if test="//elster:Berater/elster:Str">										<xsl:value-of select="//elster:Berater/elster:Str"/>&#160;									</xsl:if>									<xsl:if test="//elster:Berater/elster:Hausnummer">										<xsl:value-of select="//elster:Berater/elster:Hausnummer"/>&#160;									</xsl:if>									<xsl:if test="//elster:Berater/elster:HNrZusatz">										<xsl:value-of select="//elster:Berater/elster:HNrZusatz"/>									</xsl:if><br/>							</xsl:if>							<xsl:if test="//elster:Berater/elster:AnschriftenZusatz">										<xsl:value-of select="//elster:Berater/elster:AnschriftenZusatz"/><br/>													</xsl:if>							<xsl:if test="//elster:Berater/elster:Ort">																<xsl:choose>										<xsl:when test="//elster:Berater/elster:PLZ">												<xsl:value-of select="//elster:Berater/elster:PLZ"/>&#160;										</xsl:when>										<xsl:otherwise>											<xsl:choose>													<xsl:when test="//elster:Berater/elster:AuslandsPLZ">														<xsl:value-of select="//elster:Berater/elster:AuslandsPLZ"/>&#160;													</xsl:when>													<xsl:otherwise>														<xsl:if test="//elster:Berater/elster:GKPLZ">																				<xsl:value-of select="//elster:Berater/elster:GKPLZ"/>&#160;																		</xsl:if>													</xsl:otherwise>											</xsl:choose>																	</xsl:otherwise>									</xsl:choose>									<xsl:if test="//elster:Berater/elster:Ort">										<xsl:value-of select="//elster:Berater/elster:Ort"/>									</xsl:if><br/>							</xsl:if>							<xsl:if test="//elster:Berater/elster:Land">											<xsl:value-of select="//elster:Berater/elster:Land"/><br/>												</xsl:if>							<xsl:if test="//elster:Berater/elster:Postfach">															<xsl:text>Postfach:</xsl:text>&#160;<xsl:value-of select="//elster:Berater/elster:Postfach"/><br/>												</xsl:if>							<xsl:if test="//elster:Berater/elster:PostfachOrt">															<xsl:choose>											<xsl:when test="//elster:Berater/elster:PostfachPLZ">													<xsl:value-of select="//elster:Berater/elster:PostfachPLZ"/>&#160;											</xsl:when>											<xsl:otherwise>																							<xsl:if test="//elster:Berater/elster:GKPLZ">																				<xsl:value-of select="//elster:Berater/elster:GKPLZ"/>&#160;																	</xsl:if>																												</xsl:otherwise>									</xsl:choose>									<xsl:if test="//elster:Berater/elster:PostfachOrt">											<xsl:value-of select="//elster:Berater/elster:PostfachOrt"/>									</xsl:if><br/>							</xsl:if>							<xsl:if test="//elster:Berater/elster:Telefon">																	<xsl:value-of select="//elster:Berater/elster:Telefon"/><br/>							</xsl:if>							<xsl:if test="//elster:Berater/elster:Email">																								<xsl:value-of select="//elster:Berater/elster:Email"/> <br/>												</xsl:if>						</small><br/>						<xsl:if test="//elster:Mandant">								<xsl:text>Mandant:</xsl:text><br/>						</xsl:if>							<small>								<xsl:if test="//elster:Mandant/elster:Name | //elster:Mandant/elster:Vorname">																			<xsl:if test="//elster:Mandant/elster:Vorname">										 <xsl:value-of select="//elster:Mandant/elster:Vorname"/>&#160;									</xsl:if>																		<xsl:if test="//elster:Mandant/elster:Name">										<xsl:value-of select="//elster:Mandant/elster:Name"/>									</xsl:if>			<br/>									</xsl:if>									<xsl:if test="//elster:Mandant/elster:MandantenNr">																<xsl:text>Mandantennummer:</xsl:text>&#160;<xsl:value-of select="//elster:Mandant/elster:MandantenNr"/><br/>													</xsl:if>								<xsl:if test="//elster:Mandant/elster:Bearbeiterkennzeichen">																<xsl:text>Bearbeiterkennzeichen:</xsl:text>&#160;<xsl:value-of select="//elster:Mandant/elster:Bearbeiterkennzeichen"/><br/>													</xsl:if>						</small>					</td>										<td colspan="2" align="left" valign="top" style="width:50%">					<xsl:if test="//elster:Unternehmer">								<xsl:text>Unternehmer:</xsl:text><br/>					</xsl:if>					<small>								<xsl:if test="//elster:Unternehmer/elster:Bezeichnung">									<xsl:value-of select="//elster:Unternehmer/elster:Bezeichnung"/><br/>								</xsl:if>							<xsl:if test="//elster:Unternehmer/elster:Name | //elster:Unternehmer/elster:Vorname">										<xsl:if test="//elster:Unternehmer/elster:Namensvorsatz">										<xsl:value-of select="//elster:Unternehmer/elster:Namensvorsatz"/> &#160;									</xsl:if>									<xsl:if test="//elster:Unternehmer/elster:Vorname">										<xsl:value-of select="//elster:Unternehmer/elster:Vorname"/>	&#160;									</xsl:if>									<xsl:if test="//elster:Unternehmer/elster:Namenszusatz">										<xsl:value-of select="//elster:Unternehmer/elster:Namenszusatz"/> &#160;									</xsl:if>									<xsl:if test="//elster:Unternehmer/elster:Name">										<xsl:value-of select="//elster:Unternehmer/elster:Name"/>									</xsl:if>			<br/>										</xsl:if>									<xsl:if test="//elster:Unternehmer/elster:Str | //elster:Unternehmer/elster:Hausnummer">												<xsl:if test="//elster:Unternehmer/elster:Str">										<xsl:value-of select="//elster:Unternehmer/elster:Str"/>&#160;									</xsl:if>									<xsl:if test="//elster:Unternehmer/elster:Hausnummer">										<xsl:value-of select="//elster:Unternehmer/elster:Hausnummer"/>&#160;									</xsl:if>									<xsl:if test="//elster:Unternehmer/elster:HNrZusatz">										<xsl:value-of select="//elster:Unternehmer/elster:HNrZusatz"/>									</xsl:if><br/>							</xsl:if>							<xsl:if test="//elster:Unternehmer/elster:AnschriftenZusatz">									<xsl:value-of select="//elster:Unternehmer/elster:AnschriftenZusatz"/><br/>													</xsl:if>							<xsl:if test="//elster:Unternehmer/elster:Ort">															<xsl:choose>									<xsl:when test="//elster:Unternehmer/elster:PLZ">										<xsl:value-of select="//elster:Unternehmer/elster:PLZ"/>&#160;									</xsl:when>									<xsl:otherwise>										<xsl:choose>											<xsl:when test="//elster:Unternehmer/elster:AuslandsPLZ">												<xsl:value-of select="//elster:Unternehmer/elster:AuslandsPLZ"/>&#160;											</xsl:when>											<xsl:otherwise>												<xsl:if test="//elster:Unternehmer/elster:GKPLZ">																		<xsl:value-of select="//elster:Unternehmer/elster:GKPLZ"/>&#160;																</xsl:if>											</xsl:otherwise>										</xsl:choose>																</xsl:otherwise>								</xsl:choose>								<xsl:if test="//elster:Unternehmer/elster:Ort">										<xsl:value-of select="//elster:Unternehmer/elster:Ort"/>								</xsl:if><br/>					</xsl:if>					<xsl:if test="//elster:Unternehmer/elster:Land">										<xsl:value-of select="//elster:Unternehmer/elster:Land"/><br/>										</xsl:if>					<xsl:if test="//elster:Unternehmer/elster:Postfach">														<xsl:text>Postfach:</xsl:text>&#160;<xsl:value-of select="//elster:Unternehmer/elster:Postfach"/><br/>										</xsl:if>					<xsl:if test="//elster:Unternehmer/elster:PostfachOrt">														<xsl:choose>									<xsl:when test="//elster:Unternehmer/elster:PostfachPLZ">										<xsl:value-of select="//elster:Unternehmer/elster:PostfachPLZ"/>&#160;									</xsl:when>									<xsl:otherwise>																				<xsl:if test="//elster:Unternehmer/elster:GKPLZ">																	<xsl:value-of select="//elster:Unternehmer/elster:GKPLZ"/>&#160;														</xsl:if>																										</xsl:otherwise>								</xsl:choose>								<xsl:if test="//elster:Unternehmer/elster:PostfachOrt">										<xsl:value-of select="//elster:Unternehmer/elster:PostfachOrt"/>								</xsl:if><br/>					</xsl:if>					<xsl:if test="//elster:Unternehmer/elster:Telefon">																<xsl:value-of select="//elster:Unternehmer/elster:Telefon"/><br/>					</xsl:if>					<xsl:if test="//elster:Unternehmer/elster:Email">														<xsl:value-of select="//elster:Unternehmer/elster:Email"/> <br/>										</xsl:if>					</small><br/>				</td>				</tr>						</table>	</xsl:template>		<!--****  STEUERNUMMER    *****************-->	<xsl:template name="Steuernummer">		<xsl:text>Steuernummer:  </xsl:text>		<xsl:if test="elster:Steuernummer[starts-with(.,'10')]">			<xsl:call-template name="StNr335"/>		</xsl:if>		<xsl:if test="elster:Steuernummer[starts-with(.,'11')]">			<xsl:call-template name="StNr235"/>		</xsl:if>		<xsl:if test="elster:Steuernummer[starts-with(.,'21')]">			<xsl:call-template name="StNr235a"/>		</xsl:if>		<xsl:if test="elster:Steuernummer[starts-with(.,'22')]">			<xsl:call-template name="StNr235"/>		</xsl:if>		<xsl:if test="elster:Steuernummer[starts-with(.,'23')]">			<xsl:call-template name="StNr235"/>		</xsl:if>		<xsl:if test="elster:Steuernummer[starts-with(.,'24')]">			<xsl:call-template name="StNr235a"/>		</xsl:if>		<xsl:if test="elster:Steuernummer[starts-with(.,'26')]">			<xsl:call-template name="StNr0235"/>		</xsl:if>		<xsl:if test="elster:Steuernummer[starts-with(.,'27')]">			<xsl:call-template name="StNr2341"/>		</xsl:if>		<xsl:if test="elster:Steuernummer[starts-with(.,'28')]">			<xsl:call-template name="StNr55"/>		</xsl:if>		<xsl:if test="elster:Steuernummer[starts-with(.,'3')]">			<xsl:call-template name="StNr335"/>		</xsl:if>		<xsl:if test="elster:Steuernummer[starts-with(.,'4')]">			<xsl:call-template name="StNr335"/>		</xsl:if>		<xsl:if test="elster:Steuernummer[starts-with(.,'5')]">			<xsl:call-template name="StNr344"/>		</xsl:if>		<xsl:if test="elster:Steuernummer[starts-with(.,'9')]">			<xsl:call-template name="StNr335"/>		</xsl:if>	</xsl:template>	<!-- Steuernummern formatieren -->	<xsl:template name="StNr0235">		<xsl:text>0</xsl:text>		<xsl:value-of select="substring(elster:Steuernummer,3,2)"/>		<xsl:text> </xsl:text>		<xsl:value-of select="substring(elster:Steuernummer,6,3)"/>		<xsl:text> </xsl:text>		<xsl:value-of select="substring(elster:Steuernummer,9,5)"/>	</xsl:template>	<xsl:template name="StNr2341">		<xsl:value-of select="substring(elster:Steuernummer,3,2)"/>		<xsl:text>/</xsl:text>		<xsl:value-of select="substring(elster:Steuernummer,6,3)"/>		<xsl:text>/</xsl:text>		<xsl:value-of select="substring(elster:Steuernummer,9,4)"/>		<xsl:text>/</xsl:text>		<xsl:value-of select="substring(elster:Steuernummer,13,1)"/>	</xsl:template>	<xsl:template name="StNr235">		<xsl:value-of select="substring(elster:Steuernummer,3,2)"/>		<xsl:text>/</xsl:text>		<xsl:value-of select="substring(elster:Steuernummer,6,3)"/>		<xsl:text>/</xsl:text>		<xsl:value-of select="substring(elster:Steuernummer,9,5)"/>	</xsl:template>	<xsl:template name="StNr235a">		<xsl:value-of select="substring(elster:Steuernummer,3,2)"/>		<xsl:text> </xsl:text>		<xsl:value-of select="substring(elster:Steuernummer,6,3)"/>		<xsl:text> </xsl:text>		<xsl:value-of select="substring(elster:Steuernummer,9,5)"/>	</xsl:template>	<xsl:template name="StNr344">		<xsl:value-of select="substring(elster:Steuernummer,2,3)"/>		<xsl:text>/</xsl:text>		<xsl:value-of select="substring(elster:Steuernummer,6,4)"/>		<xsl:text>/</xsl:text>		<xsl:value-of select="substring(elster:Steuernummer,10,4)"/>	</xsl:template>	<xsl:template name="StNr335">		<xsl:value-of select="substring(elster:Steuernummer,2,3)"/>		<xsl:text>/</xsl:text>		<xsl:value-of select="substring(elster:Steuernummer,6,3)"/>		<xsl:text>/</xsl:text>		<xsl:value-of select="substring(elster:Steuernummer,9,5)"/>	</xsl:template>	<xsl:template name="StNr55">		<xsl:value-of select="substring(elster:Steuernummer,3,2)"/>		<xsl:value-of select="substring(elster:Steuernummer,6,3)"/>		<xsl:text>/</xsl:text>		<xsl:value-of select="substring(elster:Steuernummer,9,5)"/>	</xsl:template>	<!-- Zeitraume aufloesen -->	<xsl:template name="Zeitraum">		<xsl:if test="elster:Zeitraum[starts-with(.,'41')]">			1. Kalendervierteljahr 		</xsl:if>		<xsl:if test="elster:Zeitraum[starts-with(.,'42')]">			2. Kalendervierteljahr 		</xsl:if>		<xsl:if test="elster:Zeitraum[starts-with(.,'43')]">			3. Kalendervierteljahr 		</xsl:if>		<xsl:if test="elster:Zeitraum[starts-with(.,'44')]">			4. Kalendervierteljahr 		</xsl:if>		<xsl:if test="elster:Zeitraum[starts-with(.,'01')]">			Januar 		</xsl:if>		<xsl:if test="elster:Zeitraum[starts-with(.,'02')]">			Februar 		</xsl:if>		<xsl:if test="elster:Zeitraum[starts-with(.,'03')]">			März  		</xsl:if>		<xsl:if test="elster:Zeitraum[starts-with(.,'04')]">			April  		</xsl:if>		<xsl:if test="elster:Zeitraum[starts-with(.,'05')]">			Mai 		</xsl:if>		<xsl:if test="elster:Zeitraum[starts-with(.,'06')]">			Juni 		</xsl:if>		<xsl:if test="elster:Zeitraum[starts-with(.,'07')]">			Juli 		</xsl:if>		<xsl:if test="elster:Zeitraum[starts-with(.,'08')]">			August 		</xsl:if>		<xsl:if test="elster:Zeitraum[starts-with(.,'09')]">			September 		</xsl:if>		<xsl:if test="elster:Zeitraum[starts-with(.,'10')]">			Oktober 		</xsl:if>		<xsl:if test="elster:Zeitraum[starts-with(.,'11')]">			November 		</xsl:if>		<xsl:if test="elster:Zeitraum[starts-with(.,'12')]">			Dezember 		</xsl:if>		<xsl:if test="elster:Zeitraum[starts-with(.,'19')]">			Kalenderjahr 		</xsl:if>			</xsl:template>	<!-- **************** BearbeitungsKennzahlen ********************************* -->	<xsl:template name="BearbeitungsKennzahlen">				<tr>			<td colspan="2">				<table width="1024" cellspacing="3">					<tr>						<td style="width:70%"/>						<td style="width:5%" align="center">Kz</td>						<td style="width:25%" align="right">Wert</td>					</tr>					<tr>						<xsl:if test="elster:Kz10">							<td colspan="1" align="left">								<br/>								<xsl:text>  Berichtigte Anmeldung </xsl:text>							</td>							<td colspan="1" align="center" valign="bottom">10</td>							<td colspan="1" align="right" valign="bottom">								<xsl:value-of select="elster:Kz10"/>							</td>						</xsl:if>					</tr>										<tr>												<xsl:if test="elster:Kz86">							<td colspan="1" align="left">								<br/>								<xsl:text>Zahl der Arbeitnehmer  </xsl:text>															</td>							<td colspan="1" align="center" valign="bottom">86</td>							<td colspan="1" align="right" valign="bottom">								<xsl:value-of select="elster:Kz86"/>							</td>						</xsl:if>					</tr>					<tr>						<td align="center" colspan="5">							<br/>							<hr/>				<!-- ***********************************************************-->						</td>					</tr>				</table>			</td>		</tr>	</xsl:template>	<!-- **************** LStA ********************************* -->	<xsl:template name="LStA">											<tr>						<td style="width:70%"/>						<td style="width:5%" align="center">Kz</td>						<td style="width:25%" align="right">Betrag</td>					</tr>					<xsl:choose>						<xsl:when test="elster:Jahr[starts-with(.,'2004')]|elster:Jahr[starts-with(.,'2005')]|elster:Jahr[starts-with(.,'2006')]">														<tr>								<xsl:if test="elster:Kz42">									<td colspan="1" align="left">										<br/>Lohnsteuer																		</td>									<td colspan="1" align="center" valign="bottom">42</td>									<td colspan="1" align="right" valign="bottom">										<xsl:value-of select="elster:Kz42"/>									</td>								</xsl:if>							</tr>						</xsl:when>						<xsl:otherwise> <!-- ab 2007 -->							<tr>								<xsl:if test="elster:Kz42">									<td colspan="1" align="left">										<br/>Summe der einzubehaltenen Lohnsteuer																	</td>									<td colspan="1" align="center" valign="bottom">42</td>									<td colspan="1" align="right" valign="bottom">										<xsl:value-of select="elster:Kz42"/>									</td>								</xsl:if>							</tr>						</xsl:otherwise>					</xsl:choose>										<xsl:if test="elster:Kz41">						<tr>							<td colspan="1" align="left">								<br/>								Summe der pauschalen Lohnsteuer							</td>							<td colspan="1" align="center" valign="bottom">41</td>							<td colspan="1" align="right" valign="bottom">								<xsl:value-of select="elster:Kz41"/>							</td>						</tr>						</xsl:if>						<xsl:if test="elster:Kz43">						<tr>							<td colspan="1" align="left">								<br/>								abzüglich an Arbeitnehmer ausgezahltes Kindergeld							</td>							<td colspan="1" align="center" valign="bottom">43</td>							<td colspan="1" align="right" valign="bottom">								<xsl:value-of select="elster:Kz43"/>							</td>						</tr>						</xsl:if>						<xsl:if test="elster:Kz46">						<tr>							<td colspan="1" align="left">								<br/>								abzüglich an Arbeitnehmer ausgezahlte Bergmannsprämien							</td>							<td colspan="1" align="center" valign="bottom">46</td>							<td colspan="1" align="right" valign="bottom">								<xsl:value-of select="elster:Kz46"/>							</td>						</tr>						</xsl:if>						<xsl:if test="elster:Kz33">						<tr>							<td colspan="1" align="left">								<br/>								abzüglich Kürzungsbetrag für Besatzungsmitglieder von Handelsschiffen							</td>							<td colspan="1" align="center" valign="bottom">33</td>							<td colspan="1" align="right" valign="bottom">								<xsl:value-of select="elster:Kz33"/>							</td>						</tr>						</xsl:if>										<xsl:if test="elster:Kz48">						<tr>							<td colspan="1" align="left">								<br/>								<b>									verbleiben								</b>							</td>							<td colspan="1" align="center" valign="bottom">48</td>							<td colspan="1" align="right" valign="bottom">								<b><xsl:value-of select="elster:Kz48"/></b>							</td>						</tr>						</xsl:if>											<xsl:if test="elster:Kz49">						<tr>							<td colspan="1" align="left">								<br/>								Solidaritätszuschlag							</td>							<td colspan="1" align="center" valign="bottom">49</td>							<td colspan="1" align="right" valign="bottom">								<xsl:value-of select="elster:Kz49"/>							</td>						</tr>						</xsl:if>						<xsl:if test="elster:Kz47">						<tr>							<td colspan="1" align="left">								<br/>								pauschale Kirchensteuer im vereinfachten Verfahren							</td>							<td colspan="1" align="center" valign="bottom">47</td>							<td colspan="1" align="right" valign="bottom">								<xsl:value-of select="elster:Kz47"/>							</td>						</tr>						</xsl:if>						<xsl:if test="elster:Kz61">						<tr>							<td colspan="1" align="left">								<br/>								Evangelische Kirchensteuer							</td>							<td colspan="1" align="center" valign="bottom">61</td>							<td colspan="1" align="right" valign="bottom">								<xsl:value-of select="elster:Kz61"/>							</td>						</tr>						</xsl:if>						<xsl:if test="elster:Kz62">						<tr>							<td colspan="1" align="left">								<br/>								Römisch-Katholische Kirchensteuer							</td>							<td colspan="1" align="center" valign="bottom">62</td>							<td colspan="1" align="right" valign="bottom">								<xsl:value-of select="elster:Kz62"/>							</td>						</tr>						</xsl:if>						<xsl:if test="elster:Kz63">						<tr>							<td colspan="1" align="left">								<br/>								Altkatholische Kirchensteuer							</td>							<td colspan="1" align="center" valign="bottom">63</td>							<td colspan="1" align="right" valign="bottom">								<xsl:value-of select="elster:Kz63"/>							</td>						</tr>						</xsl:if>						<xsl:if test="elster:Kz64">						<tr>							<xsl:call-template name="Kz64"/>						</tr>						</xsl:if>											<xsl:if test="elster:Kz65">						<tr>							<td colspan="1" align="left">								<br/>								Freireligiöse Gemeinde Mainz							</td>							<td colspan="1" align="center" valign="bottom">65</td>							<td colspan="1" align="right" valign="bottom">								<xsl:value-of select="elster:Kz65"/>							</td>						</tr>						</xsl:if>										<xsl:if test="elster:Kz66">						<tr>							<td colspan="1" align="left">								<br/>								Freireligiöse Gemeinde Offenbach/M.							</td>							<td colspan="1" align="center" valign="bottom">66</td>							<td colspan="1" align="right" valign="bottom">								<xsl:value-of select="elster:Kz66"/>							</td>						</tr>						</xsl:if>						<xsl:if test="elster:Kz67">						<tr>							<td colspan="1" align="left">								<br/>								Kirchensteuer der Freireligiösen Landesgemeinde Baden							</td>							<td colspan="1" align="center" valign="bottom">67</td>							<td colspan="1" align="right" valign="bottom">								<xsl:value-of select="elster:Kz67"/>							</td>						</tr>						</xsl:if>											<xsl:if test="elster:Kz68">						<tr>							<xsl:call-template name="Kz68"/>						</tr>						</xsl:if>						<xsl:if test="elster:Kz69">						<tr>							<td colspan="1" align="left">								<br/>								Beiträge zur Angestelltenkammer							</td>							<td colspan="1" align="center" valign="bottom">69</td>							<td colspan="1" align="right" valign="bottom">								<xsl:value-of select="elster:Kz69"/>							</td>						</tr>						</xsl:if>						<xsl:if test="elster:Kz70">						<tr>							<td colspan="1" align="left">								<br/>								Beiträge zur Arbeitskammer							</td>							<td colspan="1" align="center" valign="bottom">70</td>							<td colspan="1" align="right" valign="bottom">								<xsl:value-of select="elster:Kz70"/>							</td>						</tr>						</xsl:if>											<xsl:if test="elster:Kz72">						<tr>							<td colspan="1" align="left">								<br/>								Freie Religionsgemeinschaft Alzey							</td>							<td colspan="1" align="center" valign="bottom">72</td>							<td colspan="1" align="right" valign="bottom">								<xsl:value-of select="elster:Kz72"/>							</td>						</tr>						</xsl:if>							<xsl:if test="elster:Kz73">						<tr>							<td colspan="1" align="left">								<br/>								Kirchensteuer der Israelitischen Religionsgemeinschaft Württembergs							</td>							<td colspan="1" align="center" valign="bottom">73</td>							<td colspan="1" align="right" valign="bottom">								<xsl:value-of select="elster:Kz73"/>							</td>						</tr>						</xsl:if>						<xsl:if test="elster:Kz74">						<tr>							<td colspan="1" align="left">								<br/>								Israelitische Kultussteuer der kultusberechtigten Gemeinden							</td>							<td colspan="1" align="center" valign="bottom">74</td>							<td colspan="1" align="right" valign="bottom">								<xsl:value-of select="elster:Kz74"/>							</td>						</tr>						</xsl:if>						<xsl:if test="elster:Kz76">						<tr>							<td colspan="1" align="left">								<br/>								Kirchensteuer-lt/rf (ev)							</td>							<td colspan="1" align="center" valign="bottom">76</td>							<td colspan="1" align="right" valign="bottom">								<xsl:value-of select="elster:Kz76"/>							</td>						</tr>						</xsl:if>						<xsl:if test="elster:Kz77">						<tr>							<td colspan="1" align="left">								<br/>								Kirchensteuer-rk/ak							</td>							<td colspan="1" align="center" valign="bottom">77</td>							<td colspan="1" align="right" valign="bottom">								<xsl:value-of select="elster:Kz77"/>							</td>						</tr>						</xsl:if>						<xsl:if test="elster:Kz78">						<tr>							<td colspan="1" align="left">								<br/>								Kirchensteuer der Israelitischen Religionsgemeinschaft Baden							</td>							<td colspan="1" align="center" valign="bottom">78</td>							<td colspan="1" align="right" valign="bottom">								<xsl:value-of select="elster:Kz78"/>							</td>						</tr>						</xsl:if>						<xsl:if test="elster:Kz83">						<tr>							<td colspan="1" align="left">								<br/><b>									Gesamtbetrag								</b>							</td>							<td colspan="1" align="center" valign="bottom">83</td>							<td colspan="1" align="right" valign="bottom">								<b><xsl:value-of select="elster:Kz83"/></b>							</td>						</tr>						</xsl:if>						<xsl:if test="elster:Kz29   |  elster:Kz26">						<tr>							<td colspan="5" align="left">								<br/>								<big>										Sonstige Angaben								</big>							</td>						</tr>						</xsl:if>						<xsl:if test="elster:Kz29">						<tr>							<td colspan="1" align="left">								<br/>								Verrechnung des Erstattungsbetrages erwünscht/ Erstattungsbetrag ist abgetreten							</td>							<td colspan="1" align="center" valign="bottom">29</td>							<td colspan="1" align="left" valign="bottom">								<xsl:value-of select="elster:Kz29"/>							</td>						</tr>						</xsl:if>						<xsl:if test="elster:Kz26">						<tr>							<td colspan="1" align="left">								<br/>								Die Einzugsermächtigung wird ausnahmsweise (z.B. wegen Verrechnungswünschen) für diesen Anmeldungszeitraum widerrufen							</td>							<td colspan="1" align="center" valign="bottom">26</td>							<td colspan="1" align="left" valign="bottom">								<xsl:value-of select="elster:Kz26"/>							</td>						</tr>						</xsl:if>									</xsl:template>	<!-- **************** Kz64 ********************************* -->	<xsl:template name="Kz64">		<xsl:if test="elster:Steuernummer[starts-with(.,'9')]">			<td colspan="1" align="left">				<br/>				Israelitische Bekenntnissteuer			</td>			<td colspan="1" align="center" valign="bottom">64</td>			<td colspan="1" align="right" valign="bottom">						<xsl:value-of select="elster:Kz64"/>			</td>		</xsl:if>		<xsl:if test="elster:Steuernummer[starts-with(.,'26')]">			<td colspan="1" align="left">				<br/>				Israelitische Kultussteuer Frankfurt			</td>			<td colspan="1" align="center" valign="bottom">64</td>			<td colspan="1" align="right" valign="bottom">				<xsl:value-of select="elster:Kz64"/>			</td>		</xsl:if>		<xsl:if test="elster:Steuernummer[starts-with(.,'10')]">			<td colspan="1" align="left">				<br/>				Israelitische Kultussteuer			</td>				<td colspan="1" align="center" valign="bottom">64</td>			<td colspan="1" align="right" valign="bottom">				<xsl:value-of select="elster:Kz64"/>			</td>								</xsl:if>		<xsl:if test="elster:Steuernummer[starts-with(.,'27')] | elster:Steuernummer[starts-with(.,'5')] | elster:Steuernummer[starts-with(.,'22')] | elster:Steuernummer[starts-with(.,'21')]">			<td colspan="1" align="left">				<br/>				Jüdische Kultussteuer			</td>			<td colspan="1" align="center" valign="bottom">64</td>			<td colspan="1" align="right" valign="bottom">				<xsl:value-of select="elster:Kz64"/>			</td>		</xsl:if>	</xsl:template>	<!-- **************** Kz68 ********************************* -->	<xsl:template name="Kz68">		<xsl:if test="elster:Steuernummer[starts-with(.,'24')]">			<td colspan="1" align="left">				<br/>					Beiträge zur Arbeitnehmerkammer			</td>			<td colspan="1" align="center" valign="bottom">68</td>			<td colspan="1" align="right" valign="bottom">				<xsl:value-of select="elster:Kz68"/>			</td>					</xsl:if>		<xsl:if test="elster:Steuernummer[starts-with(.,'27')]">			<td colspan="1" align="left">				<br/>					Freireligiöse Landesgemeinde Pfalz			</td>			<td colspan="1" align="center" valign="bottom">68</td>			<td colspan="1" align="right" valign="bottom">				<xsl:value-of select="elster:Kz68"/>			</td>						</xsl:if>	</xsl:template>	<!-- **************** Hinweise ********************************* -->	<xsl:template name="Hinweise">	<tr>		<td>			<hr/><!-- ***********************************************************-->			<br/>			<br/>		</td>	</tr>				<tr>		<td><big><xsl:text>Hinweis zu Säumniszuschlägen</xsl:text>	</big>							<br/>			<br/>		</td>	</tr>		<tr>			<td>			<xsl:text>			Bitte beachten Sie, dass bei Zahlung der angemeldeten Steuer durch Hingabe eines Schecks erst der dritte Tag nach dem Tag des Eingangs des Schecks bei der zuständigen Finanzkasse als Einzahlungstag gilt (§ 224 Abs. 2 Nr. 1 Abgabenordnung). Fällt der dritte Tag auf einen Samstag, einen Sonntag oder einen gesetzlichen Feiertag, gilt die Zahlung erst am nächstfolgenden Werktag als bewirkt. Gilt die Zahlung der angemeldeten Steuer durch Hingabe eines Schecks erst nach dem Fälligkeitstag als bewirkt, fallen Säumniszuschläge an (§ 240 Abs. 3 Abgabenordnung). Um diese zu vermeiden wird empfohlen, am Lastschriftverfahren teilzunehmen. Die Teilnahme am Lastschriftverfahren ist jederzeit widerruflich und völlig risikolos. Sollte einmal ein Betrag zu Unrecht abgebucht werden, können Sie diese Abbuchung bei Ihrer Bank innerhalb von 6 Wochen stornieren lassen. Zur Teilnahme am Lastschriftverfahren setzen Sie sich bitte mit Ihrem Finanzamt in Verbindung.			</xsl:text>			<br/>			<br/>			<br/>			<br/>			</td>		</tr>		<tr>		<td>			<b>				<xsl:text>		Dieses Übertragungsprotokoll ist nicht zur Übersendung an das Finanzamt bestimmt. Die Angaben sind auf ihre Richtigkeit hin zu prüfen.		Sofern eine Unrichtigkeit festgestellt wird, ist eine berichtigte Steueranmeldung abzugeben.				</xsl:text>				<br/>				<br/>			</b>			<br/>		</td>		</tr>	</xsl:template>   <!-- ***********************************************************--></xsl:stylesheet>
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Version 2.0 -->
+<xsl:stylesheet version="2.0" 
+		xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+		xmlns:elster="http://www.elster.de/2002/XMLSchema" 
+		exclude-result-prefixes="elster">
+	<xsl:output method="html" indent="yes" encoding="UTF-8" />
+	<xsl:output doctype-public="-//W3C//DTD HTML 4.01//EN" />
+	<xsl:output doctype-system="http://www.w3.org/TR/html4/loose.dtd" />
+	<xsl:include href="elsteranmeldung.xsl" />
+	<xsl:include href="elsterbasis.xsl" />
+	<xsl:include href="geldbetraege.xsl" />
+
+	<xsl:template match="elster:Elster">
+		<html>
+			<head>
+				<title>
+					<xsl:call-template name="Titel" />
+				</title>
+				<style type="text/css">
+					<xsl:text>
+                  body {
+                  	font-family: Helvetica, Arial, sans-serif;
+                  	font-size: 0.85em;
+                  }
+                  
+                  #content {
+                  	font-size: 0.99em;
+                  	width: 46em;
+                  	margin-left: 0.5em;
+                  }
+                  
+                  h1 {
+                  	font-size: 1.2em;
+                  	page-break-after:avoid;
+                  }
+                  
+                  h2 {
+                  	font-size: 1.1em;
+                  	page-break-after:avoid;
+                  }
+                  
+                  table {
+                  	width: 100%;
+                  	table-layout: fixed;
+                   	page-break-inside:avoid;
+                  }
+                  table,td,th{
+                      border-collapse:collapse;
+                      border:1px solid #AAAAAA;
+                    }
+                  td,th {
+                  	padding: 2px;
+                    padding-left:0.3em;
+                	font-weight:normal;
+                	vertical-align: bottom;
+                  }
+                  
+                  td.kz {
+                  	padding: 0px;
+                  	font-style: normal;
+                  	font-size: 1em;
+                  }
+                  
+                  small {
+                  	padding: 0px;
+                  	font-style: normal;
+                  	font-size: 0.8em;
+                  	line-height: 1.6em;
+                  }
+                  
+                  strong {
+                  	padding: 0px;
+                  	font-weight: bold;
+                  	font-size: 1em;
+                  }
+                  
+                  div.left,p.left,table.left {
+                  	margin-top: 0;
+                  	width: 49%;
+                  	float: left;
+                  	text-align: left;
+                  }
+                  
+                  div.right,p.right,table.right {
+                  	margin-top: 0;
+                  	width: 49%;
+                  	float: right;
+                  	text-align: right;
+                  }
+                  
+                  #content .alRight {
+                  	text-align: right;
+                  }
+                  
+                  #content .alLeft {
+                  	text-align: left;
+                  }
+                  
+                  #content .alCenter {
+                  	text-align: center;
+                  }
+                  
+                  div.clear {
+                  	height: 1px;
+                  	margin: 0;
+                  	padding: 0;
+                  	clear: both;
+                  }
+                  
+                  hr {
+                  	clear: both;
+                  }
+                  
+                  .indent {
+                  	margin-left: 2em;
+                  }
+                  
+                  .help {
+                  	cursor: help;
+                  }
+                  </xsl:text>
+				</style>
+			</head>
+
+			<body>
+				<div id="content">
+					<p class="left">
+						<xsl:call-template name="Uebermittelt_von" />
+					</p>
+
+					<p class="right">
+						<xsl:call-template name="Transferdaten" />
+					</p>
+
+					<xsl:if test="elster:TransferHeader[starts-with(elster:Testmerker,'7')]">
+						<xsl:call-template name="Testmerker" />
+					</xsl:if>
+
+					<hr />
+					
+					<xsl:call-template name="ElsterInfoMitTrennlinie" />
+
+					<xsl:if test="//elster:Berater | //elster:Mandant | //elster:Unternehmer">
+						<xsl:call-template name="Berater_Mandant_Unternehmer" />
+					</xsl:if>
+
+					<xsl:apply-templates select="//elster:Steuerfall/elster:Lohnsteueranmeldung" />
+				</div>
+			</body>
+		</html>
+	</xsl:template>
+
+	<!-- **************** STEUERFALL ********************************* -->
+	<xsl:template match="//elster:Steuerfall/*">
+
+		<xsl:call-template name="ErstelltVon" />
+
+		<xsl:if test="substring-after((substring-after(substring-after(substring-after(substring-after(normalize-space(elster:Kz09),'*'),'*'),'*'),'*')),'*')">
+			<xsl:call-template name="Kz09_Unternehmer" />
+		</xsl:if>
+
+		<xsl:call-template name="Steuernummer" />
+
+		<div class="clear"></div>
+
+		<div class="alCenter">
+			<h1>
+				<xsl:call-template name="Titel" />
+				<br />
+				<xsl:call-template name="Zeitraum" />
+				<xsl:text>&#160;</xsl:text>
+				<xsl:value-of select="elster:Jahr" />
+			</h1>
+		</div>
+		<xsl:call-template name="BearbeitungsKennzahlen" />
+		
+		<xsl:call-template name="LStA" />
+		<hr />
+
+		<h2>Hinweis zu Säumniszuschlägen</h2>
+		<xsl:call-template name="Hinweis_zu_Saeumniszuschlaegen" />
+
+	</xsl:template>
+
+	<!--****  UNTERNEHMER    *****************-->
+	<xsl:template name="Kz09_Unternehmer">
+		<p class="left">
+			<xsl:text>Unternehmer: </xsl:text>
+			<br />
+			<xsl:value-of select="substring-after((substring-after(substring-after(substring-after(substring-after(elster:Kz09,'*'),'*'),'*'),'*')),'*')" />
+		</p>
+	</xsl:template>
+
+	<xsl:template name="Titel">
+		<xsl:text>Lohnsteuer-Anmeldung</xsl:text>
+	</xsl:template>
+
+	<!-- **************** BearbeitungsKennzahlen ********************************* -->
+	<xsl:template name="BearbeitungsKennzahlen">
+		<table cellspacing="3">
+			<tr>
+				<td style="width: 70%"></td>
+				<th style="width: 5%" class="alCenter">
+					<abbr title="Kennziffer" class="help">Kz</abbr>
+				</th>
+				<th style="width: 25%" class="alRight">Wert</th>
+			</tr>
+			<xsl:if test="elster:Kz10">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						<xsl:text>Berichtigte Anmeldung </xsl:text>
+					</th>
+
+					<td class="alCenter">10</td>
+					<td class="alRight">
+						<xsl:value-of select="elster:Kz10" />
+					</td>
+				</tr>
+			</xsl:if>
+			<xsl:if test="elster:Kz86">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						<xsl:text>Zahl der Arbeitnehmer</xsl:text>
+					</th>
+					<td class="alCenter">86</td>
+					<td class="alRight">
+						<xsl:value-of select="elster:Kz86" />
+					</td>
+				</tr>
+			</xsl:if>
+		</table>
+		<hr />
+	</xsl:template>
+
+	<!-- **************** LStA ********************************* -->
+	<xsl:template name="LStA">
+		<table>
+			<tr>
+				<td style="width: 70%"></td>
+				<th style="width: 5%" class="alCenter">
+					<abbr title="Kennziffer" class="help">Kz</abbr>
+				</th>
+				<th style="width: 25%" class="alRight">Betrag</th>
+			</tr>
+			<xsl:choose>
+				<xsl:when test="elster:Jahr[starts-with(.,'2004')]|elster:Jahr[starts-with(.,'2005')]|elster:Jahr[starts-with(.,'2006')]">
+					<tr>
+						<xsl:if test="elster:Kz42">
+							<th scope="row" class="alLeft">
+								<br />
+								<xsl:text>Lohnsteuer</xsl:text>
+							</th>
+							<td class="alCenter">42</td>
+							<td class="alRight">
+								<xsl:call-template name="formatiereGeldbetrag">
+									<xsl:with-param name="betrag" select="//elster:Kz42"/>
+								</xsl:call-template>
+							</td>
+						</xsl:if>
+					</tr>
+				</xsl:when>
+				<xsl:otherwise>
+					<tr>
+						<xsl:if test="elster:Kz42">
+							<th scope="row" class="alLeft">
+								<br />
+								<xsl:choose>									
+									<xsl:when test="elster:Jahr[starts-with(.,'2007')]|elster:Jahr[starts-with(.,'2008')]">
+										<xsl:text>Summe der einzubehaltenen Lohnsteuer</xsl:text>
+									</xsl:when>
+									<xsl:otherwise>
+										<!-- ab 2009 -->
+										<xsl:text>Summe der einzubehaltenden Lohnsteuer</xsl:text>
+									</xsl:otherwise>
+								</xsl:choose>
+							</th>
+							<td class="alCenter">42</td>
+							<td class="alRight">
+								<xsl:call-template name="formatiereGeldbetrag">
+									<xsl:with-param name="betrag" select="//elster:Kz42"/>
+								</xsl:call-template>
+							</td>
+						</xsl:if>
+					</tr>
+				</xsl:otherwise>
+			</xsl:choose>
+			<xsl:if test="elster:Kz41">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						<xsl:choose>
+							<xsl:when test="elster:Jahr[starts-with(.,'2004')]|elster:Jahr[starts-with(.,'2005')]|elster:Jahr[starts-with(.,'2006')]|elster:Jahr[starts-with(.,'2007')]|elster:Jahr[starts-with(.,'2008')]">
+								<xsl:text>Summe der pauschalen Lohnsteuer</xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<!-- ab 2009 wird eine Unterscheidung bzgl. § 37b getroffen--> 
+								<xsl:text>Summe der pauschalen Lohnsteuer - ohne § 37b Einkommensteuergesetz </xsl:text>(<abbr>EStG</abbr>)
+							</xsl:otherwise>
+						</xsl:choose>
+					</th>
+					<td class="alCenter">41</td>
+					<td class="alRight">
+						<xsl:call-template name="formatiereGeldbetrag">
+							<xsl:with-param name="betrag" select="//elster:Kz41"/>
+						</xsl:call-template>
+					</td>
+				</tr>
+			</xsl:if>
+			<xsl:if test="elster:Kz44">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						<xsl:text>Summe der pauschalen Lohnsteuer nach § 37b Einkommensteuergesetz </xsl:text>(<abbr>EStG</abbr>)
+					</th>
+					<td class="alCenter">44</td>
+					<td class="alRight">
+						<xsl:call-template name="formatiereGeldbetrag">
+							<xsl:with-param name="betrag" select="//elster:Kz44"/>
+						</xsl:call-template>
+					</td>
+				</tr>
+			</xsl:if>
+			<xsl:if test="elster:Kz43">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						<xsl:text>abzüglich an Arbeitnehmer ausgezahltes Kindergeld</xsl:text>
+					</th>
+					<td class="alCenter">43</td>
+					<td class="alRight">
+						<xsl:call-template name="formatiereGeldbetrag">
+							<xsl:with-param name="betrag" select="//elster:Kz43"/>
+						</xsl:call-template>
+					</td>
+				</tr>
+			</xsl:if>
+			<xsl:if test="elster:Kz46">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						<xsl:text>abzüglich an Arbeitnehmer ausgezahlte Bergmannsprämien</xsl:text>
+					</th>
+					<td class="alCenter">46</td>
+					<td class="alRight">
+						<xsl:call-template name="formatiereGeldbetrag">
+							<xsl:with-param name="betrag" select="//elster:Kz46"/>
+						</xsl:call-template>
+					</td>
+				</tr>
+			</xsl:if>
+			<xsl:if test="elster:Kz33">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						<xsl:text>abzüglich Kürzungsbetrag für Besatzungsmitglieder von Handelsschiffen</xsl:text>
+					</th>
+					<td class="alCenter">33</td>
+					<td class="alRight">
+						<xsl:call-template name="formatiereGeldbetrag">
+							<xsl:with-param name="betrag" select="//elster:Kz33"/>
+						</xsl:call-template>
+					</td>
+				</tr>
+			</xsl:if>
+			<xsl:if test="elster:Kz48">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						<strong>verbleiben</strong>
+					</th>
+					<td class="alCenter">48</td>
+					<td class="alRight">
+						<strong>
+							<xsl:call-template name="formatiereGeldbetrag">
+								<xsl:with-param name="betrag" select="//elster:Kz48"/>
+							</xsl:call-template>
+						</strong>
+					</td>
+				</tr>
+			</xsl:if>
+			<xsl:if test="elster:Kz49">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						<xsl:text>Solidaritätszuschlag</xsl:text>
+					</th>
+					<td class="alCenter">49</td>
+					<td class="alRight">
+						<xsl:call-template name="formatiereGeldbetrag">
+							<xsl:with-param name="betrag" select="//elster:Kz49"/>
+						</xsl:call-template>
+					</td>
+				</tr>
+			</xsl:if>
+			<xsl:if test="elster:Kz47">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						pauschale Kirchensteuer im vereinfachten Verfahren
+					</th>
+					<td class="alCenter">47</td>
+					<td class="alRight">
+						<xsl:call-template name="formatiereGeldbetrag">
+							<xsl:with-param name="betrag" select="//elster:Kz47"/>
+						</xsl:call-template>
+					</td>
+				</tr>
+			</xsl:if>
+			<xsl:if test="elster:Kz61">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						Evangelische Kirchensteuer
+					</th>
+					<td class="alCenter">61</td>
+					<td class="alRight">
+						<xsl:call-template name="formatiereGeldbetrag">
+							<xsl:with-param name="betrag" select="//elster:Kz61"/>
+						</xsl:call-template>
+					</td>
+				</tr>
+			</xsl:if>
+			<xsl:if test="elster:Kz62">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						Römisch-Katholische Kirchensteuer
+					</th>
+					<td class="alCenter">62</td>
+					<td class="alRight">
+						<xsl:call-template name="formatiereGeldbetrag">
+							<xsl:with-param name="betrag" select="//elster:Kz62"/>
+						</xsl:call-template>
+					</td>
+				</tr>
+			</xsl:if>
+			<xsl:if test="elster:Kz63">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						Altkatholische Kirchensteuer
+					</th>
+					<td class="alCenter">63</td>
+					<td class="alRight">
+						<xsl:call-template name="formatiereGeldbetrag">
+							<xsl:with-param name="betrag" select="//elster:Kz63"/>
+						</xsl:call-template>
+					</td>
+				</tr>
+			</xsl:if>
+			<xsl:if test="elster:Kz64">
+				<xsl:call-template name="Kz64" />
+			</xsl:if>
+			<xsl:if test="elster:Kz65">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						Freireligiöse Gemeinde Mainz
+					</th>
+					<td class="alCenter">65</td>
+					<td class="alRight">
+						<xsl:call-template name="formatiereGeldbetrag">
+							<xsl:with-param name="betrag" select="//elster:Kz65"/>
+						</xsl:call-template>
+					</td>
+				</tr>
+			</xsl:if>
+			<xsl:if test="elster:Kz66">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						Freireligiöse Gemeinde Offenbach/M.
+					</th>
+					<td class="alCenter">66</td>
+					<td class="alRight">
+						<xsl:call-template name="formatiereGeldbetrag">
+							<xsl:with-param name="betrag" select="//elster:Kz66"/>
+						</xsl:call-template>
+					</td>
+				</tr>
+			</xsl:if>
+			<xsl:if test="elster:Kz67">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						Kirchensteuer der Freireligiösen Landesgemeinde Baden
+					</th>
+					<td class="alCenter">67</td>
+					<td class="alRight">
+						<xsl:call-template name="formatiereGeldbetrag">
+							<xsl:with-param name="betrag" select="//elster:Kz67"/>
+						</xsl:call-template>
+					</td>
+				</tr>
+			</xsl:if>
+			<xsl:if test="elster:Kz68">
+				<xsl:call-template name="Kz68" />
+			</xsl:if>
+			<xsl:if test="elster:Kz69">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						Beiträge zur Angestelltenkammer
+					</th>
+					<td class="alCenter">69</td>
+					<td class="alRight">
+						<xsl:call-template name="formatiereGeldbetrag">
+							<xsl:with-param name="betrag" select="//elster:Kz69"/>
+						</xsl:call-template>
+					</td>
+				</tr>
+			</xsl:if>
+			<xsl:if test="elster:Kz70">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						<xsl:text>Beiträge zur Arbeitskammer</xsl:text>
+					</th>
+					<td class="alCenter">70</td>
+					<td class="alRight">
+						<xsl:call-template name="formatiereGeldbetrag">
+							<xsl:with-param name="betrag" select="//elster:Kz70"/>
+						</xsl:call-template>
+					</td>
+				</tr>
+			</xsl:if>
+			<xsl:if test="elster:Kz72">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						Freie Religionsgemeinschaft Alzey
+					</th>
+					<td class="alCenter">72</td>
+					<td class="alRight">
+						<xsl:call-template name="formatiereGeldbetrag">
+							<xsl:with-param name="betrag" select="//elster:Kz72"/>
+						</xsl:call-template>
+					</td>
+				</tr>
+			</xsl:if>
+			<xsl:if test="elster:Kz73">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						Kirchensteuer der Israelitischen Religionsgemeinschaft Württembergs
+					</th>
+					<td class="alCenter">73</td>
+					<td class="alRight">
+						<xsl:call-template name="formatiereGeldbetrag">
+							<xsl:with-param name="betrag" select="//elster:Kz73"/>
+						</xsl:call-template>
+					</td>
+				</tr>
+			</xsl:if>
+			<xsl:if test="elster:Kz74">
+				<xsl:call-template name="Kz74" />
+			</xsl:if>
+			<xsl:if test="elster:Kz76">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						Kirchensteuer-lt/rf (ev)
+					</th>
+					<td class="alCenter">76</td>
+					<td class="alRight">
+						<xsl:call-template name="formatiereGeldbetrag">
+							<xsl:with-param name="betrag" select="//elster:Kz76"/>
+						</xsl:call-template>
+					</td>
+				</tr>
+			</xsl:if>
+			<xsl:if test="elster:Kz77">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						Kirchensteuer-rk/ak
+					</th>
+					<td class="alCenter">77</td>
+					<td class="alRight">
+						<xsl:call-template name="formatiereGeldbetrag">
+							<xsl:with-param name="betrag" select="//elster:Kz77"/>
+						</xsl:call-template>
+					</td>
+				</tr>
+			</xsl:if>
+			<xsl:if test="elster:Kz78">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						Kirchensteuer der Israelitischen Religionsgemeinschaft Baden
+					</th>
+					<td class="alCenter">78</td>
+					<td class="alRight">
+						<xsl:call-template name="formatiereGeldbetrag">
+							<xsl:with-param name="betrag" select="//elster:Kz78"/>
+						</xsl:call-template>
+					</td>
+				</tr>
+			</xsl:if>
+			<xsl:if test="elster:Kz83">
+				<tr>
+					<th scope="row" class="alLeft">
+						<br />
+						<strong>Gesamtbetrag</strong>
+					</th>
+					<td class="alCenter">83</td>
+					<td class="alRight">
+						<strong>
+							<xsl:call-template name="formatiereGeldbetrag">
+								<xsl:with-param name="betrag" select="//elster:Kz83"/>
+							</xsl:call-template>
+						</strong>
+					</td>
+				</tr>
+			</xsl:if>
+		</table>
+		<xsl:if test="elster:Kz29   |  elster:Kz26">
+			<h2>Sonstige Angaben</h2>
+			<table>
+				<tr>
+					<td style="width: 70%"></td>
+					<th style="width: 5%" class="alCenter">
+						<abbr title="Kennziffer" class="help">Kz</abbr>
+					</th>
+					<th style="width: 25%" class="alRight">Wert</th>
+				</tr>
+				<xsl:if test="elster:Kz29">
+					<tr>
+						<th scope="row" class="alLeft">
+							<br />
+							<xsl:text>Verrechnung des Erstattungsbetrages erwünscht/ Erstattungsbetrag ist abgetreten</xsl:text>
+						</th>
+						<td class="alCenter">29</td>
+						<td class="alRight">
+							<xsl:value-of select="elster:Kz29" />
+						</td>
+					</tr>
+				</xsl:if>
+				<xsl:if test="elster:Kz26">
+					<tr>
+						<th scope="row" class="alLeft">
+							<br />
+							<xsl:text>Die Einzugsermächtigung wird ausnahmsweise (z.B. wegen Verrechnungswünschen) für diesen Anmeldungszeitraum widerrufen</xsl:text>
+						</th>
+						<td class="alCenter">26</td>
+						<td class="alRight">
+							<xsl:value-of select="elster:Kz26" />
+						</td>
+					</tr>
+				</xsl:if>
+			</table>
+		</xsl:if>
+	</xsl:template>
+
+	<!-- **************** Kz64 ********************************* -->
+	<xsl:template name="Kz64">
+		<xsl:if test="elster:Steuernummer[starts-with(.,'9')]">
+		<!-- Bayern -->		
+			<tr>
+				<th scope="row" class="alLeft">
+					<br />
+					Israelitische Bekenntnissteuer
+				</th>
+				<td class="alCenter">64</td>
+				<td class="alRight">
+					<xsl:call-template name="formatiereGeldbetrag">
+						<xsl:with-param name="betrag" select="//elster:Kz64"/>
+					</xsl:call-template>
+				</td>
+			</tr>
+		</xsl:if>
+		<xsl:if test="elster:Steuernummer[starts-with(.,'26')]">
+		<!--Hessen  -->
+			<tr>
+				<th scope="row" class="alLeft">
+					<br />
+					Israelitische Kultussteuer Frankfurt
+				</th>
+				<td class="alCenter">64</td>
+				<td class="alRight">
+					<xsl:call-template name="formatiereGeldbetrag">
+						<xsl:with-param name="betrag" select="//elster:Kz64"/>
+					</xsl:call-template>
+				</td>
+			</tr>
+		</xsl:if>
+		<xsl:if test="elster:Steuernummer[starts-with(.,'10')]">
+		<!-- Saarland -->
+			<tr>
+				<th scope="row" class="alLeft">
+					<br />
+					<xsl:text>Israelitische Kultussteuer</xsl:text>
+				</th>
+				<td class="alCenter">64</td>
+				<td class="alRight">
+					<xsl:call-template name="formatiereGeldbetrag">
+						<xsl:with-param name="betrag" select="//elster:Kz64"/>
+					</xsl:call-template>
+				</td>
+			</tr>
+		</xsl:if>
+		<xsl:if test="elster:Steuernummer[starts-with(.,'27')] | elster:Steuernummer[starts-with(.,'5')] | elster:Steuernummer[starts-with(.,'22')] | elster:Steuernummer[starts-with(.,'21')]">
+		<!-- Rheinland-Pfalz, NRW,  HH,  Schleswig Holstein -->
+			<tr>
+				<th scope="row" class="alLeft">
+					<br />
+					Jüdische Kultussteuer
+				</th>
+				<td class="alCenter">64</td>
+				<td class="alRight">
+					<xsl:call-template name="formatiereGeldbetrag">
+						<xsl:with-param name="betrag" select="//elster:Kz64"/>
+					</xsl:call-template>
+				</td>
+			</tr>
+		</xsl:if>
+		<xsl:if test="elster:Steuernummer[starts-with(.,'30')]">
+		<!-- Brandenburg -->
+			<tr>
+				<th scope="row" class="alLeft">
+					<br />
+					<xsl:text>Israelitische / Jüdische Kultussteuer</xsl:text>
+				</th>
+				<td class="alCenter">64</td>
+				<td class="alRight">
+					<xsl:call-template name="formatiereGeldbetrag">
+						<xsl:with-param name="betrag" select="//elster:Kz64"/>
+					</xsl:call-template>
+				</td>
+			</tr>
+		</xsl:if>
+	</xsl:template>
+	<!-- **************** Kz68 ********************************* -->
+	<xsl:template name="Kz68">
+		<xsl:if test="elster:Steuernummer[starts-with(.,'24')]">
+			<tr>
+				<th scope="row" class="alLeft">
+					<br />
+					Beiträge zur Arbeitnehmerkammer
+				</th>
+				<td class="alCenter">68</td>
+				<td class="alRight">
+					<xsl:call-template name="formatiereGeldbetrag">
+						<xsl:with-param name="betrag" select="//elster:Kz68"/>
+					</xsl:call-template>
+				</td>
+			</tr>
+		</xsl:if>
+		<xsl:if test="elster:Steuernummer[starts-with(.,'27')]">
+			<tr>
+				<th scope="row" class="alLeft">
+					<br />
+					Freireligiöse Landesgemeinde Pfalz
+				</th>
+				<td class="alCenter">68</td>
+				<td class="alRight">
+					<xsl:call-template name="formatiereGeldbetrag">
+						<xsl:with-param name="betrag" select="//elster:Kz68"/>
+					</xsl:call-template>
+				</td>
+			</tr>
+		</xsl:if>
+	</xsl:template>
+	<!-- ****************** Kz74 ************************************* -->
+	<xsl:template name="Kz74">
+		<tr>
+			<th scope="row" class="alLeft">
+				<br />
+				<xsl:if test="elster:Steuernummer[starts-with(.,'26')]">
+					<!-- Hessen --> 				
+					<xsl:choose>
+						<xsl:when test="elster:Jahr[starts-with(.,'2004')] | elster:Jahr[starts-with(.,'2005')] | elster:Jahr[starts-with(.,'2006')] | elster:Jahr[starts-with(.,'2007')] | elster:Jahr[starts-with(.,'2008')] | elster:Jahr[starts-with(.,'2009')]	">
+							<!-- bis einschließlich 2009 --> 
+							Israelitische Kultussteuer der kultusberechtigten Gemeinden						
+						</xsl:when>
+						<xsl:otherwise>
+							<!-- ab 2010 -->						
+							Israelitische Kultussteuer der kultussteuerberechtigten Gemeinden
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:if>
+				<xsl:if test="elster:Steuernummer[starts-with(.,'30')]">
+					<!-- Brandenburg -->
+					Israelitische Kultussteuer der kultussteuerberechtigten Gemeinden Hessen
+				</xsl:if>
+			</th>
+			<td class="alCenter">74</td>
+			<td class="alRight">
+				<xsl:call-template name="formatiereGeldbetrag">
+					<xsl:with-param name="betrag" select="//elster:Kz74"/>
+				</xsl:call-template>
+			</td>
+		</tr>
+	</xsl:template>
+</xsl:stylesheet>

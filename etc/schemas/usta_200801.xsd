@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- edited with XMLSpy v2005 U (http://www.xmlspy.com) by josef veits (Oberfinanzdirektion München) -->
-<!-- Version_BY 2007.1 -->
-<xs:schema targetNamespace="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:elster="http://www.elster.de/2002/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<!-- Version 2008.1 -->
+<xs:schema targetNamespace="http://www.elster.de/2002/XMLSchema" xmlns:elster="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:complexType name="usta_AnmeldungssteuernCType">
 		<xs:sequence>
 			<xs:element name="DatenLieferant" type="elster:usta_DatenlieferantCType"/>
@@ -61,15 +60,7 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
-			<xs:element name="Telefon" minOccurs="0">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:maxLength value="20"/>
-						<xs:minLength value="1"/>
-						<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:element>
+			<xs:element name="Telefon"  type="elster:TelefonSType" minOccurs="0"/>				
 			<xs:element name="Email" type="elster:EmailSType" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
@@ -201,7 +192,9 @@
 	</xs:simpleType>
 	<xs:simpleType name="TelefonSType">
 		<xs:restriction base="xs:string">
-			<xs:pattern value="\d{1,20}"/>
+			<xs:maxLength value="20"/>
+			<xs:minLength value="1"/>
+			<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<!-- ustva Typen  -->
@@ -270,6 +263,16 @@
 			<xs:enumeration value="42"/>
 			<xs:enumeration value="43"/>
 			<xs:enumeration value="44"/>
+		</xs:restriction>
+	</xs:simpleType>
+		<xs:simpleType name="allg_StNrSType">
+		<xs:annotation>
+			<xs:documentation xml:lang="DE">gemäß Elster Developers Toolkit</xs:documentation>
+			<xs:documentation xml:lang="DE">13 stellig Nummerisch</xs:documentation>
+			<xs:documentation xml:lang="DE">Bundesfinanzamtsnummer + 0 + Bezirk + Unterscheidungsnr. + Prüfziffer</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="\d{4}0\d{8}"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="usta_JahrSType">

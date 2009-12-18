@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- edited with XMLSpy v2005 U (http://www.xmlspy.com) by josef veits (Oberfinanzdirektion München) -->
-<!-- Version_BY 200501.2 -->
-<xs:schema targetNamespace="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:elster="http://www.elster.de/2002/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<!-- Version 2008.1 -->
+<xs:schema targetNamespace="http://www.elster.de/2002/XMLSchema" xmlns:elster="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:complexType name="usta_AnmeldungssteuernCType">
 		<xs:sequence>
-			<xs:element name="DatenLieferant" type="elster:usta_DatenlieferantType"/>
+			<xs:element name="DatenLieferant" type="elster:usta_DatenlieferantCType"/>
 			<xs:element name="Erstellungsdatum" type="elster:usta_MyDateSType"/>
 			<xs:element name="Steuerfall" type="elster:usta_SteuerfallCType"/>
 		</xs:sequence>
@@ -23,7 +22,7 @@
 			</xs:simpleType>
 		</xs:attribute>
 	</xs:complexType>
-	<xs:complexType name="usta_DatenlieferantType">
+	<xs:complexType name="usta_DatenlieferantCType">
 		<xs:sequence>
 			<xs:element name="Name">
 				<xs:simpleType>
@@ -61,15 +60,7 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
-			<xs:element name="Telefon" minOccurs="0">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:maxLength value="20"/>
-						<xs:minLength value="1"/>
-						<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:element>
+			<xs:element name="Telefon" type="elster:TelefonSType" minOccurs="0"/>
 			<xs:element name="Email" minOccurs="0">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
@@ -81,7 +72,140 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+	<xs:complexType name="AdresseCType">
+		<xs:sequence>
+			<xs:element name="Bezeichnung" type="elster:BezeichnungSType" minOccurs="0"/>
+			<xs:element name="Name" type="elster:NameSType" minOccurs="0"/>
+			<xs:element name="Vorname" type="elster:VornameSType" minOccurs="0"/>
+			<xs:element name="Namensvorsatz" type="elster:NamenszusatzSType" minOccurs="0"/>
+			<xs:element name="Namenszusatz" type="elster:NamenszusatzSType" minOccurs="0"/>
+			<xs:element name="Str" type="elster:StrSType" minOccurs="0"/>
+			<xs:element name="Hausnummer" type="elster:HausnummerSType" minOccurs="0"/>
+			<xs:element name="HNrZusatz" type="elster:HNrZusatzSType" minOccurs="0"/>
+			<xs:element name="AnschriftenZusatz" type="elster:AnschriftenZusatzSType" minOccurs="0"/>
+			<xs:element name="Ort" type="elster:OrtSType" minOccurs="0"/>
+			<xs:element name="PLZ" type="elster:PLZSType" minOccurs="0"/>
+			<xs:element name="AuslandsPLZ" type="elster:AuslandsPLZSType" minOccurs="0"/>
+			<xs:element name="Land" type="elster:LandSType" minOccurs="0"/>
+			<xs:element name="PostfachOrt" type="elster:OrtSType" minOccurs="0"/>
+			<xs:element name="Postfach" type="elster:PostfachSType" minOccurs="0"/>
+			<xs:element name="PostfachPLZ" type="elster:PLZSType" minOccurs="0"/>
+			<xs:element name="GKPLZ" type="elster:PLZSType" minOccurs="0"/>
+			<xs:element name="Telefon" type="elster:TelefonSType" minOccurs="0"/>
+			<xs:element name="Email" type="elster:EmailSType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="MandantCType">
+		<xs:sequence>
+			<xs:element name="Name" type="elster:NameSType" minOccurs="0"/>
+			<xs:element name="Vorname" type="elster:VornameSType" minOccurs="0"/>
+			<xs:element name="MandantenNr" type="elster:MandantenNrSType" minOccurs="0"/>
+			<xs:element name="Bearbeiterkennzeichen" type="elster:BearbeiterkennzeichenSType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
 	<!--- simple Elements & Types ____________________________________________________________ -->
+	<xs:simpleType name="AnschriftenZusatzSType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="40"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="AuslandsPLZSType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="13"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="BearbeiterkennzeichenSType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="20"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="BezeichnungSType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="50"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EmailSType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="70"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="HausnummerSType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="\d{1,9}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="HNrZusatzSType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="15"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MandantenNrSType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="60"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LandSType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="20"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="NameSType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="60"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="NamenszusatzSType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="20"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="OrtSType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="34"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PostfachSType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="10"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PLZSType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="\d{5}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StrSType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="33"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="VornameSType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="30"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TelefonSType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="20"/>
+			<xs:minLength value="1"/>
+			<xs:pattern value="[^\s\p{C}][^\p{C}]*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- ustva Typen  -->
 	<xs:simpleType name="usta_DefaultKZSType">
 		<xs:restriction base="xs:string">
 			<xs:maxLength value="14"/>
@@ -149,6 +273,16 @@
 			<xs:enumeration value="44"/>
 		</xs:restriction>
 	</xs:simpleType>
+		<xs:simpleType name="allg_StNrSType">
+		<xs:annotation>
+			<xs:documentation xml:lang="DE">gemäß Elster Developers Toolkit</xs:documentation>
+			<xs:documentation xml:lang="DE">13 stellig Nummerisch</xs:documentation>
+			<xs:documentation xml:lang="DE">Bundesfinanzamtsnummer + 0 + Bezirk + Unterscheidungsnr. + Prüfziffer</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="\d{4}0\d{8}"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="usta_JahrSType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="2006"/>
@@ -181,11 +315,16 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="usta_SteuerfallCType">
-		<xs:choice>
-			<xs:element name="Umsatzsteuervoranmeldung" type="elster:usta_UmsatzsteuervoranmeldungCType"/>
-			<xs:element name="Dauerfristverlaengerung" type="elster:usta_DauerfristverlaengerungCType"/>
-			<xs:element name="Umsatzsteuersondervorauszahlung" type="elster:usta_UmsatzsteuersondervorauszahlungCType"/>
-		</xs:choice>
+		<xs:sequence>
+			<xs:element name="Berater" type="elster:AdresseCType" minOccurs="0"/>
+			<xs:element name="Mandant" type="elster:MandantCType" minOccurs="0"/>
+			<xs:element name="Unternehmer" type="elster:AdresseCType" minOccurs="0"/>
+			<xs:choice>
+				<xs:element name="Umsatzsteuervoranmeldung" type="elster:usta_UmsatzsteuervoranmeldungCType"/>
+				<xs:element name="Dauerfristverlaengerung" type="elster:usta_DauerfristverlaengerungCType"/>
+				<xs:element name="Umsatzsteuersondervorauszahlung" type="elster:usta_UmsatzsteuersondervorauszahlungCType"/>
+			</xs:choice>
+		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="usta_DauerfristverlaengerungCType">
 		<xs:all>

@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- Version_BY Version 2006.1.0 -->
+<!-- Version 2008.1 -->
 <xs:schema targetNamespace="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:elster="http://www.elster.de/2002/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:include schemaLocation="./allg000007.xsd">
-		<xs:annotation>
-			<xs:documentation xml:lang="DE">In der allg.xsd werden  komplexe Typen, die in mehreren Bescheinigungen verwendet werden, global definiert z.B. ArbeitgeberCTyp </xs:documentation>
-		</xs:annotation>
-	</xs:include>
 	<xs:include schemaLocation="./ndh000010_extern.xsd">
 		<xs:annotation>
 			<xs:documentation xml:lang="DE">Nutzdatenheader</xs:documentation>

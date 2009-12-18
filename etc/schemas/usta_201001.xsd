@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- Version 2008.1 -->
-<xs:schema targetNamespace="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:elster="http://www.elster.de/2002/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<!-- Mit XMLSpy v2007 sp2 (http://www.altova.com) von Bayerisches Landesamt für Steuer (Bayerisches Landesamt für Steuer) bearbeitet -->
+<!-- Version 2010.1 -->
+<xs:schema xmlns:elster="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.elster.de/2002/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:complexType name="usta_AnmeldungssteuernCType">
 		<xs:sequence>
 			<xs:element name="DatenLieferant" type="elster:usta_DatenlieferantCType"/>
@@ -10,7 +11,7 @@
 		<xs:attribute name="version" use="required">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
-					<xs:enumeration value="200701"/>
+					<xs:enumeration value="201001"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
@@ -60,7 +61,7 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
-			<xs:element name="Telefon"  type="elster:TelefonSType" minOccurs="0"/>
+			<xs:element name="Telefon" type="elster:TelefonSType" minOccurs="0"/>
 			<xs:element name="Email" type="elster:EmailSType" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
@@ -265,7 +266,7 @@
 			<xs:enumeration value="44"/>
 		</xs:restriction>
 	</xs:simpleType>
-		<xs:simpleType name="allg_StNrSType">
+	<xs:simpleType name="allg_StNrSType">
 		<xs:annotation>
 			<xs:documentation xml:lang="DE">gemäß Elster Developers Toolkit</xs:documentation>
 			<xs:documentation xml:lang="DE">13 stellig Nummerisch</xs:documentation>
@@ -277,7 +278,7 @@
 	</xs:simpleType>
 	<xs:simpleType name="usta_JahrSType">
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="2007"/>
+			<xs:enumeration value="2010"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="usta_Kz09SType">
@@ -358,6 +359,7 @@
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="Kz10" type="elster:usta_Kz10SType" minOccurs="0"/>
+			<xs:element name="Kz21" type="elster:usta_DefaultKZSType" minOccurs="0"/>
 			<xs:element name="Kz22" type="elster:usta_Kz22SType" minOccurs="0"/>
 			<xs:element name="Kz26" type="elster:usta_Kz26SType" minOccurs="0"/>
 			<xs:element name="Kz29" type="elster:usta_Kz29SType" minOccurs="0"/>
@@ -369,6 +371,8 @@
 			<xs:element name="Kz43" type="elster:usta_DefaultKZSType" minOccurs="0"/>
 			<xs:element name="Kz44" type="elster:usta_DefaultKZSType" minOccurs="0"/>
 			<xs:element name="Kz45" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz46" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz47" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
 			<xs:element name="Kz48" type="elster:usta_DefaultKZSType" minOccurs="0"/>
 			<xs:element name="Kz49" type="elster:usta_DefaultKZSType" minOccurs="0"/>
 			<xs:element name="Kz52" type="elster:usta_DefaultKZSType" minOccurs="0"/>

@@ -444,5 +444,16 @@
 				berichtigte Steueranmeldung abzugeben.
 			</strong>
 		</p>
+
+		<xsl:if xmlns:xsl="http://www.w3.org/1999/XSL/Transform" test="elster:Kz51|elster:Kz81|elster:Kz86|elster:Kz54|elster:Kz55|elster:Kz97|elster:Kz89|elster:Kz93" >
+			<tr>
+				<td>
+					<sup>*)</sup> 
+					<xsl:text xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+						Dieser Wert wurde arithmetisch ermittelt und nicht an die Finanzbehörde übermittelt.
+					</xsl:text>
+				</td>
+			</tr>
+		</xsl:if>
 	</xsl:template>
 </xsl:stylesheet>

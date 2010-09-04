@@ -47,7 +47,11 @@ geier_dsig_get_attr(STACK_OF(X509_ATTRIBUTE) *attrs, const char *want)
 			ASN1_TYPE *val = sk_ASN1_TYPE_value(attr->value.set,0);
 
 			if(val->type == V_ASN1_BMPSTRING)
+				#if OPENSSL_VERSION_NUMBER >= 0x10000000L
+				return OPENSSL_uni2asc(val->value.bmpstring->data,
+				#else
 				return uni2asc(val->value.bmpstring->data,
+				#endif
 					       val->value.bmpstring->length);
 
 			if(val->type == V_ASN1_OCTET_STRING)

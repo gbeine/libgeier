@@ -269,6 +269,10 @@ static int p7_set_enc_key(const EVP_CIPHER *cipher,
 	char buf[512];
 	EVP_PKEY *elster_pubkey = X509_get_pubkey((X509 *)x509_cert);
 
+	#if OPENSSL_VERSION_NUMBER >= 0x10000000L
+	#define EVP_PKEY_encrypt EVP_PKEY_encrypt_old
+	#endif
+
 	int len = EVP_PKEY_encrypt((unsigned char *) buf,
 				   key, EVP_CIPHER_key_length(cipher),
 				   elster_pubkey);

@@ -197,10 +197,7 @@ static char *validate_elsteranmeldung(geier_context *context, xmlDoc *doc)
 	int th_version = validate_get_th_version(context, doc);
 	int nh_version = validate_get_nh_version(context, doc);
 
-	if(th_version == 7 && nh_version == 9)
-		xmlBufferCCat(buf, "/elster_");
-
-	else if(th_version == 8 && nh_version == 10)
+	if(th_version == 8 && nh_version == 10)
 		xmlBufferCCat(buf, "/elster0810_");
 
 	else {

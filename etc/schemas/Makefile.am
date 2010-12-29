@@ -1,16 +1,5 @@
 schemadir = $(datadir)/libgeier/schemas
 schema_DATA = \
-	allg000007.xsd \
-	elster_LStA_200401_extern.xsd \
-	elster_LStA_200501_extern.xsd \
-	elster_LStA_200601_extern.xsd \
-	elster_LStA_200701_extern.xsd \
-	elster_LStA_200801_extern.xsd \
-	elster_UStA_200401_extern.xsd \
-	elster_UStA_200501_extern.xsd \
-	elster_UStA_200601_extern.xsd \
-	elster_UStA_200701_extern.xsd \
-	elster_UStA_200801_extern.xsd \
 	elster0810_LStA_200401_extern.xsd \
 	elster0810_LStA_200501_extern.xsd \
 	elster0810_LStA_200601_extern.xsd \
@@ -35,11 +24,9 @@ schema_DATA = \
 	lsta_200801.xsd \
 	lsta_200901.xsd \
 	lsta_201001.xsd \
-	ndh000009.xsd \
 	ndh000010_extern.xsd \
 	registrierung.xsd \
 	registrierung_rootish.xsd \
-	th000007_extern.xsd \
 	th000008_extern.xsd \
 	usta_200401.xsd \
 	usta_200501.xsd \

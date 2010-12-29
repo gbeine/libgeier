@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- edited with XMLSPY v2004 rel. 3 U (http://www.xmlspy.com) by kerstin hoffmann (Oberfinanzdirektion München) -->
 <!-- edited with XML Spy v4.3 U (http://www.xmlspy.com) by Michael Wilz (Rechenzentrum der Finanzverwaltung NRW) -->
-<!-- Version -  10.05 -->
-<xs:schema targetNamespace="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:elster="http://www.elster.de/2002/XMLSchema" xmlns:headerbasis="http://www.elster.de/headerbasis02/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<!-- Version -  10.07 -->
+<xs:schema xmlns:headerbasis="http://www.elster.de/headerbasis02/XMLSchema" xmlns:elster="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.elster.de/2002/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:import namespace="http://www.elster.de/headerbasis02/XMLSchema" schemaLocation="./headerbasis000002.xsd"/>
 	<xs:element name="NutzdatenHeader" type="elster:NutzdatenHeaderCType"/>
 	<xs:complexType name="NutzdatenHeaderCType">
 		<xs:sequence>
 			<xs:element name="NutzdatenTicket" type="headerbasis:NutzdatenBlockTicketSType"/>
 			<xs:element name="Empfaenger" type="elster:NDH_EmpfaengerCType"/>
-			<xs:element name="SigUser" type="elster:NDH_SigUserCType" minOccurs="0"/>
+			<xs:element name="SigUser" minOccurs="0">
+				<xs:complexType mixed="true">
+					<xs:complexContent mixed="true">
+						<xs:restriction base="xs:anyType">
+							<xs:sequence>
+								<xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+							</xs:sequence>
+						</xs:restriction>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>			
 			<xs:element name="Hersteller" type="elster:NDH_HerstellerCType"/>
 			<xs:element name="DatenLieferant" type="headerbasis:DatenLieferantSType"/>
 			<xs:element name="RC" type="elster:NDH_RCCType" minOccurs="0"/>
@@ -98,53 +107,6 @@
 		</xs:sequence>
 	</xs:complexType>
 	<!-- S -->
-	<xs:complexType name="NDH_SigUserCType">
-		<xs:sequence>
-			<xs:element name="SigPruefung" type="headerbasis:DatumSType" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation xml:lang="DE">Zeitpunkt der Signaturprüfung im Format JJJJ MM TT hh mm ss (14-stellig num)</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="UserInfo" minOccurs="0">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="User" maxOccurs="unbounded">
-							<xs:complexType>
-								<xs:sequence>
-									<xs:element name="Vorname" minOccurs="0">
-										<xs:simpleType>
-											<xs:restriction base="xs:string">
-												<xs:pattern value="[^\p{C}]*"/>
-											</xs:restriction>
-										</xs:simpleType>
-									</xs:element>
-									<xs:element name="Name">
-										<xs:simpleType>
-											<xs:restriction base="xs:string">
-												<xs:pattern value="[^\p{C}]*"/>
-											</xs:restriction>
-										</xs:simpleType>
-									</xs:element>
-								</xs:sequence>
-								<xs:attribute name="id" type="xs:positiveInteger" use="required"/>
-							</xs:complexType>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="Sig" minOccurs="0">
-				<xs:complexType mixed="true">
-					<xs:complexContent mixed="true">
-						<xs:restriction base="xs:anyType">
-							<xs:sequence>
-								<xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-							</xs:sequence>
-						</xs:restriction>
-					</xs:complexContent>
-				</xs:complexType>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
 	<!-- T -->
 	<!-- U -->
 	<!-- V -->
@@ -154,7 +116,27 @@
 	<!-- Z -->
 	<xs:complexType name="NDH_ZusatzCType">
 		<xs:sequence>
-			<xs:element name="Info" type="headerbasis:BaseStringSType" maxOccurs="unbounded"/>
+			<xs:element name="Info" minOccurs="0" maxOccurs="unbounded">
+				<xs:simpleType>
+					<xs:annotation>
+						<xs:documentation xml:lang="de">kann vom Datenlieferant für eigene Zusätze / Informationen genutzt werden</xs:documentation>
+					</xs:annotation>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ElsterInfo" minOccurs="0" maxOccurs="unbounded">
+				<xs:simpleType>
+					<xs:annotation>
+						<xs:documentation xml:lang="de">für Rückübermittlung des TransferHeaders aus der Clearingstelle wird in der Clearingstelle eingefügt</xs:documentation>
+						<xs:documentation xml:lang="de">das TAG darf vom Datenlieferant nicht geliefert werden (auch nicht leer)</xs:documentation>
+					</xs:annotation>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<!-- Definierung globaler Gruppen _______________________________________________________ -->

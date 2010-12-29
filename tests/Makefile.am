@@ -1,20 +1,9 @@
 # tests run for make check
-TESTS = \
-	$(check_PROGRAMS) \
-	$(check_SCRIPTS)
+TESTS = $(check_PROGRAMS)
 
-#XFAIL_TESTS =
-
-# add tests run by hand here
 check_PROGRAMS = \
 	test_base64 \
 	test_pkcs7_decrypt
-
-check_SCRIPTS = \
-	test_dsig_digestvalue \
-	test_dsig_send_text \
-	test_send_text \
-	test_validate
 
 
 TESTDATADIR = $(top_srcdir)/tests/data

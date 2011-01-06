@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- Version 2.0 -->
-<xsl:stylesheet version="1.0" 
+<xsl:stylesheet version="2.0" 
 		xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
 		xmlns:elster="http://www.elster.de/2002/XMLSchema" 
 		exclude-result-prefixes="elster">
-	<xsl:output method="html" indent="yes" encoding="UTF-8" />
-	<xsl:output doctype-public="-//W3C//DTD HTML 4.01//EN" />
-	<xsl:output doctype-system="http://www.w3.org/TR/html4/loose.dtd" />
+	<xsl:output method="html" indent="yes" encoding="UTF-8" doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN" doctype-system="http://www.w3.org/TR/html4/loose.dtd"/>
 	<xsl:include href="elsteranmeldung.xsl" />
-	<xsl:include href="elsterbasis.xsl" />
 	<xsl:include href="geldbetraege.xsl" />
 
-	<xsl:template match="elster:Elster">
+	<xsl:template match="elster:Elster"> 
 		<html>
 			<head>
 				<title>
@@ -22,6 +19,7 @@
                   body {
                   	font-family: Helvetica, Arial, sans-serif;
                   	font-size: 0.85em;
+                  	word-wrap: break-word;
                   }
                   
                   #content {
@@ -133,9 +131,7 @@
 						<xsl:call-template name="Transferdaten" />
 					</p>
 
-					<xsl:if test="elster:TransferHeader[starts-with(elster:Testmerker,'7')]">
-						<xsl:call-template name="Testmerker" />
-					</xsl:if>
+					<xsl:call-template name="testfall" />
 
 					<hr />
 					

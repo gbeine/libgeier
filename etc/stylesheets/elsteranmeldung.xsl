@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- Version 2.0 -->
-<xsl:stylesheet version="1.0"
+<xsl:stylesheet version="2.0"
 		xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 		xmlns:elster="http://www.elster.de/2002/XMLSchema"
 		exclude-result-prefixes="elster">
 
 	<xsl:include href="steuernummer.xsl" />
+	<xsl:include href="elsterbasis.xsl" />
 	
 	<!--Gemeinsame Elemente für die UStVA und LStA    -->
 	<xsl:template name="Uebermittelt_von">
@@ -29,7 +30,12 @@
 		</small>
 	</xsl:template>
 
-	<!-- Schreibt die "Erstellt von" Zeile, falls Information angegeben wurde -->
+	<!-- 
+    Schreibt die "Erstellt von" Zeile, falls Information angegeben wurde 
+    
+    Abhaengigkeiten:
+    not(starts-with(normalize-space(substring-after(elster:Kz09,'*')),'*')) == true -bestimmt-die-Ausgabe-von-> Dem kompletten Template
+    -->
 	<xsl:template name="ErstelltVon">
 		<xsl:if test="not(starts-with(normalize-space(substring-after(elster:Kz09,'*')),'*'))">
 			<p>
@@ -69,6 +75,7 @@
 			<hr />
 		</xsl:if>
 	</xsl:template>
+	
 
 	<xsl:template name="Transferdaten">
 		<xsl:choose>
@@ -91,22 +98,26 @@
 				<xsl:text>Ausdruck vor Übermittlung</xsl:text>
 			</xsl:otherwise>
 		</xsl:choose>
-		<br />
 		<xsl:if test="elster:TransferHeader/elster:TransferTicket">
+			<br />
 			<xsl:text>Transferticket: </xsl:text>
 			<xsl:value-of select="elster:TransferHeader/elster:TransferTicket" />
-			<br />
 		</xsl:if>
-		<xsl:text>Erstellungsdatum: </xsl:text>
-		<xsl:variable name="erstellungsdatum" select="elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:Erstellungsdatum" />
-		<xsl:value-of select="substring($erstellungsdatum,7)" />
-		<xsl:text>.</xsl:text>
-		<xsl:value-of select="substring($erstellungsdatum,5,2)" />
-		<xsl:text>.</xsl:text>
-		<xsl:value-of select="substring($erstellungsdatum,1,4)" />
+		<xsl:if test="elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:Erstellungsdatum">
+			<br />
+			<xsl:text>Erstellungsdatum: </xsl:text>
+			<xsl:variable name="erstellungsdatum" select="elster:DatenTeil/elster:Nutzdatenblock/elster:Nutzdaten/elster:Anmeldungssteuern/elster:Erstellungsdatum" />
+			<xsl:value-of select="substring($erstellungsdatum,7)" />
+			<xsl:text>.</xsl:text>
+			<xsl:value-of select="substring($erstellungsdatum,5,2)" />
+			<xsl:text>.</xsl:text>
+			<xsl:value-of select="substring($erstellungsdatum,1,4)" />
+		</xsl:if>
 	</xsl:template>
 
-	<!-- Berater Mandant Unternehmer -->
+	<!-- Berater Mandant Unternehmer 
+        Aufgerufene Templates: Berater, Mandat, Unternehmer
+    -->
 	<xsl:template name="Berater_Mandant_Unternehmer">
 		<xsl:if test="//elster:Berater">
 			<p class="left">
@@ -149,7 +160,14 @@
 		</xsl:if>
 	</xsl:template>
 
-	<xsl:template name="Berater">
+	<!-- 
+		Abhaengigkeiten:
+        //elster:Berater/elster:Name | //elster:Berater/elster:Vorname -bestimmt-die-Ausgabe-von-> //elster:Berater/elster:Namenszusatz, 
+        //elster:Berater/elster:Str | //elster:Berater/elster:Hausnummer -bestimmt-die-Ausgabe-von-> //elster:Berater/elster:HNrZusatz, 
+        //elster:Berater/elster:Ort -bestimmt-die-Ausgabe-von-> //elster:Berater/elster:PLZ //elster:Berater/elster:AuslandsPLZ //elster:Berater/elster:GKPLZ, 
+        //elster:Berater/elster:PostfachOrt -bestimmt-die-Ausgabe-von-> //elster:Berater/elster:PostfachPLZ //elster:Berater/elster:GKPLZ
+    --> 
+    <xsl:template name="Berater">
 		<xsl:text>Berater:</xsl:text>
 		<br />
 		<small>
@@ -287,7 +305,14 @@
 			</xsl:if>
 		</small>
 	</xsl:template>
-
+    
+    <!-- 
+    	Abhaengigkeiten:
+        //elster:Unternehmer/elster:Name | //elster:Unternehmer/elster:Vorname -bestimmt-die-Ausgabe-von-> //elster:Unternehmer/elster:Namensvorsatz //elster:Unternehmer/elster:Namenszusatz
+        //elster:Unternehmer/elster:Str | //elster:Unternehmer/elster:Hausnummer -bestimmt-die-Ausgabe-von-> //elster:Unternehmer/elster:HNrZusatz
+        //elster:Unternehmer/elster:Ort -bestimmt-die-Ausgabe-von-> //elster:Unternehmer/elster:PLZ //elster:Unternehmer/elster:AuslandsPLZ //elster:Unternehmer/elster:GKPLZ
+        //elster:Unternehmer/elster:PostfachOrt -bestimmt-die-Ausgabe-von-> //elster:Unternehmer/elster:PostfachPLZ //elster:Unternehmer/elster:GKPLZ
+    -->
 	<xsl:template name="Unternehmer">
 		<xsl:text>Unternehmer:</xsl:text>
 		<br />
@@ -434,7 +459,7 @@
 			Bitte beachten Sie, dass bei Zahlung der angemeldeten Steuer durch Hingabe eines Schecks erst der dritte Tag nach dem Tag des Eingangs des Schecks bei der zuständigen Finanzkasse als
 			Einzahlungstag gilt (§ 224 Absatz 2 Nr. 1 Abgabenordnung). Fällt der dritte Tag auf einen Samstag, einen Sonntag oder einen gesetzlichen Feiertag, gilt die Zahlung erst am nächstfolgenden
 			Werktag als bewirkt. Gilt die Zahlung der angemeldeten Steuer durch Hingabe eines Schecks erst nach dem Fälligkeitstag als bewirkt, fallen Säumniszuschläge an (§ 240 Absatz 3 Abgabenordnung). Um
-			diese zu vermeiden wird empfohlen, am Lastschriftverfahren teilzunehmen. Die Teilnahme am Lastschriftverfahren ist jederzeit widerruflich und völlig risikolos. Sollte einmal ein Betrag zu
+			diese zu vermeiden, wird empfohlen, am Lastschriftverfahren teilzunehmen. Die Teilnahme am Lastschriftverfahren ist jederzeit widerruflich und völlig risikolos. Sollte einmal ein Betrag zu
 			Unrecht abgebucht werden, können Sie diese Abbuchung bei Ihrer Bank innerhalb von 6 Wochen stornieren lassen. Zur Teilnahme am Lastschriftverfahren setzen Sie sich bitte mit Ihrem Finanzamt in
 			Verbindung.
 		</p>
@@ -444,16 +469,5 @@
 				berichtigte Steueranmeldung abzugeben.
 			</strong>
 		</p>
-
-		<xsl:if xmlns:xsl="http://www.w3.org/1999/XSL/Transform" test="elster:Kz51|elster:Kz81|elster:Kz86|elster:Kz54|elster:Kz55|elster:Kz97|elster:Kz89|elster:Kz93" >
-			<tr>
-				<td>
-					<sup>*)</sup> 
-					<xsl:text xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-						Dieser Wert wurde arithmetisch ermittelt und nicht an die Finanzbehörde übermittelt.
-					</xsl:text>
-				</td>
-			</tr>
-		</xsl:if>
 	</xsl:template>
 </xsl:stylesheet>

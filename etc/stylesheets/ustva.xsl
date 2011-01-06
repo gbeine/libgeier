@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- Version 2.0 -->
-<xsl:stylesheet version="1.0"
+<xsl:stylesheet version="2.0"
 		xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 		xmlns:elster="http://www.elster.de/2002/XMLSchema"
 		exclude-result-prefixes="elster">
-	<xsl:output method="html" indent="yes" encoding="UTF-8" />
-	<xsl:output doctype-public="-//W3C//DTD HTML 4.01//EN" />
-	<xsl:output doctype-system="http://www.w3.org/TR/html4/loose.dtd" />
+	<xsl:output method="html" indent="yes" encoding="UTF-8" doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN" doctype-system="http://www.w3.org/TR/html4/loose.dtd"/>
 	<xsl:include href="elsteranmeldung.xsl" />
-	<xsl:include href="elsterbasis.xsl" />
 	<xsl:include href="geldbetraege.xsl" />
 
 	<xsl:template match="elster:Elster">
@@ -22,6 +19,7 @@
 						body {
 							font-family:Helvetica,Arial,sans-serif;
 							font-size: 0.85em;
+							word-wrap: break-word;
 						}
 						#content{
 							font-size:0.99em;
@@ -128,9 +126,7 @@
 						<xsl:call-template name="Transferdaten" />
 					</p>
 
-					<xsl:if test="elster:TransferHeader[starts-with(elster:Testmerker,'7')]">
-						<xsl:call-template name="Testmerker" />
-					</xsl:if>
+					<xsl:call-template name="testfall" /> 
 
 					<hr />
 
@@ -417,11 +413,30 @@
 
 		<xsl:if test="elster:Jahr[not(starts-with(.,'2004'))]">
 			<xsl:if test="elster:Kz46  | elster:Kz52  | elster:Kz73   | elster:Kz84 | elster:Kz65">
-				<h3>
-					Umsätze, für die als Leistungsempfänger die Steuer nach § 13b Absatz 2
-					<abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>
-					geschuldet wird
-				</h3>
+				<xsl:choose>
+					<xsl:when test="( 2010 > elster:Jahr[substring(., 1, 4)] ) or ( (2010 = elster:Jahr[substring(., 1, 4)]) and ( (6 >= elster:Zeitraum[substring(., 1, 2)]) or (elster:Zeitraum[substring(., 1, 2)] = 41) or (elster:Zeitraum[substring(., 1, 2)] = 42) )) " >
+					<!-- Bis Juni 2010 -->
+						<h3>
+							Umsätze, für die als Leistungsempfänger die Steuer nach § 13b Absatz 2
+							<abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>
+							geschuldet wird
+						</h3>
+					</xsl:when>
+					<xsl:when test="(2010 = elster:Jahr[substring(., 1, 4)]) and ((elster:Zeitraum[substring(., 1, 2)] > 6) or (elster:Zeitraum[substring(., 1, 2)] = 43) or (elster:Zeitraum[substring(., 1, 2)] = 44))">
+					<!-- Ab Juli 2010 bis Dezember 2010 -->
+						<h3>
+							Umsätze, für die als Leistungsempfänger die Steuer nach § 13b Absatz 5
+							<abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>
+							geschuldet wird
+						</h3>
+					</xsl:when>
+					<xsl:otherwise>
+					<!-- Ab 2011 -->
+						<h3>		
+							Leistungsempfänger als Steuerschuldner (§ 13b <abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>)
+						</h3>
+					</xsl:otherwise>
+				</xsl:choose>
 				<table>
 					<xsl:call-template name="UStVA_table_header" />
 					<xsl:call-template name="u200513b" />
@@ -687,11 +702,7 @@
 							<xsl:with-param name="betrag" select="//elster:Kz51"/>
 						</xsl:call-template>
 					</td>
-					<td valign="bottom" align="center" colspan="1" >--</td>
-					<td valign="bottom" align="right" colspan="1" >
-					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.16 * elster:Kz51, '#.##0,00&#160;&#8364;', 'geldformat')" />
-					    <sup>*)</sup>
-					</td>
+					<td colspan="2"></td>
 				</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz81">
@@ -708,11 +719,7 @@
 							<xsl:with-param name="betrag" select="//elster:Kz81"/>
 						</xsl:call-template>
 					</td>
-					<td valign="bottom" align="center" colspan="1" >--</td>
-					<td valign="bottom" align="right" colspan="1" >
-					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.19 * elster:Kz81, '#.##0,00&#160;&#8364;', 'geldformat')" />
-					    <sup>*)</sup>
-					</td>
+					<td colspan="2"></td>
 				</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz86">
@@ -729,11 +736,7 @@
 							<xsl:with-param name="betrag" select="//elster:Kz86"/>
 						</xsl:call-template>
 					</td>
-					<td valign="bottom" align="center" colspan="1" >--</td>
-					<td valign="bottom" align="right" colspan="1" >
-					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.07 * elster:Kz86, '#.##0,00&#160;&#8364;', 'geldformat')" />
-					    <sup>*)</sup>
-					</td>
+					<td colspan="2"></td>
 				</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz35">
@@ -790,11 +793,7 @@
 							<xsl:with-param name="betrag" select="//elster:Kz81"/>
 						</xsl:call-template>
 					</td>
-					<td valign="bottom" align="center" colspan="1" >--</td>
-					<td valign="bottom" align="right" colspan="1" >
-					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.19 * elster:Kz81, '#.##0,00&#160;&#8364;', 'geldformat')" />
-					    <sup>*)</sup>
-					</td>
+					<td colspan="2"></td>
 				</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz86">
@@ -811,11 +810,7 @@
 							<xsl:with-param name="betrag" select="//elster:Kz86"/>
 						</xsl:call-template>
 					</td>
-					<td valign="bottom" align="center" colspan="1" >--</td>
-					<td valign="bottom" align="right" colspan="1" >
-					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.07 * elster:Kz86, '#.##0,00&#160;&#8364;', 'geldformat')" />
-					    <sup>*)</sup>
-					</td>
+					<td colspan="2"></td>
 				</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz35">
@@ -888,7 +883,17 @@
 			<tr>
 				<th scope="row" class="alLeft">
 					<small>
-							Im Inland steuerpflichtige sonstige Leistungen von im übrigen Gemeinschaftsgebiet ansässigen Unternehmern
+				<xsl:choose>
+					<xsl:when test="( 2010 > elster:Jahr[substring(., 1, 4)] ) or ( (2010 = elster:Jahr[substring(., 1, 4)]) and ( (6 >= elster:Zeitraum[substring(., 1, 2)]) or (elster:Zeitraum[substring(., 1, 2)] = 41) or (elster:Zeitraum[substring(., 1, 2)] = 42) )) " >
+					<!-- Bis Juni 2010 -->
+						Im Inland steuerpflichtige sonstige Leistungen von im übrigen Gemeinschaftsgebiet ansässigen Unternehmern
+					</xsl:when>
+					<xsl:otherwise>
+					<!-- Ab Juli 2010 -->
+						Im Inland steuerpflichtige sonstige Leistungen von im übrigen Gemeinschaftsgebiet ansässigen Unternehmern 
+						(§ 13b Absatz 1 <abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>) 
+					</xsl:otherwise>
+				</xsl:choose>
 					</small>
 				</th>
 				<td class="alRight">46</td>
@@ -910,14 +915,19 @@
 				<th scope="row" class="alLeft">
 					<small>
 						<xsl:choose>
-							<xsl:when test="(2010 > elster:Jahr[substring(., 1, 4)] ) ">
-								<!-- bis 2010--> 
+							<xsl:when test="( 2010 > elster:Jahr[substring(., 1, 4)] )" >
+								<!-- bis 2010 --> 
 								Leistungen eines im Ausland ansässigen Unternehmers (§ 13b Absatz 1 Satz 1 Nr. 1 und 5
 								<abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>)
 							</xsl:when>
+							<xsl:when test="((2010 = elster:Jahr[substring(., 1, 4)]) and ( (6 >= elster:Zeitraum[substring(., 1, 2)]) or (elster:Zeitraum[substring(., 1, 2)] = 41) or (elster:Zeitraum[substring(., 1, 2)] = 42) )) " >
+								<!-- von Januar 2010 bis Juli 2010 --> 
+								Andere Leistungen eines im Ausland ansässigen Unternehmers (§ 13b Absatz 1 Satz 1 Nr. 1 und 5 
+								<abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>)
+							</xsl:when>
 							<xsl:otherwise>
-								<!-- ab 2010--> 
-								Andere Leistungen eines im Ausland ansässigen Unternehmers (§ 13b Abs. 1 Satz 1 Nr. 1 und 5 
+								<!-- ab Juli 2010--> 
+								Andere Leistungen eines im Ausland ansässigen Unternehmers (§ 13b Absatz 2 Nr. 1 und 5 
 								<abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>)
 							</xsl:otherwise>
 						</xsl:choose>						
@@ -941,10 +951,21 @@
 			<tr>
 				<th scope="row" class="alLeft">
 					<small>
-						Lieferungen sicherungsübereigneter Gegenstände und Umsätze, die unter das
-						<abbr class="help" title="Grunderwerbsteuergesetz">GrEStG</abbr>
-						fallen (§ 13b Absatz 1 Satz 1 Nr. 2 und 3
-						<abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>)
+					<xsl:choose>
+						<xsl:when test="( 2010 > elster:Jahr[substring(., 1, 4)] ) or ( (2010 = elster:Jahr[substring(., 1, 4)]) and ( (6 >= elster:Zeitraum[substring(., 1, 2)]) or (elster:Zeitraum[substring(., 1, 2)] = 41) or (elster:Zeitraum[substring(., 1, 2)] = 42) )) " >
+						<!-- Bis Juni 2010 -->
+							Lieferungen sicherungsübereigneter Gegenstände und Umsätze, die unter das
+							<abbr class="help" title="Grunderwerbsteuergesetz">GrEStG</abbr>
+							fallen (§ 13b Absatz 1 Satz 1 Nr. 2 und 3
+							<abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>)
+						</xsl:when>
+						<xsl:otherwise>
+						<!-- Ab Juli 2010 -->
+							Lieferungen sicherungsübereigneter Gegenstände und Umsätze, die unter das 
+							<abbr class="help" title="Grunderwerbsteuergesetz">GrEStG</abbr> fallen 
+							(§ 13b Absatz 2 Nr. 2 und 3 <abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>)
+						</xsl:otherwise>
+					</xsl:choose>
 					</small>
 				</th>
 				<td class="alRight">73</td>
@@ -965,8 +986,21 @@
 			<tr>
 				<th scope="row" class="alLeft">
 					<small>
-						Bauleistungen eines im Inland ansässigen Unternehmers (§ 13b Absatz 1 Satz 1 Nr. 4
-						<abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>)
+					<xsl:choose>
+						<xsl:when test="( 2010 > elster:Jahr[substring(., 1, 4)] ) or ( (2010 = elster:Jahr[substring(., 1, 4)]) and ( (6 >= elster:Zeitraum[substring(., 1, 2)]) or (elster:Zeitraum[substring(., 1, 2)] = 41) or (elster:Zeitraum[substring(., 1, 2)] = 42) )) " >
+						<!-- bis Juni 2010 -->
+							Bauleistungen eines im Inland ansässigen Unternehmers (§ 13b Absatz 1 Satz 1 Nr. 4
+							<abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>)
+						</xsl:when>
+						<xsl:when test="(2010 = elster:Jahr[substring(., 1, 4)]) and ((elster:Zeitraum[substring(., 1, 2)] > 6) or (elster:Zeitraum[substring(., 1, 2)] = 43) or (elster:Zeitraum[substring(., 1, 2)] = 44))">
+							<!-- Ab Juli 2010 bis Dezember 2010 -->
+							Andere Leistungen eines im Inland ansässigen Unternehmers (§ 13b Absatz 2 Nr. 4 und 6 <abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>)
+						</xsl:when>
+						<xsl:otherwise>
+							<!-- Ab 2011 -->
+							Andere Umsätze eines im Inland ansässigen Unternehmers (§ 13b Absatz 2 Nr. 4, 6 bis 9 <abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>)
+						</xsl:otherwise>
+					</xsl:choose>
 					</small>
 				</th>
 				<td class="alRight">84</td>
@@ -1001,11 +1035,7 @@
 						<xsl:with-param name="betrag" select="//elster:Kz54"/>
 					</xsl:call-template>
 				</td>
-				<td valign="bottom" align="center" colspan="1" >--</td>
-				<td valign="bottom" align="right" colspan="1" >
-				    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.16 * elster:Kz54, '#.##0,00&#160;&#8364;', 'geldformat')" />
-				    <sup>*)</sup>
-				</td>
+				<td colspan="2"></td>
 			</tr>
 		</xsl:if>
 		<xsl:if test="elster:Kz55">
@@ -1022,11 +1052,7 @@
 						<xsl:with-param name="betrag" select="//elster:Kz55"/>
 					</xsl:call-template>
 				</td>
-				<td valign="bottom" align="center" colspan="1" >--</td>
-				<td valign="bottom" align="right" colspan="1" >
-				    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.07 * elster:Kz55, '#.##0,00&#160;&#8364;', 'geldformat')" />
-				    <sup>*)</sup>
-				</td>
+				<td colspan="2"></td>
 			</tr>
 		</xsl:if>
 		<xsl:if test="elster:Kz57">
@@ -1068,12 +1094,8 @@
 							<xsl:with-param name="betrag" select="//elster:Kz97"/>
 						</xsl:call-template>
 					</td>
-					<td valign="bottom" align="center" colspan="1" >--</td>
-					<td valign="bottom" align="right" colspan="1" >
-					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.16 * elster:Kz97, '#.##0,00&#160;&#8364;', 'geldformat')" />
-					    <sup>*)</sup>
-					</td>
-					</tr>
+					<td colspan="2"></td>
+				</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz89">
 				<tr>
@@ -1089,11 +1111,7 @@
 							<xsl:with-param name="betrag" select="//elster:Kz89"/>
 						</xsl:call-template>
 					</td>
-					<td valign="bottom" align="center" colspan="1" >--</td>
-					<td valign="bottom" align="right" colspan="1" >
-					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.19 * elster:Kz89, '#.##0,00&#160;&#8364;', 'geldformat')" />
-					    <sup>*)</sup>
-					</td>
+					<td colspan="2"></td>
 				</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz93">
@@ -1110,11 +1128,7 @@
 							<xsl:with-param name="betrag" select="//elster:Kz93"/>
 						</xsl:call-template>
 					</td>
-					<td valign="bottom" align="center" colspan="1" >--</td>
-					<td valign="bottom" align="right" colspan="1" >
-					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.07 * elster:Kz93, '#.##0,00&#160;&#8364;', 'geldformat')" />
-					    <sup>*)</sup>
-					</td>
+					<td colspan="2"></td>
 				</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz95">
@@ -1261,15 +1275,21 @@
 						<th scope="row" class="alLeft">
 							<small>
 								<xsl:choose>						
+									<!-- vor 2010 -->
 									<xsl:when test="2010 > elster:Jahr[substring(.,1,4)]">										
 										Steuerpflichtige Umsätze im Sinne des § 13b Absatz 1 Satz 1 Nr. 1 bis 5
 										<abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>,
 										für die der Leistungsempfänger die Steuer schuldet																			
 									</xsl:when>							
-									<xsl:otherwise>			
-										<!-- ab 2010 -->
-											Steuerpflichtige Umsätze im Sinne des § 13b <abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>,
-											für die der Leistungsempfänger die Steuer schuldet																	
+									<!-- 2010 -->
+									<xsl:when test="2010 = elster:Jahr[substring(.,1,4)]">			
+										Steuerpflichtige Umsätze im Sinne des § 13b <abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>,
+										für die der Leistungsempfänger die Steuer schuldet						
+									</xsl:when>
+									<!-- ab 2011 -->
+									<xsl:otherwise>
+										Steuerpflichtige Umsätze, für die der Leistungsempfänger die Steuer nach § 13b Absatz 5 
+										<abbr class="help" title="Umsatzsteuergesetz">UStG</abbr> schuldet
 									</xsl:otherwise>
 								</xsl:choose>		
 							</small>													
@@ -1307,7 +1327,9 @@
 				<xsl:if test="elster:Kz45">
 					<tr>
 						<th scope="row" class="alLeft">
-							<strong>Im Inland nicht steuerbare Umsätze</strong>
+							<small>
+								<strong>Im Inland nicht steuerbare Umsätze</strong>
+							</small>
 						</th>
 						<td class="alRight">45</td>
 						<td class="alRight">
@@ -1324,8 +1346,10 @@
 			<xsl:if test="(elster:Jahr[starts-with(.,'2007')] | elster:Jahr[starts-with(.,'2008')] | elster:Jahr[starts-with(.,'2009')] ) and elster:Kz45">
 				<tr>
 					<th scope="row" class="alLeft">
+					<small>
 						<strong>Nicht steuerbare Umsätze</strong>
 						(Leistungsort nicht im Inland)
+					</small>
 					</th>
 					<td class="alRight">45</td>
 					<td class="alRight">
@@ -1341,8 +1365,10 @@
 			<xsl:if test="(elster:Jahr[substring(., 1, 4)] > 2009) and elster:Kz45">
 				<tr>
 					<th scope="row" class="alLeft">
-						<strong>Übrige nicht steuerbare Umsätze </strong>
-						(Leistungsort nicht im Inland)
+						<small>
+							<strong>Übrige nicht steuerbare Umsätze </strong>
+							(Leistungsort nicht im Inland)
+						</small>
 					</th>
 					<td class="alRight">45</td>
 					<td class="alRight">
@@ -1358,8 +1384,8 @@
 
 	<!--******************** 'Vorsteuer' *****-->
 	<xsl:template name="Vorsteuer">
-		<tr>
-			<xsl:if test="elster:Kz66">
+		<xsl:if test="elster:Kz66">
+			<tr>
 				<th scope="row" class="alLeft">
 					<small>
 						Vorsteuerbeträge aus Rechnungen von anderen Unternehmern (§ 15 Absatz 1 Satz 1 Nr. 1
@@ -1378,10 +1404,10 @@
 						<xsl:with-param name="betrag" select="//elster:Kz66"/>
 					</xsl:call-template>
 				</td>
-			</xsl:if>
-		</tr>
-		<tr>
-			<xsl:if test="elster:Kz61">
+			</tr>
+		</xsl:if>
+		<xsl:if test="elster:Kz61">
+			<tr>
 				<th scope="row" class="alLeft">
 					<small>
 						Vorsteuerbeträge aus dem innergemeinschaftlichen Erwerb von Gegenständen (§ 15 Absatz 1 Satz 1 Nr. 3
@@ -1395,10 +1421,10 @@
 						<xsl:with-param name="betrag" select="//elster:Kz61"/>
 					</xsl:call-template>
 				</td>
-			</xsl:if>
-		</tr>
-		<tr>
-			<xsl:if test="elster:Kz62">
+			</tr>
+		</xsl:if>
+		<xsl:if test="elster:Kz62">
+			<tr>
 				<th scope="row" class="alLeft">
 					<small>Entrichtete Einfuhrumsatzsteuer (§ 15 Absatz 1 Satz 1 Nr. 2 UStG)</small>
 				</th>
@@ -1409,10 +1435,10 @@
 						<xsl:with-param name="betrag" select="//elster:Kz62"/>
 					</xsl:call-template>
 				</td>
-			</xsl:if>
-		</tr>
-		<tr>
-			<xsl:if test="elster:Kz67">
+			</tr>
+		</xsl:if>
+		<xsl:if test="elster:Kz67">
+			<tr>
 				<th scope="row" class="alLeft">
 					<small>
 						<xsl:choose>
@@ -1427,7 +1453,7 @@
 								<!-- ab 2010 -->
 								Vorsteuerbeträge aus Leistungen im Sinne des § 13b 
 								<abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>
-								 (§ 15 Abs. 1 Satz 1 Nr. 4
+								 (§ 15 Absatz 1 Satz 1 Nr. 4
 								 <abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>)
 							</xsl:otherwise>
 						</xsl:choose>						
@@ -1440,10 +1466,10 @@
 						<xsl:with-param name="betrag" select="//elster:Kz67"/>
 					</xsl:call-template>
 				</td>
-			</xsl:if>
-		</tr>
-		<tr>
-			<xsl:if test="elster:Kz63">
+			</tr>
+		</xsl:if>
+		<xsl:if test="elster:Kz63">
+			<tr>
 				<th scope="row" class="alLeft">
 					<small>
 						Vorsteuerbeträge, die nach allgemeinen Durchschnittssätzen berechnet sind (§§ 23 und 23a
@@ -1457,10 +1483,10 @@
 						<xsl:with-param name="betrag" select="//elster:Kz63"/>
 					</xsl:call-template>
 				</td>
-			</xsl:if>
-		</tr>
-		<tr>
-			<xsl:if test="elster:Kz64">
+			</tr>
+		</xsl:if>
+		<xsl:if test="elster:Kz64">
+			<tr>
 				<th scope="row" class="alLeft">
 					<small>
 						Berichtigung des Vorsteuerabzugs (§ 15a
@@ -1474,10 +1500,10 @@
 						<xsl:with-param name="betrag" select="//elster:Kz64"/>
 					</xsl:call-template>
 				</td>
-			</xsl:if>
-		</tr>
-		<tr>
-			<xsl:if test="elster:Kz59">
+			</tr>
+		</xsl:if>
+		<xsl:if test="elster:Kz59">
+			<tr>
 				<th scope="row" class="alLeft">
 					<small>
 						Vorsteuerabzug für innergemeinschaftliche Lieferungen neuer Fahrzeuge außerhalb eines Unternehmens (§ 2a
@@ -1495,8 +1521,8 @@
 						<xsl:with-param name="betrag" select="//elster:Kz59"/>
 					</xsl:call-template>
 				</td>
-			</xsl:if>
-		</tr>
+			</tr>
+		</xsl:if>
 	</xsl:template>
 
 	<!--******************** DAUERFRISTVERLAENGERUNG **************** -->

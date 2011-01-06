@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- Version 2.0 -->
-<xsl:stylesheet version="2.0"
+<xsl:stylesheet version="1.0"
 		xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 		xmlns:elster="http://www.elster.de/2002/XMLSchema"
 		exclude-result-prefixes="elster">
@@ -702,7 +702,11 @@
 							<xsl:with-param name="betrag" select="//elster:Kz51"/>
 						</xsl:call-template>
 					</td>
-					<td colspan="2"></td>
+					<td valign="bottom" align="center" colspan="1" >--</td>
+					<td valign="bottom" align="right" colspan="1" >
+					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.16 * elster:Kz51, '#.##0,00&#160;&#8364;', 'geldformat')" />
+					    <sup>*)</sup>
+					</td>
 				</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz81">
@@ -719,7 +723,11 @@
 							<xsl:with-param name="betrag" select="//elster:Kz81"/>
 						</xsl:call-template>
 					</td>
-					<td colspan="2"></td>
+					<td valign="bottom" align="center" colspan="1" >--</td>
+					<td valign="bottom" align="right" colspan="1" >
+					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.19 * elster:Kz81, '#.##0,00&#160;&#8364;', 'geldformat')" />
+					    <sup>*)</sup>
+					</td>
 				</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz86">
@@ -736,7 +744,11 @@
 							<xsl:with-param name="betrag" select="//elster:Kz86"/>
 						</xsl:call-template>
 					</td>
-					<td colspan="2"></td>
+					<td valign="bottom" align="center" colspan="1" >--</td>
+					<td valign="bottom" align="right" colspan="1" >
+					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.07 * elster:Kz86, '#.##0,00&#160;&#8364;', 'geldformat')" />
+					    <sup>*)</sup>
+					</td>
 				</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz35">
@@ -793,7 +805,11 @@
 							<xsl:with-param name="betrag" select="//elster:Kz81"/>
 						</xsl:call-template>
 					</td>
-					<td colspan="2"></td>
+					<td valign="bottom" align="center" colspan="1" >--</td>
+					<td valign="bottom" align="right" colspan="1" >
+					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.19 * elster:Kz81, '#.##0,00&#160;&#8364;', 'geldformat')" />
+					    <sup>*)</sup>
+					</td>
 				</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz86">
@@ -810,7 +826,11 @@
 							<xsl:with-param name="betrag" select="//elster:Kz86"/>
 						</xsl:call-template>
 					</td>
-					<td colspan="2"></td>
+					<td valign="bottom" align="center" colspan="1" >--</td>
+					<td valign="bottom" align="right" colspan="1" >
+					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.07 * elster:Kz86, '#.##0,00&#160;&#8364;', 'geldformat')" />
+					    <sup>*)</sup>
+					</td>
 				</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz35">
@@ -1035,7 +1055,11 @@
 						<xsl:with-param name="betrag" select="//elster:Kz54"/>
 					</xsl:call-template>
 				</td>
-				<td colspan="2"></td>
+				<td valign="bottom" align="center" colspan="1" >--</td>
+				<td valign="bottom" align="right" colspan="1" >
+				    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.16 * elster:Kz54, '#.##0,00&#160;&#8364;', 'geldformat')" />
+				    <sup>*)</sup>
+				</td>
 			</tr>
 		</xsl:if>
 		<xsl:if test="elster:Kz55">
@@ -1052,7 +1076,11 @@
 						<xsl:with-param name="betrag" select="//elster:Kz55"/>
 					</xsl:call-template>
 				</td>
-				<td colspan="2"></td>
+				<td valign="bottom" align="center" colspan="1" >--</td>
+				<td valign="bottom" align="right" colspan="1" >
+				    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.07 * elster:Kz55, '#.##0,00&#160;&#8364;', 'geldformat')" />
+				    <sup>*)</sup>
+				</td>
 			</tr>
 		</xsl:if>
 		<xsl:if test="elster:Kz57">
@@ -1094,8 +1122,12 @@
 							<xsl:with-param name="betrag" select="//elster:Kz97"/>
 						</xsl:call-template>
 					</td>
-					<td colspan="2"></td>
-				</tr>
+					<td valign="bottom" align="center" colspan="1" >--</td>
+					<td valign="bottom" align="right" colspan="1" >
+					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.16 * elster:Kz97, '#.##0,00&#160;&#8364;', 'geldformat')" />
+					    <sup>*)</sup>
+					</td>
+					</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz89">
 				<tr>
@@ -1111,7 +1143,11 @@
 							<xsl:with-param name="betrag" select="//elster:Kz89"/>
 						</xsl:call-template>
 					</td>
-					<td colspan="2"></td>
+					<td valign="bottom" align="center" colspan="1" >--</td>
+					<td valign="bottom" align="right" colspan="1" >
+					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.19 * elster:Kz89, '#.##0,00&#160;&#8364;', 'geldformat')" />
+					    <sup>*)</sup>
+					</td>
 				</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz93">
@@ -1128,7 +1164,11 @@
 							<xsl:with-param name="betrag" select="//elster:Kz93"/>
 						</xsl:call-template>
 					</td>
-					<td colspan="2"></td>
+					<td valign="bottom" align="center" colspan="1" >--</td>
+					<td valign="bottom" align="right" colspan="1" >
+					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.07 * elster:Kz93, '#.##0,00&#160;&#8364;', 'geldformat')" />
+					    <sup>*)</sup>
+					</td>
 				</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz95">

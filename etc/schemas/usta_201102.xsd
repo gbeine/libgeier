@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-15"?>
-<!-- Version 2007.1 -->
-<xs:schema targetNamespace="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:elster="http://www.elster.de/2002/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<!-- Version 2011.2 -->
+<xs:schema xmlns:elster="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.elster.de/2002/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:complexType name="usta_AnmeldungssteuernCType">
 		<xs:sequence>
 			<xs:element name="DatenLieferant" type="elster:usta_DatenlieferantCType"/>
@@ -10,7 +10,7 @@
 		<xs:attribute name="version" use="required">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
-					<xs:enumeration value="200701"/>
+					<xs:enumeration value="201102"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
@@ -60,7 +60,7 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
-			<xs:element name="Telefon"  type="elster:TelefonSType" minOccurs="0"/>
+			<xs:element name="Telefon" type="elster:TelefonSType" minOccurs="0"/>
 			<xs:element name="Email" type="elster:EmailSType" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
@@ -247,25 +247,17 @@
 	</xs:simpleType>
 	<xs:simpleType name="usta_ZeitraumSType">
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="01"/>
-			<xs:enumeration value="02"/>
-			<xs:enumeration value="03"/>
-			<xs:enumeration value="04"/>
-			<xs:enumeration value="05"/>
-			<xs:enumeration value="06"/>
 			<xs:enumeration value="07"/>
 			<xs:enumeration value="08"/>
 			<xs:enumeration value="09"/>
 			<xs:enumeration value="10"/>
 			<xs:enumeration value="11"/>
 			<xs:enumeration value="12"/>
-			<xs:enumeration value="41"/>
-			<xs:enumeration value="42"/>
 			<xs:enumeration value="43"/>
 			<xs:enumeration value="44"/>
 		</xs:restriction>
 	</xs:simpleType>
-		<xs:simpleType name="allg_StNrSType">
+	<xs:simpleType name="allg_StNrSType">
 		<xs:annotation>
 			<xs:documentation xml:lang="DE">gemäß Elster Developers Toolkit</xs:documentation>
 			<xs:documentation xml:lang="DE">13 stellig Nummerisch</xs:documentation>
@@ -277,7 +269,7 @@
 	</xs:simpleType>
 	<xs:simpleType name="usta_JahrSType">
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="2007"/>
+			<xs:enumeration value="2011"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="usta_Kz09SType">
@@ -358,6 +350,7 @@
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="Kz10" type="elster:usta_Kz10SType" minOccurs="0"/>
+			<xs:element name="Kz21" type="elster:usta_DefaultKZSType" minOccurs="0"/>
 			<xs:element name="Kz22" type="elster:usta_Kz22SType" minOccurs="0"/>
 			<xs:element name="Kz26" type="elster:usta_Kz26SType" minOccurs="0"/>
 			<xs:element name="Kz29" type="elster:usta_Kz29SType" minOccurs="0"/>
@@ -369,6 +362,8 @@
 			<xs:element name="Kz43" type="elster:usta_DefaultKZSType" minOccurs="0"/>
 			<xs:element name="Kz44" type="elster:usta_DefaultKZSType" minOccurs="0"/>
 			<xs:element name="Kz45" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz46" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz47" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
 			<xs:element name="Kz48" type="elster:usta_DefaultKZSType" minOccurs="0"/>
 			<xs:element name="Kz49" type="elster:usta_DefaultKZSType" minOccurs="0"/>
 			<xs:element name="Kz52" type="elster:usta_DefaultKZSType" minOccurs="0"/>
@@ -382,11 +377,14 @@
 			<xs:element name="Kz65" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
 			<xs:element name="Kz66" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
 			<xs:element name="Kz67" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
+			<xs:element name="Kz68" type="elster:usta_DefaultKZSType" minOccurs="0"/>
 			<xs:element name="Kz69" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
 			<xs:element name="Kz73" type="elster:usta_DefaultKZSType" minOccurs="0"/>
 			<xs:element name="Kz74" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
 			<xs:element name="Kz76" type="elster:usta_DefaultKZSType" minOccurs="0"/>
 			<xs:element name="Kz77" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz78" type="elster:usta_DefaultKZSType" minOccurs="0"/>
+			<xs:element name="Kz79" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
 			<xs:element name="Kz80" type="elster:usta_DefaultKZSTypewithCent" minOccurs="0"/>
 			<xs:element name="Kz81" type="elster:usta_DefaultKZSType" minOccurs="0"/>
 			<xs:element name="Kz83" type="elster:usta_DefaultKZSTypewithCent"/>

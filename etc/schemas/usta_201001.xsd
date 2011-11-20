@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="ISO-8859-15"?>
 <!-- Mit XMLSpy v2007 sp2 (http://www.altova.com) von Bayerisches Landesamt für Steuer (Bayerisches Landesamt für Steuer) bearbeitet -->
 <!-- Version 2010.1 -->
 <xs:schema xmlns:elster="http://www.elster.de/2002/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.elster.de/2002/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">

@@ -1,3 +1,5 @@
+
+
 schemadir = $(datadir)/libgeier/schemas
 schema_DATA = \
 	elster0810_LStA_200401_extern.xsd \
@@ -8,6 +10,7 @@ schema_DATA = \
 	elster0810_LStA_200901_extern.xsd \
 	elster0810_LStA_201001_extern.xsd \
 	elster0810_LStA_201101_extern.xsd \
+	elster0810_LStA_201201_extern.xsd \
 	elster0810_UStA_200401_extern.xsd \
 	elster0810_UStA_200501_extern.xsd \
 	elster0810_UStA_200601_extern.xsd \
@@ -16,6 +19,8 @@ schema_DATA = \
 	elster0810_UStA_200901_extern.xsd \
 	elster0810_UStA_201001_extern.xsd \
 	elster0810_UStA_201101_extern.xsd \
+	elster0810_UStA_201102_extern.xsd \
+	elster0810_UStA_201201_extern.xsd \
 	headerbasis000002.xsd \
 	kontoabfrage.xsd \
 	kontoabfrage_rootish.xsd \
@@ -27,6 +32,7 @@ schema_DATA = \
 	lsta_200901.xsd \
 	lsta_201001.xsd \
 	lsta_201101.xsd \
+	lsta_201201.xsd \
 	ndh000010_extern.xsd \
 	registrierung.xsd \
 	registrierung_rootish.xsd \
@@ -38,6 +44,8 @@ schema_DATA = \
 	usta_200801.xsd \
 	usta_200901.xsd \
 	usta_201001.xsd \
-	usta_201101.xsd
+	usta_201101.xsd \
+	usta_201102.xsd \
+	usta_201201.xsd
 
 EXTRA_DIST = $(schema_DATA)

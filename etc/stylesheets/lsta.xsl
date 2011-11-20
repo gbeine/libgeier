@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- Version 2.0 -->
-<xsl:stylesheet version="1.0" 
+<xsl:stylesheet version="2.0" 
 		xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
 		xmlns:elster="http://www.elster.de/2002/XMLSchema" 
 		exclude-result-prefixes="elster">
@@ -134,9 +134,9 @@
 					<xsl:call-template name="testfall" />
 
 					<hr />
-					
-					<xsl:call-template name="ElsterInfoMitTrennlinie" />
 
+					<xsl:call-template name="Anmeldungen_ElsterInfo" />
+					
 					<xsl:if test="//elster:Berater | //elster:Mandant | //elster:Unternehmer">
 						<xsl:call-template name="Berater_Mandant_Unternehmer" />
 					</xsl:if>

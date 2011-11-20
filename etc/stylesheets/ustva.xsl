@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- Version 2.0 -->
-<xsl:stylesheet version="1.0"
+<xsl:stylesheet version="2.0"
 		xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 		xmlns:elster="http://www.elster.de/2002/XMLSchema"
 		exclude-result-prefixes="elster">
@@ -129,8 +129,8 @@
 					<xsl:call-template name="testfall" /> 
 
 					<hr />
-
-					<xsl:call-template name="ElsterInfoMitTrennlinie" />
+					
+					<xsl:call-template name="Anmeldungen_ElsterInfo" />
 
 					<xsl:if test="//elster:Berater | //elster:Mandant | //elster:Unternehmer">
 						<xsl:call-template name="Berater_Mandant_Unternehmer" />
@@ -272,15 +272,15 @@
 
 	<xsl:template name="UStVA_table_header">
 		<tr>
-			<td></td>
+			<td style="width:44%"></td>
 			<th style="width:4%" class="alRight">
 				<abbr title="Kennziffer" class="help">Kz</abbr>
 			</th>
-			<th style="width:23%" class="alRight">Bemessungsgrundlage</th>
+			<th style="width:24%" class="alRight">Bemessungsgrundlage</th>
 			<th style="width:4%" class="alRight">
 				<abbr title="Kennziffer" class="help">Kz</abbr>
 			</th>
-			<th style="width:23%" class="alRight">Steuer</th>
+			<th style="width:24%" class="alRight">Steuer</th>
 		</tr>
 	</xsl:template>
 	<!--******************** UStVA *******************************-->
@@ -343,10 +343,20 @@
 				<xsl:call-template name="UStVA_table_header" />
 				<tr>
 					<th scope="row" class="alLeft">
-						<small>
-							Erwerbe nach § 4b
-							<abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>
-						</small>
+						<xsl:choose>
+							<xsl:when test="2011 >= elster:Jahr[substring(.,1,4)]">
+								<small>
+									Erwerbe nach § 4b
+									<abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>
+								</small>
+							</xsl:when>
+							<xsl:otherwise>	
+								<small>
+									Erwerbe nach §§ 4b und 25c 
+									<ABBR class="help" title="Umsatzsteuergesetz">UStG</ABBR>
+								</small>
+							</xsl:otherwise>
+						</xsl:choose>
 					</th>
 					<td class="alRight">91</td>
 					<td class="alRight">
@@ -364,7 +374,7 @@
 		</xsl:if>
 
 		<xsl:if test="elster:Jahr[not(starts-with(.,'2004'))]">
-			<xsl:if test="elster:Kz42 | elster:Kz60 | elster:Kz21 | elster:Kz45">
+			<xsl:if test="elster:Kz42 | elster:Kz68 | elster:Kz60 | elster:Kz21 | elster:Kz45">
 				<xsl:call-template name="ergAng" />
 			</xsl:if>
 		</xsl:if>
@@ -412,7 +422,7 @@
 		</xsl:if>
 
 		<xsl:if test="elster:Jahr[not(starts-with(.,'2004'))]">
-			<xsl:if test="elster:Kz46  | elster:Kz52  | elster:Kz73   | elster:Kz84 | elster:Kz65">
+			<xsl:if test="elster:Kz46  | elster:Kz52  | elster:Kz73 | elster:Kz78 | elster:Kz84 | elster:Kz65">
 				<xsl:choose>
 					<xsl:when test="( 2010 > elster:Jahr[substring(., 1, 4)] ) or ( (2010 = elster:Jahr[substring(., 1, 4)]) and ( (6 >= elster:Zeitraum[substring(., 1, 2)]) or (elster:Zeitraum[substring(., 1, 2)] = 41) or (elster:Zeitraum[substring(., 1, 2)] = 42) )) " >
 					<!-- Bis Juni 2010 -->
@@ -702,11 +712,7 @@
 							<xsl:with-param name="betrag" select="//elster:Kz51"/>
 						</xsl:call-template>
 					</td>
-					<td valign="bottom" align="center" colspan="1" >--</td>
-					<td valign="bottom" align="right" colspan="1" >
-					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.16 * elster:Kz51, '#.##0,00&#160;&#8364;', 'geldformat')" />
-					    <sup>*)</sup>
-					</td>
+					<td colspan="2"></td>
 				</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz81">
@@ -723,11 +729,7 @@
 							<xsl:with-param name="betrag" select="//elster:Kz81"/>
 						</xsl:call-template>
 					</td>
-					<td valign="bottom" align="center" colspan="1" >--</td>
-					<td valign="bottom" align="right" colspan="1" >
-					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.19 * elster:Kz81, '#.##0,00&#160;&#8364;', 'geldformat')" />
-					    <sup>*)</sup>
-					</td>
+					<td colspan="2"></td>
 				</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz86">
@@ -744,11 +746,7 @@
 							<xsl:with-param name="betrag" select="//elster:Kz86"/>
 						</xsl:call-template>
 					</td>
-					<td valign="bottom" align="center" colspan="1" >--</td>
-					<td valign="bottom" align="right" colspan="1" >
-					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.07 * elster:Kz86, '#.##0,00&#160;&#8364;', 'geldformat')" />
-					    <sup>*)</sup>
-					</td>
+					<td colspan="2"></td>
 				</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz35">
@@ -805,11 +803,7 @@
 							<xsl:with-param name="betrag" select="//elster:Kz81"/>
 						</xsl:call-template>
 					</td>
-					<td valign="bottom" align="center" colspan="1" >--</td>
-					<td valign="bottom" align="right" colspan="1" >
-					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.19 * elster:Kz81, '#.##0,00&#160;&#8364;', 'geldformat')" />
-					    <sup>*)</sup>
-					</td>
+					<td colspan="2"></td>
 				</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz86">
@@ -826,11 +820,7 @@
 							<xsl:with-param name="betrag" select="//elster:Kz86"/>
 						</xsl:call-template>
 					</td>
-					<td valign="bottom" align="center" colspan="1" >--</td>
-					<td valign="bottom" align="right" colspan="1" >
-					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.07 * elster:Kz86, '#.##0,00&#160;&#8364;', 'geldformat')" />
-					    <sup>*)</sup>
-					</td>
+					<td colspan="2"></td>
 				</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz35">
@@ -876,7 +866,7 @@
 						<small>
 							Umsätze, für die eine Steuer nach § 24
 							<abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>
-							zu entrichten ist (Sägewerkserzeugnisse, Getränke und alkohol. Flüssigkeiten, z.B. Wein)
+							zu entrichten ist (Sägewerkserzeugnisse, Getränke und alkoholische Flüssigkeiten, z.B. Wein)
 						</small>
 					</th>
 					<td class="alRight">76</td>
@@ -1002,6 +992,29 @@
 				</td>
 			</tr>
 		</xsl:if>
+		
+		<xsl:if test="elster:Kz78">
+			<tr>
+				<th scope="row" class="alLeft">
+					<small>
+							Lieferungen von Mobilfunkgeräten und integrierten Schaltkreisen (§ 13b Absatz 2 Nr. 10 <abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>)
+					</small>
+				</th>
+				<td class="alRight">78</td>
+				<td class="alRight">
+					<xsl:call-template name="formatiereGeldbetrag">
+						<xsl:with-param name="betrag" select="//elster:Kz78"/>
+					</xsl:call-template>
+				</td>
+				<td class="alRight">79</td>
+				<td class="alRight">
+					<xsl:call-template name="formatiereGeldbetrag">
+						<xsl:with-param name="betrag" select="//elster:Kz79"/>
+					</xsl:call-template>
+				</td>
+			</tr>
+		</xsl:if>
+		
 		<xsl:if test="elster:Kz84">
 			<tr>
 				<th scope="row" class="alLeft">
@@ -1055,11 +1068,7 @@
 						<xsl:with-param name="betrag" select="//elster:Kz54"/>
 					</xsl:call-template>
 				</td>
-				<td valign="bottom" align="center" colspan="1" >--</td>
-				<td valign="bottom" align="right" colspan="1" >
-				    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.16 * elster:Kz54, '#.##0,00&#160;&#8364;', 'geldformat')" />
-				    <sup>*)</sup>
-				</td>
+				<td colspan="2"></td>
 			</tr>
 		</xsl:if>
 		<xsl:if test="elster:Kz55">
@@ -1076,11 +1085,7 @@
 						<xsl:with-param name="betrag" select="//elster:Kz55"/>
 					</xsl:call-template>
 				</td>
-				<td valign="bottom" align="center" colspan="1" >--</td>
-				<td valign="bottom" align="right" colspan="1" >
-				    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.07 * elster:Kz55, '#.##0,00&#160;&#8364;', 'geldformat')" />
-				    <sup>*)</sup>
-				</td>
+				<td colspan="2"></td>
 			</tr>
 		</xsl:if>
 		<xsl:if test="elster:Kz57">
@@ -1122,12 +1127,8 @@
 							<xsl:with-param name="betrag" select="//elster:Kz97"/>
 						</xsl:call-template>
 					</td>
-					<td valign="bottom" align="center" colspan="1" >--</td>
-					<td valign="bottom" align="right" colspan="1" >
-					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.16 * elster:Kz97, '#.##0,00&#160;&#8364;', 'geldformat')" />
-					    <sup>*)</sup>
-					</td>
-					</tr>
+					<td colspan="2"></td>
+				</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz89">
 				<tr>
@@ -1143,11 +1144,7 @@
 							<xsl:with-param name="betrag" select="//elster:Kz89"/>
 						</xsl:call-template>
 					</td>
-					<td valign="bottom" align="center" colspan="1" >--</td>
-					<td valign="bottom" align="right" colspan="1" >
-					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.19 * elster:Kz89, '#.##0,00&#160;&#8364;', 'geldformat')" />
-					    <sup>*)</sup>
-					</td>
+					<td colspan="2"></td>
 				</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz93">
@@ -1164,11 +1161,7 @@
 							<xsl:with-param name="betrag" select="//elster:Kz93"/>
 						</xsl:call-template>
 					</td>
-					<td valign="bottom" align="center" colspan="1" >--</td>
-					<td valign="bottom" align="right" colspan="1" >
-					    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="format-number(0.07 * elster:Kz93, '#.##0,00&#160;&#8364;', 'geldformat')" />
-					    <sup>*)</sup>
-					</td>
+					<td colspan="2"></td>
 				</tr>
 			</xsl:if>
 			<xsl:if test="elster:Kz95">
@@ -1266,7 +1259,7 @@
 						<small>
 							Umsätze, für die eine Steuer nach § 24
 							<abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>
-							zu entrichten ist (Sägewerkserzeugnisse, Getränke und alkohol. Flüssigkeiten, z.B. Wein)
+							zu entrichten ist (Sägewerkserzeugnisse, Getränke und alkoholische Flüssigkeiten, z.B. Wein)
 						</small>
 					</th>
 					<td class="alRight">76</td>
@@ -1308,6 +1301,25 @@
 					<td colspan="2"></td>
 				</tr>
 			</xsl:if>
+			
+			<xsl:if test="elster:Kz68">
+				<tr>
+					<th scope="row" class="alLeft">
+						<small>
+							Steuerpflichtige Umsätze, für die der Leistungsempfänger 
+							die Steuer nach § 13b Absatz 5 Satz 1 in Verbindung mit 
+							Absatz 2 Nr. 10 <ABBR class="help" title="Umsatzsteuergesetz">UStG</ABBR> schuldet
+						</small>
+					</th>
+					<td class="alRight">68</td>
+					<td class="alRight">
+						<xsl:call-template name="formatiereGeldbetrag">
+							<xsl:with-param name="betrag" select="//elster:Kz68"/>
+						</xsl:call-template>
+					</td>
+					<td colspan="2"></td>
+				</tr>
+			</xsl:if>
 
 			<xsl:if test="elster:Jahr[not(starts-with(.,'2004'))]">
 				<xsl:if test="elster:Kz60">
@@ -1327,9 +1339,13 @@
 										für die der Leistungsempfänger die Steuer schuldet						
 									</xsl:when>
 									<!-- ab 2011 -->
+									<xsl:when test="(2011 = elster:Jahr[substring(.,1,4)]) and ((6 >= elster:Zeitraum[substring(., 1, 2)]) or (elster:Zeitraum[substring(., 1, 2)] = 41) or (elster:Zeitraum[substring(., 1, 2)] = 42))">			
+										Steuerpflichtige Umsätze im Sinne des § 13b <abbr class="help" title="Umsatzsteuergesetz">UStG</abbr>,
+										für die der Leistungsempfänger die Steuer schuldet						
+									</xsl:when>
 									<xsl:otherwise>
-										Steuerpflichtige Umsätze, für die der Leistungsempfänger die Steuer nach § 13b Absatz 5 
-										<abbr class="help" title="Umsatzsteuergesetz">UStG</abbr> schuldet
+										Übrige steuerpflichtige Umsätze, für die der Leistungsempfänger die Steuer 
+										nach § 13b Absatz 5 <abbr class="help" title="Umsatzsteuergesetz">UStG</abbr> schuldet
 									</xsl:otherwise>
 								</xsl:choose>		
 							</small>													

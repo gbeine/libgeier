@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- Version 2.0 -->
-<xsl:stylesheet version="1.0" 
+<xsl:stylesheet version="2.0" 
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
   xmlns:elster="http://www.elster.de/2002/XMLSchema" 
   exclude-result-prefixes="elster">
@@ -60,7 +60,7 @@
     </div>
     <div class="clear"></div>
   </xsl:template>
-
+  
   <xsl:template name="ElsterInfo">
   	<!-- für Verfahrensnachrichten -->
     <xsl:if test="//elster:Zusatz/elster:ElsterInfo" >
@@ -81,6 +81,5 @@
       </xsl:for-each>
     </xsl:if>
   </xsl:template>
-	
 
 </xsl:stylesheet>

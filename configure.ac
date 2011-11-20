@@ -21,7 +21,7 @@
 # Process this file with autoconf to produce a configure script.
 
 # FIXME: we need a proper project bugreport email address
-AC_INIT([libgeier],[0.12],[taxbird@taxbird.de])
+AC_INIT([libgeier],[0.13],[taxbird@taxbird.de])
 AC_CONFIG_AUX_DIR(config)
 AM_CONFIG_HEADER(src/config.h)
 AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION, $PACKAGE_BUGREPORT)
